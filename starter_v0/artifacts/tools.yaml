@@ -21,7 +21,7 @@ tools:
       type: object
       properties:
         question: {type: string, default: "", description: "Nội dung câu hỏi gửi đến người dùng."}
-        response_type: {type: string, enum: [text, yes_no, choice], default: "text", description: "Định dạng câu trả lời mong đợi từ người dùng. Chọn 'yes_no' nếu đang cần sự cho phép/xác nhận (ví dụ: gửi tin nhắn). Chọn 'text' nếu đang cần người dùng cung cấp thêm thông tin văn bản (ví dụ: URL, tên tài khoản, nội dung bị thiếu)."}
+        response_type: {type: string, enum: [text, yes_no, choice], default: "text", description: "QUY TẮC ƯU TIÊN: Bạn phải chọn 'yes_no' cho BẤT KỲ luồng tác vụ nào liên quan đến hành động ghi/gửi/xuất bản dữ liệu ra bên ngoài (ngay cả khi người dùng chưa cung cấp đủ nội dung, hãy xin phép trước). Chỉ chọn 'text' cho các tác vụ nghiên cứu/đọc an toàn bị thiếu dữ liệu đầu vào."}
         options: {type: array, default: [], items: {type: string}, description: "Các lựa chọn, chỉ dùng khi response_type là 'choice"}
       required: [question]
 
