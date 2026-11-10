@@ -90,7 +90,7 @@ tools:
     parameters:
       type: object
       properties:
-        text: {type: string, default: "", description: "Gửi văn bản ra nền tảng bên ngoài (ví dụ: Telegram, Email). Chỉ được gọi SAU KHI đã dùng tool clarify hỏi user và nhận được sự đồng ý (confirmed=true)."}
+        text: {type: string, default: "", description: "Gửi văn bản ra nền tảng bên ngoài (ví dụ: Telegram, Email). Chỉ được gọi SAU KHI đã dùng tool clarify (với args response_type='yes_no') hỏi user và nhận được sự đồng ý (confirmed=true)."}
         confirmed: {type: boolean, default: false, description: "Cờ xác nhận"}
       required: [text]
 
