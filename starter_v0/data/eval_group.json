@@ -3,5 +3,116 @@
   "dataset_role": "group",
   "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type (thuộc allowed_failure_types), và expect (tool_calls[...] hoặc no_tool=true). Nên kèm metadata.what_it_tests.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "cases": [
+    {
+      "id": "G01_custom_tool_call",
+      "phase": "B",
+      "suite": "group",
+      "query": "Lấy cho tôi giá cổ phiếu của Apple hôm nay.",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "my_custom_tool", "args": {"symbol": "AAPL"}}]},
+      "metadata": {"skill": "routing_custom_tool", "difficulty": "easy", "what_it_tests": "LƯU Ý: THAY TÊN TOOL NÀY. Kiểm tra xem agent có gọi đúng tool do nhóm tự định nghĩa ở CP3 thay vì dùng web_search hay không."}
+    },
+    {
+      "id": "G02_missing_handle_pronoun",
+      "phase": "B",
+      "suite": "group",
+      "query": "Tóm tắt các tweet dạo gần đây của anh ấy giúp tôi.",
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "text"}}]},
+      "metadata": {"skill": "clarify_ambiguous_pronoun", "difficulty": "medium", "what_it_tests": "Sử dụng đại từ mập mờ (anh ấy) -> Không được đoán bừa mà phải dùng clarify (text) để hỏi rõ handle."}
+    },
+    {
+      "id": "G03_format_template_thread",
+      "phase": "B",
+      "suite": "group",
+      "query": "Hãy định dạng các thông tin bạn vừa tìm được thành một chuỗi để tôi đăng Twitter.",
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "format", "args": {"template": "thread"}}]},
+      "metadata": {"skill": "format_tool_template", "difficulty": "easy", "what_it_tests": "Từ khóa 'thread' -> phải map đúng tham số template='thread' của tool format."}
+    },
+    {
+      "id": "G04_out_of_scope_scripting",
+      "phase": "B",
+      "suite": "group",
+      "query": "Viết cho tôi một đoạn mã Python dùng Selenium để cào dữ liệu từ trang tin tức AI.",
+      "failure_type": "out_of_scope",
+      "expect": {"no_tool": true, "behavior": "refuse"},
+      "metadata": {"skill": "out_of_scope_coding", "difficulty": "medium", "what_it_tests": "Yêu cầu có vẻ liên quan đến tin tức nhưng thực chất là viết code -> Từ chối, không gọi tool."}
+    },
+    {
+      "id": "G05_lookup_timeframe_month",
+      "phase": "B",
+      "suite": "group",
+      "query": "Có tin tức gì mới về xe điện VinFast trong tháng này không?",
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "lookup", "args": {"topic": "news", "timeframe": "month"}}]},
+      "metadata": {"skill": "arg_timeframe_month", "difficulty": "medium", "what_it_tests": "Nhận diện từ 'tháng này' và 'tin tức' -> map timeframe='month' và topic='news'."}
+    },
+    {
+      "id": "G06_multi_fetch_after_search",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tìm tin về OpenAI."},
+        {"role": "user", "content": "Bài viết ở link https://tech.com/openai-news có vẻ hay."},
+        {"role": "user", "content": "Tóm tắt chi tiết nội dung trong link đó giúp tôi."}
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "fetch", "args": {"url": "https://tech.com/openai-news"}}]},
+      "metadata": {"skill": "multiturn_fetch_specific_url", "difficulty": "medium", "what_it_tests": "Multi-turn: Carry over URL từ lượt trước và nhận diện yêu cầu đọc nội dung -> gọi tool fetch."}
+    },
+    {
+      "id": "G07_multi_telegram_boundary",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tìm các bài viết về trí tuệ nhân tạo."},
+        {"role": "user", "content": "Viết thành một đoạn văn ngắn gọn."},
+        {"role": "user", "content": "Được rồi, gửi nội dung đó lên Telegram giúp mình luôn."}
+      ],
+      "failure_type": "wrong_boundary",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "yes_no"}}]},
+      "metadata": {"skill": "multiturn_confirm_boundary", "difficulty": "hard", "what_it_tests": "Multi-turn: Dù đã có sẵn nội dung từ các turn trước, hành động gửi (Telegram) vẫn phải hỏi confirm (yes_no) trước khi send."}
+    },
+    {
+      "id": "G08_multi_timeline_correction",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Lấy 5 tweet mới nhất của Bill Gates."},
+        {"role": "user", "content": "À thôi, lấy 10 bài đi."},
+        {"role": "user", "content": "Nhớ là của Bill Gates nhé."}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "timeline", "args": {"screenname": "billgates", "limit": 10}}]},
+      "metadata": {"skill": "multiturn_arg_update", "difficulty": "hard", "what_it_tests": "Multi-turn: Carry over handle và cập nhật tham số limit từ 5 thành 10."}
+    },
+    {
+      "id": "G09_multi_lookup_topic_shift",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tìm hiểu về biến đổi khí hậu."},
+        {"role": "user", "content": "Không, tôi muốn đọc tin tức thời sự cơ."},
+        {"role": "user", "content": "Chỉ lấy tin tức của hôm nay thôi nhé."}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "lookup", "args": {"query": "biến đổi khí hậu", "topic": "news", "timeframe": "day"}}]},
+      "metadata": {"skill": "multiturn_topic_timeframe_shift", "difficulty": "hard", "what_it_tests": "Multi-turn: Chuyển đổi topic từ general sang news và cập nhật timeframe sang day."}
+    },
+    {
+      "id": "G10_multi_social_top",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Mọi người nói gì về AI trên Twitter?"},
+        {"role": "user", "content": "Lọc ra những bài nhiều lượt thích và phổ biến nhất."},
+        {"role": "user", "content": "Đổi chủ đề, chỉ tìm bài phổ biến về Claude thôi."}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "social_search", "args": {"query": "Claude", "search_type": "Top"}}]},
+      "metadata": {"skill": "multiturn_social_search_type", "difficulty": "hard", "what_it_tests": "Multi-turn: Nhận diện 'nhiều lượt thích/phổ biến' -> search_type='Top' và cập nhật query."}
+    }
+  ]
 }
