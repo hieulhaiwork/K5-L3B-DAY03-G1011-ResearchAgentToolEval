@@ -14,7 +14,7 @@
 |   1 |        |      |       |        |         |
 |   2 |        |      |       |        |         |
 |   3 | Trần Xuân Lộc | 2A202603951     |    xuanloca2tv@gmail.com |   Kaylez-TXL       |         |
-|   4 |        |      |       |        |         |
+|   4 | Nguyễn Quang Tiệp | 2A202603946 | 26ai.tiepnq@vinuni.edu.vn | nguyenquangtiep |         |
 
 ## Cá nhân
 
