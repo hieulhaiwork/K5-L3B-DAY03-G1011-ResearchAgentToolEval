@@ -1,0 +1,80 @@
+{
+  "dataset_id": "day03_v2_top_scorers",
+  "dataset_role": "group",
+  "description": "Case routing cho tool mới top_scorers (file riêng, không thay 10 case của eval_group.json). Eval chỉ chấm tool + args ở lượt đầu; hành vi fallback provider (API-Football -> SportScore, season protection, cả hai lỗi) được kiểm tra bằng unit test trong tests/test_top_scorers.py.",
+  "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
+  "cases": [
+    {
+      "id": "T01_top_scorers_season_and_limit",
+      "phase": "B",
+      "suite": "group",
+      "query": "Top 10 cầu thủ ghi bàn nhiều nhất Premier League mùa 2025/26 là ai?",
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {"name": "top_scorers", "args": {"season": 2025, "limit": 10}}
+        ]
+      },
+      "metadata": {
+        "skill": "routing_top_scorers_args",
+        "difficulty": "medium",
+        "what_it_tests": "Route tới top_scorers (không phải lookup) và chuyển mùa '2025/26' thành năm bắt đầu season=2025, limit=10."
+      }
+    },
+    {
+      "id": "T02_top_scorers_routing_not_lookup",
+      "phase": "B",
+      "suite": "group",
+      "query": "Ai đang dẫn đầu cuộc đua Chiếc giày vàng ở Serie A?",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {"name": "top_scorers", "args": {}}
+        ]
+      },
+      "metadata": {
+        "skill": "routing_top_scorers",
+        "difficulty": "easy",
+        "what_it_tests": "Câu hỏi vua phá lưới không dùng từ 'top scorers' vẫn phải route tới top_scorers thay vì lookup/football_stats."
+      }
+    },
+    {
+      "id": "T03_top_scorers_missing_competition",
+      "phase": "B",
+      "suite": "group",
+      "query": "Cho mình xem danh sách vua phá lưới với.",
+      "failure_type": "missing_info",
+      "expect": {
+        "tool_calls": [
+          {"name": "clarify", "args": {"response_type": "text"}}
+        ]
+      },
+      "metadata": {
+        "skill": "clarify_missing_competition",
+        "difficulty": "medium",
+        "what_it_tests": "Không nêu giải đấu -> phải gọi clarify hỏi giải nào, không tự đoán competition rồi gọi top_scorers."
+      }
+    },
+    {
+      "id": "T04_multi_top_scorers_details_across_turns",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Mình muốn xem top cầu thủ ghi bàn."},
+        {"role": "user", "content": "Giải Bundesliga của Đức nhé."},
+        {"role": "user", "content": "Lấy top 5 của mùa 2024/25 thôi."}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {"name": "top_scorers", "args": {"season": 2024, "limit": 5}}
+        ]
+      },
+      "metadata": {
+        "skill": "multiturn_top_scorers_args",
+        "difficulty": "hard",
+        "what_it_tests": "Multi-turn: gom giải (turn 2) + mùa 2024/25 -> season=2024 và limit=5 (turn 3) vào một lệnh top_scorers, giữ đúng mùa lịch sử user yêu cầu."
+      }
+    }
+  ]
+}

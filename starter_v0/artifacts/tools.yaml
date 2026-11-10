@@ -138,3 +138,14 @@ tools:
         team_b: {type: string, default: "", description: "Tên đội bóng thứ hai nếu muốn so sánh phong độ đối đầu"}
         last_n: {type: integer, default: 5, description: "Số trận gần nhất cần tính (mặc định là 5 trận)"}
       required: [team_a, matches]
+
+  - name: top_scorers
+    description: "Lấy bảng xếp hạng vua phá lưới (top scorers) THẬT của một giải bóng đá: thứ hạng, cầu thủ, CLB, bàn thắng, kiến tạo, phạt đền. DÙNG KHI user hỏi top cầu thủ ghi bàn, vua phá lưới, Chiếc giày vàng, ai ghi nhiều bàn nhất một giải/mùa. KHÔNG DÙNG cho phong độ W-D-L của một đội (dùng football_stats), tin tức/tiểu sử cầu thủ (dùng lookup). Nếu user không nói giải nào thì gọi clarify trước, không tự đoán giải. Nếu tool trả error=ambiguous_competition thì dùng clarify hỏi user chọn một trong candidates."
+    parameters:
+      type: object
+      properties:
+        competition: {type: string, default: "", description: "Tên giải đúng như user nói, ví dụ 'Premier League', 'La Liga', 'Serie A', 'Champions League'; hoặc league id dạng số. Không bịa tên giải."}
+        season: {type: integer, description: "NĂM BẮT ĐẦU của mùa giải: 2025/26 -> 2025, 2024/25 -> 2024. Chỉ truyền khi user nêu mùa; bỏ trống = mùa hiện tại. Không tự điền mùa."}
+        limit: {type: integer, default: 10, description: "Số cầu thủ cần lấy, từ 1 đến 20. User nói 'top 5' -> 5. Mặc định 10."}
+        country: {type: string, default: "", description: "Quốc gia của giải (tiếng Anh) để phân biệt giải trùng tên: Premier League -> England, La Liga -> Spain, Serie A -> Italy, Bundesliga -> Germany. Bỏ trống với giải châu lục/quốc tế."}
+      required: [competition]
