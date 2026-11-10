@@ -129,7 +129,6 @@ starter_v0/
     eval_base.json            # bộ eval cố định, không sửa nội dung case
     eval_group.json           # nhóm thêm 10 case (5 single + 5 multi turn)
     eval_research_extension.json
-    eval_top_scorers.json     # routing eval riêng cho tool top_scorers
   tools/
     README.md                 # contract của folder tool
     <tool_name>/
@@ -162,7 +161,6 @@ Optional tools (có sẵn trong starter, không tự được bonus):
 - `policy`: tìm trong company policy markdown nội bộ.
 - `papers`: tìm paper trên arXiv.
 - `paper_text`: tải PDF arXiv và trích text cục bộ.
-- `top_scorers`: lấy bảng cầu thủ ghi bàn của giải bóng đá, dùng API-Football trước và SportScore dự phòng; attribution SportScore phải được giữ hiển thị.
 
 Mỗi tool nằm trong thư mục riêng dưới `starter_v0/tools/<tool_name>/`.
 

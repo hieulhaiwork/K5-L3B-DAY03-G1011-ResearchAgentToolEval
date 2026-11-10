@@ -128,30 +128,7 @@ python -c "from tools import TOOL_FUNCTIONS as T; print(T['paper_text']('1706.03
 
 Generated paper files go under `starter_v0/arxiv_papers/` and are ignored by git.
 
-## 6. API-Football — `top_scorers`
-
-API-Football is the primary football scorer data provider. Check the current
-plan's endpoint and season availability in the official documentation before
-running requests. SportScore is used as a fallback without an API key for the
-competition slugs documented by this project.
-
-1. Create an API-Football account and copy its API key.
-2. Add the key to `starter_v0/.env`:
-
-```bash
-API_FOOTBALL_KEY=<your-key>
-```
-
-Quick test (may use API-Football or the SportScore fallback):
-
-```bash
-python -c "from tools import TOOL_FUNCTIONS as T; print(T['top_scorers']('Premier League', limit=3))"
-```
-
-The tool keeps the provider source in its result. If SportScore supplies data,
-keep its `Powered by SportScore` attribution link visible.
-
-## 7. Telegram Bonus — `send`
+## 6. Telegram Bonus — `send`
 
 Bonus action tool that posts text to a Telegram channel.
 
@@ -241,7 +218,6 @@ Before class, at least one person per group should have:
 - `TAVILY_API_KEY`
 - `FIRECRAWL_API_KEY`
 - `RAPIDAPI_KEY`
-- `API_FOOTBALL_KEY` (for API-Football primary scorer data; SportScore fallback does not require a key)
 - optional `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`
 - optional `ARXIV_USER_AGENT`
 - `python scripts/preflight_provider.py --provider openrouter` passes

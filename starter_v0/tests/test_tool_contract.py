@@ -16,12 +16,7 @@ from tools import TOOL_FUNCTIONS, load_tool_declarations, to_openai_tools
 ROOT = Path(__file__).resolve().parents[1]
 DECLARATIONS = load_tool_declarations(ROOT / "artifacts" / "tools.yaml")
 DECLARED = {item["name"]: item for item in DECLARATIONS}
-EVAL_FILES = [
-    "eval_base.json",
-    "eval_group.json",
-    "eval_research_extension.json",
-    "eval_top_scorers.json",
-]
+EVAL_FILES = ["eval_base.json", "eval_group.json", "eval_research_extension.json"]
 
 
 def test_tool_names_are_unique() -> None:

@@ -116,18 +116,6 @@ def run_model_tool_loop(
             event = execute_tool_call(call)
             round_record["tool_results"].append(event)
             all_tool_events.append(event)
-            result_data = event.get("result")
-            provider_data = result_data.get("provider") if isinstance(result_data, dict) else None
-            if isinstance(provider_data, dict) and provider_data.get("name") == "SportScore":
-                for failure in result_data.get("provider_errors", []):
-                    print(
-                        f"Primary provider notice: {failure.get('provider')}: "
-                        f"{failure.get('message')}"
-                    )
-                attribution = provider_data.get("attribution") or {}
-                label = attribution.get("label") or "Powered by SportScore"
-                url = attribution.get("url") or "https://sportscore.com/"
-                print(f"Source attribution: {label} — {url}")
 
             # Detect the clarification/pause tool by its output flag (rename-proof),
             # not by a hard-coded tool name.
