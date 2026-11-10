@@ -1,14 +1,21 @@
 {
   "dataset_id": "day03_v2_research_group",
   "dataset_role": "group",
-  "description": "Case do NHÓM tự viết thêm: 5 single-turn + 5 multi-turn, kiểm tra routing tool mới football_stats, boundary xác nhận, arg formatting, và out-of-scope.",
-  "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
+  "description": "10 case nhóm (5 single + 5 multi), kiểm tra football_stats, football_headlines, football_mentions và các hành vi hỏi lại/định dạng/xác nhận.",
+  "allowed_failure_types": [
+    "wrong_tool",
+    "wrong_arg_value",
+    "wrong_boundary",
+    "unnecessary_tool",
+    "out_of_scope",
+    "missing_info"
+  ],
   "cases": [
     {
       "id": "G01_football_stats_routing",
       "phase": "B",
       "suite": "group",
-      "query": "Dựa vào danh sách kết quả sau, hãy phân tích phong độ 5 trận gần nhất của Arsenal: [{'team': 'Arsenal', 'scored': 2, 'conceded': 1}, {'team': 'Arsenal', 'scored': 3, 'conceded': 0}]",
+      "query": "Hãy phân tích phong độ Arsenal trong tối đa 5 trận gần nhất từ dữ liệu đã có, không tìm thêm trên web. Danh sách theo thứ tự cũ đến mới: [{'team': 'Arsenal', 'scored': 2, 'conceded': 1}, {'team': 'Arsenal', 'scored': 3, 'conceded': 0}]. Giữ tên đội trong từng bản ghi để xác định tỷ số thuộc đội nào; nếu chưa đủ 5 trận thì chỉ tính số trận được cung cấp.",
       "failure_type": "wrong_tool",
       "expect": {
         "tool_calls": [
@@ -52,7 +59,7 @@
       "id": "G03_format_template_thread",
       "phase": "B",
       "suite": "group",
-      "query": "Hãy định dạng các thông tin bạn vừa tìm được thành một chuỗi để tôi đăng Twitter.",
+      "query": "Hãy định dạng hai thông tin sau thành một Twitter thread, chỉ tạo bản nháp để tôi tự đăng, không gửi ra ngoài: [{'title': 'Arsenal thắng 2-1', 'summary': 'Arsenal giành 3 điểm.', 'url': 'https://example.com/arsenal'}, {'title': 'Liverpool hòa 0-0', 'summary': 'Liverpool giành 1 điểm.', 'url': 'https://example.com/liverpool'}].",
       "failure_type": "wrong_arg_value",
       "expect": {
         "tool_calls": [
@@ -87,26 +94,29 @@
       }
     },
     {
-      "id": "G05_lookup_timeframe_month",
+      "id": "G05_football_headlines_routing",
       "phase": "B",
       "suite": "group",
-      "query": "Có tin tức gì mới về xe điện VinFast trong tháng này không?",
-      "failure_type": "wrong_arg_value",
+      "query": "Đọc hai trang tin bóng đá https://www.arsenal.com/news và https://www.liverpoolfc.com/news trong một lần để chuẩn bị bản tin. Loại link trùng và báo riêng link lỗi, đọc tối đa 2 nguồn; chưa cần trình bày hoặc đăng bản tin.",
+      "failure_type": "wrong_tool",
       "expect": {
         "tool_calls": [
           {
-            "name": "lookup",
+            "name": "football_headlines",
             "args": {
-              "topic": "news",
-              "timeframe": "month"
+              "urls": [
+                "https://www.arsenal.com/news",
+                "https://www.liverpoolfc.com/news"
+              ],
+              "max_articles": 2
             }
           }
         ]
       },
       "metadata": {
-        "skill": "arg_timeframe_month",
+        "skill": "batch_football_headlines",
         "difficulty": "medium",
-        "what_it_tests": "Nhận diện từ 'tháng này' và 'tin tức' -> map timeframe='month' và topic='news'."
+        "what_it_tests": "Nhận diện yêu cầu đọc nhiều nguồn, chọn football_headlines thay vì gọi fetch riêng từng URL."
       }
     },
     {
@@ -114,9 +124,18 @@
       "phase": "B",
       "suite": "group",
       "turns": [
-        {"role": "user", "content": "Tìm tin về OpenAI."},
-        {"role": "user", "content": "Bài viết ở link https://tech.com/openai-news có vẻ hay."},
-        {"role": "user", "content": "Tóm tắt chi tiết nội dung trong link đó giúp tôi."}
+        {
+          "role": "user",
+          "content": "Tìm tin về OpenAI."
+        },
+        {
+          "role": "user",
+          "content": "Bài viết ở link https://tech.com/openai-news có vẻ hay."
+        },
+        {
+          "role": "user",
+          "content": "Tóm tắt chi tiết nội dung trong link đó giúp tôi."
+        }
       ],
       "failure_type": "wrong_tool",
       "expect": {
@@ -140,9 +159,18 @@
       "phase": "B",
       "suite": "group",
       "turns": [
-        {"role": "user", "content": "Tìm các bài viết về trí tuệ nhân tạo."},
-        {"role": "user", "content": "Viết thành một đoạn văn ngắn gọn."},
-        {"role": "user", "content": "Được rồi, gửi nội dung đó lên Telegram giúp mình luôn."}
+        {
+          "role": "user",
+          "content": "Tìm các bài viết về trí tuệ nhân tạo."
+        },
+        {
+          "role": "user",
+          "content": "Viết thành một đoạn văn ngắn gọn."
+        },
+        {
+          "role": "user",
+          "content": "Được rồi, gửi nội dung đó lên Telegram giúp mình luôn."
+        }
       ],
       "failure_type": "wrong_boundary",
       "expect": {
@@ -162,30 +190,44 @@
       }
     },
     {
-      "id": "G08_multi_timeline_correction",
+      "id": "G08_multi_football_mentions",
       "phase": "B",
       "suite": "group",
       "turns": [
-        {"role": "user", "content": "Lấy 5 tweet mới nhất của Bill Gates."},
-        {"role": "user", "content": "À thôi, lấy 10 bài đi."},
-        {"role": "user", "content": "Nhớ là của Bill Gates nhé."}
+        {
+          "role": "user",
+          "content": "Trong hai tài khoản X Arsenal và PremierLeague, tìm các bài có nhắc tới Chelsea."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ xem tối đa 5 bài có ID đầu tiên mỗi tài khoản, không tìm toàn X."
+        },
+        {
+          "role": "user",
+          "content": "Gộp kết quả, loại tweet trùng và trả tối đa 5 bài khớp kèm link gốc."
+        }
       ],
       "failure_type": "wrong_arg_value",
       "expect": {
         "tool_calls": [
           {
-            "name": "timeline",
+            "name": "football_mentions",
             "args": {
-              "screenname": "billgates",
-              "limit": 10
+              "handles": [
+                "Arsenal",
+                "PremierLeague"
+              ],
+              "keyword": "Chelsea",
+              "per_account": 5,
+              "max_results": 5
             }
           }
         ]
       },
       "metadata": {
-        "skill": "multiturn_arg_update",
-        "difficulty": "hard",
-        "what_it_tests": "Multi-turn: Carry over handle và cập nhật tham số limit từ 5 thành 10."
+        "skill": "multiturn_football_mentions",
+        "difficulty": "medium",
+        "what_it_tests": "Giữ nhóm tài khoản, từ khóa và hai giới hạn từ lịch sử; route tới football_mentions để lọc timeline và loại tweet trùng."
       }
     },
     {
@@ -193,9 +235,18 @@
       "phase": "B",
       "suite": "group",
       "turns": [
-        {"role": "user", "content": "Tìm hiểu về biến đổi khí hậu."},
-        {"role": "user", "content": "Không, tôi muốn đọc tin tức thời sự cơ."},
-        {"role": "user", "content": "Chỉ lấy tin tức của hôm nay thôi nhé."}
+        {
+          "role": "user",
+          "content": "Tìm hiểu về biến đổi khí hậu."
+        },
+        {
+          "role": "user",
+          "content": "Không, tôi muốn đọc tin tức thời sự cơ."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ lấy tin tức của hôm nay thôi nhé."
+        }
       ],
       "failure_type": "wrong_arg_value",
       "expect": {
@@ -221,9 +272,18 @@
       "phase": "B",
       "suite": "group",
       "turns": [
-        {"role": "user", "content": "Tính giúp mình phong độ mấy trận gần đây với danh sách: [{'team': 'Liverpool', 'scored': 1, 'conceded': 0}]"},
-        {"role": "user", "content": "Của đội Liverpool nhé"},
-        {"role": "user", "content": "Tính trong 4 trận gần nhất"}
+        {
+          "role": "user",
+          "content": "Tính giúp mình phong độ mấy trận gần đây với danh sách: [{'team': 'Liverpool', 'scored': 1, 'conceded': 0}]"
+        },
+        {
+          "role": "user",
+          "content": "Của đội Liverpool nhé"
+        },
+        {
+          "role": "user",
+          "content": "Tính trong 4 trận gần nhất"
+        }
       ],
       "failure_type": "missing_info",
       "expect": {

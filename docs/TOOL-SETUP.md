@@ -221,3 +221,10 @@ Before class, at least one person per group should have:
 - optional `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`
 - optional `ARXIV_USER_AGENT`
 - `python scripts/preflight_provider.py --provider openrouter` passes
+
+## Hai tool gom nguồn bóng đá
+
+- `football_headlines`: dùng lại `FIRECRAWL_API_KEY` để đọc tối đa 5 URL duy nhất; trả lỗi từng nguồn nếu bài rỗng hoặc không đọc được.
+- `football_mentions`: dùng lại `RAPIDAPI_KEY` và `RAPIDAPI_TWITTER_HOST` của tool timeline, tối đa 5 tài khoản mỗi lượt; chỉ lọc trong trang timeline trả về.
+- Không thêm API key hay dependency. Người chạy local cấu hình `.env`; khi deploy UI, người giữ key cấu hình cùng tên biến trong phần secrets/environment của nơi deploy. Không đưa key vào Git.
+- Test offline: `python -m pytest -q` trong `starter_v0/`. Chi tiết giới hạn ở `tools/football_headlines/TOOL.md` và `tools/football_mentions/TOOL.md`.

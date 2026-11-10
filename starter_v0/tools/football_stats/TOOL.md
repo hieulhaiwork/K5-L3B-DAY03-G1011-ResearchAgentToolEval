@@ -25,3 +25,12 @@ Calculate and compare recent football (soccer) form, points, and goal statistics
 - User wants general web search for football news -> use `lookup`.
 - User wants to fetch a match report web page -> use `fetch`.
 - User asks about non-football subjects.
+
+## Input and limitations
+
+- Supply `matches` in oldest-to-newest order; the last `last_n` records for each team are analyzed. No dates are inferred or sorted.
+- Each record must contain either `team`, `scored`, `conceded`, or `home_team`, `away_team`, `home_score`, `away_score`.
+- Scores must be non-negative integers (integer strings are accepted). Missing fields, fractional scores and booleans return an error dict rather than an invented score.
+- `last_n` must be a positive integer; `team_b`, when provided, must be a non-empty team name.
+- An empty list returns zero analyzed matches and `form: N/A`; fewer available matches are not extrapolated to the requested window.
+- This local tool does not fetch live data or validate source accuracy. Comparisons use total points then goal difference; different sample sizes can bias the comparison.

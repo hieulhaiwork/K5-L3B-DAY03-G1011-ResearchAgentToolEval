@@ -1,104 +1,69 @@
 # Báo cáo nhóm — Day 03 Research Agent Tool Eval
 
-> Báo cáo gồm 2 phần có hạn khác nhau:
-> - **Phần A (mục 2)** — giới thiệu agent, ngắn gọn 1 trang. **Xong trước Team showdown (16:30)** để team khác hiểu nhanh agent có tool gì, làm được gì. Có thể làm thêm poster `report/team/poster.html` hoặc `poster.svg`.
-> - **Phần B (mục 3–7)** — chi tiết và bằng chứng, dựa trên log thật. Hoàn thiện trước deadline nộp bài.
->
-> Mỗi bảng phải trỏ được tới file thật: run JSON, transcript, commit. Cách chấm xem [RUBRIC.md](../../RUBRIC.md).
+Phần A giới thiệu agent; Phần B ghi kết quả và bằng chứng. Nội dung dưới đây cập nhật phần CP3/CP4 của Trần Xuân Lộc: football_stats, football_headlines và football_mentions. Phần tool và eval của thành viên khác do người phụ trách tự bổ sung. Các mục chờ CP1/CP2 và CP5 được ghi rõ bên dưới.
 
 ## 1. Thông tin nhóm
 
 - Tên nhóm: G1011
 - Thành viên và phân công: xem [TEAM.md](../../TEAM.md)
-- Provider/model dùng cho v0–v3: OpenAPI (ChatGPT)
+- Provider/model CP1/CP2: chờ thành viên phụ trách xác nhận và hoàn thiện cùng bảng B1.
+- Kiểm thử CP3/CP4 trên máy cá nhân: OpenRouter / `openai/gpt-4o-mini`, nhãn v5 (chi tiết B3).
 
 ## 2. Mục tiêu và cách tiếp cận — PHẦN A: Giới thiệu agent
 
 ### A1. Agent này làm được gì
 
-AI Agent tự động tìm kiếm thông tin về lĩnh vực bóng đá (ví dụ: tối nay có trận đấu nào? kết quả như thế nào? đội hình ra sân của đội nào? Tiểu sử của một cầu thủ?...)
+Nhóm xây dựng một agent thử nghiệm hỗ trợ tìm tin bóng đá, đọc nội dung từ link và tính phong độ đội bóng từ danh sách kết quả được cung cấp. Trong phần việc của Trần Xuân Lộc, nhóm sử dụng tool có sẵn của bài lab và thêm ba tool: tính phong độ, đọc nhiều link và lọc bài đăng từ một nhóm tài khoản X.
 
-*Note:* Agent phù hợp nhất với các câu hỏi cần tổng hợp nhiều nguồn: lịch thi đấu,
-kết quả mới nhất, tin tức, phát biểu trên mạng xã hội và hồ sơ cầu thủ. Với
-thông tin có tính thời gian thực như tỷ số hoặc đội hình ra sân, agent phải
-hiển thị thời điểm cập nhật và nguồn; không được suy đoán khi chưa có dữ liệu
-đáng tin cậy.
+Phạm vi hiện tại còn nhỏ: nhóm đã kiểm tra cách chọn tool, truyền tham số và tính thống kê cơ bản. Agent chưa có nguồn dữ liệu tỷ số trực tiếp riêng; thông tin tìm được vẫn cần kiểm tra nguồn.
 
-**Cách chạy UI:** (để sau)
+**UI và link dùng thử (CP5):** chưa có bằng chứng trong bản báo cáo hiện tại. Thành viên phụ trách cần bổ sung lệnh chạy, dependency và URL dùng thử.
 
-> Lệnh chạy UI (ví dụ `streamlit run app.py`) và dependency đã thêm vào `starter_v0/requirements.txt`.
+### A2. Tool được mô tả trong phần báo cáo này
 
-**Link dùng thử (deploy):**
-
-> Dán link public để team khác mở thử ngay. Cách deploy nhanh bằng Cloudflare Tunnel xem README. Nếu deploy Vercel/Streamlit Cloud thì dán link đó.
->
-> URL:
-
-### A2. Tool agent có
-
-> Liệt kê các tool agent đang dùng (gồm tool mới nhóm tự thêm). Mỗi tool 1 dòng: tên + làm được gì.
-
-| Tên tool | Làm được gì | Tool mới nhóm thêm? |
+| Tên tool | Chức năng | Nguồn |
 |---|---|---|
-| `clarify` | Hỏi lại khi thiếu định danh đội/cầu thủ, giải đấu, ngày hoặc múi giờ; nên dùng trước khi tìm nếu có nhiều khả năng trùng tên. | không |
-| `lookup` | Tìm web/Tavily theo từ khóa; dùng cho tin bóng đá, lịch/kết quả, tiểu sử và thông tin đội/cầu thủ. `topic=news` + `timeframe=day` phù hợp tin nóng; trả về tiêu đề, URL, nguồn, tóm tắt và điểm liên quan. | không |
-| `fetch` | Đọc toàn văn một URL đã tìm được; dùng để kiểm tra chi tiết đội hình, tỷ số hoặc tiểu sử từ nguồn gốc trước khi trả lời. | không |
-| `social_search` | Tìm bài đăng X theo từ khóa, sắp xếp `Latest` hoặc `Top`; phù hợp phát biểu/chấn thương/đội hình được CLB hoặc nhà báo đăng. Đây là nguồn tham khảo, không nên là nguồn duy nhất cho tỷ số chính thức. | không |
-| `timeline` | Lấy bài đăng mới nhất của một tài khoản X cụ thể; phù hợp theo dõi tài khoản chính thức của CLB, giải đấu hoặc nhà báo. `screenname` không có ký tự `@`. | không |
-| `format` | Chuẩn hóa các kết quả đã thu thập thành bản tin Markdown (`brief`, `sections`, `bullets`, `daily_ai_vn`); dùng ở bước cuối để câu trả lời có cấu trúc và link nguồn. | không |
-| `send` | Gửi bản tin qua Telegram sau khi người dùng xác nhận rõ; phù hợp đăng ký bản tin/lịch nhắc, không gọi tự động khi chưa xác nhận vì có side effect. | không (bonus có sẵn) |
-| `policy` | Tra cứu chính sách nội bộ về trích dẫn, quyền riêng tư và sử dụng tool; không phải nguồn dữ liệu bóng đá nhưng giúp kiểm soát cách trả lời. | không (bonus có sẵn) |
-
-### A2.1. Ma trận nhu cầu và luồng gọi tool
-
-| Nhu cầu bóng đá | Tool nên gọi | Cách dùng/giới hạn |
-|---|---|---|
-| Tối nay có trận nào? | `lookup` → `fetch` → `format` | Thêm ngày hiện tại, múi giờ và tên giải vào truy vấn; đối chiếu trang lịch chính thức trước khi kết luận. |
-| Kết quả trận vừa kết thúc | `lookup(topic=news, timeframe=day)` → `fetch` → `format` | Trích tỷ số, thời điểm và trạng thái trận; nếu nguồn mâu thuẫn phải nêu rõ hoặc tìm nguồn thứ hai. |
-| Đội hình ra sân | `lookup` → `fetch`; có thể bổ sung `social_search`/`timeline` | Phân biệt đội hình dự kiến và đội hình chính thức; chỉ gọi `send` sau xác nhận nếu người dùng muốn nhận thông báo. |
-| Tiểu sử cầu thủ/đội bóng | `lookup` → `fetch` → `format` | Ưu tiên nguồn chính thức hoặc hồ sơ uy tín; chuẩn hóa tên để tránh nhầm cầu thủ trùng tên. |
-| Phản ứng và tin nóng | `social_search` hoặc `timeline` → `lookup` → `format` | Gắn thời gian đăng và tài khoản; không coi bài đăng mạng xã hội là thông tin đã được xác minh. |
-| Phân tích chiến thuật/số liệu | `lookup` → `papers` → `paper_text` → `format` | Tách dữ liệu trận đấu khỏi kết luận nghiên cứu; nêu năm và giới hạn của bài nghiên cứu. |
+| `clarify` | Hỏi lại khi thiếu thông tin hoặc cần xác nhận. | Có sẵn |
+| `lookup` | Tìm kiếm thông tin trên web. | Có sẵn |
+| `fetch` | Đọc nội dung một đường link. | Có sẵn |
+| `social_search` | Tìm bài đăng X theo từ khóa. | Có sẵn |
+| `timeline` | Lấy bài đăng của một tài khoản X. | Có sẵn |
+| `format` | Trình bày dữ liệu thành bản tin hoặc thread. | Có sẵn |
+| `send` | Gửi Telegram sau khi người dùng xác nhận. Chưa có bằng chứng gửi thật. | Có sẵn |
+| `policy` | Tra cứu tài liệu chính sách nội bộ mẫu. | Có sẵn |
+| `papers`, `paper_text` | Tìm paper và đọc PDF arXiv; không phải trọng tâm thử nghiệm bóng đá. | Có sẵn |
+| `football_stats` | Tính phong độ, điểm và bàn thắng/bại từ danh sách trận. | Nhóm tự thêm |
+| `football_headlines` | Đọc nhiều link, loại URL trùng và ghi lỗi từng nguồn. | Nhóm tự thêm |
+| `football_mentions` | Lọc bài có từ khóa trong timeline của một nhóm tài khoản X. | Nhóm tự thêm |
 
 ### A3. Câu hỏi mẫu để thử
 
-> 3–5 câu hỏi/yêu cầu mẫu để team khác tự thử agent ngay.
-
-1. Tối nay (giờ Việt Nam) có những trận bóng đá đáng chú ý nào? Cho tôi giờ đá, giải đấu và link nguồn.
-2. Kết quả trận Liverpool gặp Manchester City gần nhất là gì? Ai ghi bàn và trận đã kết thúc chưa?
-3. Đội hình ra sân chính thức của Việt Nam trong trận gần nhất là ai? Phân biệt với đội hình dự kiến.
-4. Hãy tóm tắt tiểu sử và phong độ gần đây của [tên cầu thủ], kèm nguồn và ngày cập nhật.
-5. Tìm các phát biểu mới nhất của tài khoản X chính thức của [CLB] về trận đấu sắp tới, rồi tạo bản tin ngắn.
+1. Tìm tin tức mới về Arsenal trong hôm nay, kèm link nguồn.
+2. Lấy 5 bài đăng mới nhất của tài khoản X `Arsenal`.
+3. Tính phong độ Arsenal từ danh sách theo thứ tự cũ đến mới: `[{'team':'Arsenal','scored':2,'conceded':1}, {'team':'Arsenal','scored':0,'conceded':0}]`.
+4. Đọc hai [trang tin Arsenal](https://www.arsenal.com/news) và [Liverpool](https://www.liverpoolfc.com/news) để chuẩn bị bản tin, đọc tối đa 2 nguồn.
+5. Trong hai tài khoản X Arsenal và PremierLeague, lọc bài có chữ Chelsea; chỉ xem 5 bài mỗi tài khoản và trả tối đa 5 bài khớp.
 
 ## 3. Giải pháp
 
-> Tóm tắt các thay đổi chính trong `starter_v0/artifacts/system_prompt.md` và `starter_v0/artifacts/tools.yaml`, và tool mới nhóm viết (tên, làm gì, khi nào agent nên gọi).
+Phần CP1/CP2 do thành viên phụ trách bổ sung. Phần dưới mô tả ba tool và công việc CP3/CP4 đã kiểm chứng.
 
 
-### 3.1. Tool bổ sung đề xuất cho phiên bản bóng đá
+### 3.1. Ba tool do Trần Xuân Lộc phụ trách
 
-| Ưu tiên | Tool đề xuất | Chức năng chính | Giá trị trải nghiệm và yêu cầu an toàn |
-|---|---|---|---|
-| P0 | `football_fixtures` | Lịch trận theo ngày, giải đấu, đội; trả về múi giờ, sân, trạng thái và ID trận. | Giải quyết trực tiếp câu hỏi “tối nay có trận nào”; dùng API dữ liệu thể thao có timestamp và cache ngắn. |
-| P0 | `football_match` | Tỷ số trực tiếp/chung cuộc, phút thi đấu, bàn thắng, thẻ, thay người và sự kiện trận. | Tránh ghép dữ liệu từ bài báo; phải công bố `last_updated` và trạng thái `scheduled/live/finished/postponed`. |
-| P0 | `football_lineups` | Đội hình chính thức, dự bị, sơ đồ và cầu thủ vắng mặt. | Phân biệt `predicted`/`confirmed`, ghi nguồn và thời điểm xác nhận. |
-| P1 | `football_team` | Hồ sơ đội, HLV, sân nhà, danh hiệu và phong độ gần đây. | Chuẩn hóa theo `team_id` thay vì chỉ tên để tránh nhầm CLB/đội tuyển. |
-| P1 | `football_player` | Tiểu sử, vị trí, quốc tịch, đội hiện tại và thống kê mùa giải. | Trả về `player_id`, ngày sinh đã được kiểm chứng và nguồn; không suy luận dữ liệu nhạy cảm. |
-| P1 | `football_standings` | Bảng xếp hạng theo giải/mùa: điểm, hiệu số, trận đã đấu, quy tắc xếp hạng. | Hỗ trợ câu hỏi “đội đang đứng thứ mấy”; cần tham số mùa giải và thời điểm cập nhật. |
-| P1 | `football_stats` | Thống kê cầu thủ/đội theo trận hoặc mùa: bàn, kiến tạo, phút, xG nếu nguồn có. | Hiển thị định nghĩa chỉ số và mẫu dữ liệu, tránh so sánh khác giải khi chưa chuẩn hóa. |
-| P1 | `source_verify` | Đối chiếu nhiều nguồn, chấm độ tin cậy và đánh dấu mâu thuẫn. | Giảm hallucination cho tỷ số/đội hình; không tự biến dữ liệu chưa xác minh thành kết luận chắc chắn. |
-| P2 | `football_alerts` | Đăng ký nhắc trận, thay đổi tỷ số, đội hình hoặc tin chấn thương. | Tăng tính chủ động; cần lịch sử đăng ký, chống gửi trùng và cơ chế hủy. |
-| P2 | `football_compare` | So sánh hai đội/cầu thủ trong cùng giải và cùng khoảng thời gian. | Trả bảng chỉ số có cùng định nghĩa; không đưa ra khuyến nghị cá cược. |
-| P2 | `football_translate` | Dịch thuật ngữ/bản tin bóng đá giữa tiếng Việt và ngôn ngữ nguồn. | Hữu ích cho người dùng Việt; giữ nguyên tên riêng, tỷ số, đơn vị và link gốc. |
+| Tool | Phần code | Phạm vi |
+|---|---|---|
+| `football_stats` | [tool.py](../../starter_v0/tools/football_stats/tool.py), [TOOL.md](../../starter_v0/tools/football_stats/TOOL.md) | Tính W-D-L, điểm và bàn thắng/bại từ dữ liệu có sẵn. Kiểm tra dữ liệu thiếu/sai; không tự tìm kết quả trận. |
+| `football_headlines` | [tool.py](../../starter_v0/tools/football_headlines/tool.py), [TOOL.md](../../starter_v0/tools/football_headlines/TOOL.md) | Dùng Firecrawl hiện có để đọc tối đa 5 URL duy nhất. Giữ bài đọc được khi nguồn khác lỗi; trả đoạn nội dung tối đa 4.000 ký tự mỗi nguồn. |
+| `football_mentions` | [tool.py](../../starter_v0/tools/football_mentions/tool.py), [TOOL.md](../../starter_v0/tools/football_mentions/TOOL.md) | Dùng RapidAPI hiện có để lấy timeline tối đa 5 tài khoản, lọc một cụm từ và loại tweet trùng ID. Không phân trang hoặc theo dõi nền. |
 
-**Thứ tự triển khai đề xuất:** làm `football_fixtures`, `football_match`,
-`football_lineups` trước; sau đó thêm `football_player`, `football_standings`
-và `source_verify`. Đây là nhóm bao phủ các nhu cầu cốt lõi, giảm phụ thuộc
-vào tìm kiếm web tự do và giúp kiểm thử đầu ra có cấu trúc.
+Hai tool mới bổ sung xử lý theo nhóm và lỗi từng nguồn, sử dụng lại hàm fetch/timeline; không chỉ đổi tên tool có sẵn. Không thêm key hay thư viện. Đã đăng ký code và khai báo hai tool mới; giữ nguyên system prompt, khai báo các tool cũ và version_log.csv của CP1/CP2. Nhãn chạy vẫn là v5, tools_hash mới phân biệt bộ tool đã mở rộng.
 
 ## 4. Kết quả — PHẦN B: Chi tiết và bằng chứng
 
 ### B1. Version Evidence
+
+**Chờ thành viên phụ trách CP1/CP2 hoàn thiện.**
 
 Lấy từ `starter_v0/artifacts/version_log.csv` và `starter_v0/runs/*.json`. Chỉ dùng run có `provider_error_cases == 0` và `measured_cases == total_cases`.
 
@@ -111,6 +76,8 @@ Lấy từ `starter_v0/artifacts/version_log.csv` và `starter_v0/runs/*.json`. 
 
 ### B2. Failure Analysis
 
+**Chờ thành viên phụ trách CP1 bổ sung phân tích lỗi baseline.** Các lỗi CP3/CP4 được ghi ở mục 5.
+
 Lấy từ `results[*].result.failures` trong run JSON.
 
 | Case ID | Failure Type | Actual Tool Calls | What Failed | Fix |
@@ -119,86 +86,96 @@ Lấy từ `results[*].result.failures` trong run JSON.
 
 ### B3. Team Eval Cases
 
-Liệt kê đúng 10 case trong `starter_v0/data/eval_group.json` (5 single turn + 5 multi turn).
+Bộ case: [eval_group.json](../../starter_v0/data/eval_group.json), đúng 5 single turn và 5 multi turn. Run hiện tại: [v5_B_group_openrouter_20261111T011314148993.json](../../starter_v0/runs/v5_B_group_openrouter_20261111T011314148993.json). Dùng OpenRouter / `openai/gpt-4o-mini` trên máy cá nhân, nhãn v5; prompt_hash không đổi.
+
+Lệnh từ `starter_v0/`:
+
+```text
+python run_eval.py --provider openrouter --model openai/gpt-4o-mini --version v5 --suite group --eval-cases data/eval_group.json
+```
+
+Kết quả kiểm tra sau khi pull 8 commit: **9/10 PASS**, provider_error_cases=0, measured_cases=total_cases=10. case_accuracy, tool_routing_accuracy và argument_accuracy = 0.9; multiturn_accuracy = 1.0. Đây là số đo hiện tại; kết quả 10/10 trước khi đồng bộ không được dùng thay cho lần tích hợp này.
 
 | Case ID | What It Tests | Expected Tool/Behavior | Result |
 |---|---|---|---|
-|  |  |  |  |
+| G01_football_stats_routing | Phân tích phong độ đội bóng từ danh sách trận đấu -> gọi tool mới football_stats thay vì lookup hay format. | `football_stats {"team_a": "Arsenal"}` | PASS |
+| G02_missing_handle_pronoun | Sử dụng đại từ mập mờ (anh ấy) -> Không được đoán bừa mà phải dùng clarify (text) để hỏi rõ handle. | `clarify {"response_type": "text"}` | PASS |
+| G03_format_template_thread | Từ khóa 'thread' -> phải map đúng tham số template='thread' của tool format. | `format {"template": "thread"}` | PASS |
+| G04_out_of_scope_scripting | Yêu cầu có vẻ liên quan đến tin tức nhưng thực chất là viết code -> Từ chối, không gọi tool. | `Không gọi tool` | PASS |
+| G05_football_headlines_routing | Nhận diện yêu cầu đọc nhiều nguồn, chọn football_headlines thay vì gọi fetch riêng từng URL. | `football_headlines {"urls": ["https://www.arsenal.com/news", "https://www.liverpoolfc.com/news"], "max_articles": 2}` | FAIL: model gọi fetch hai lần |
+| G06_multi_fetch_after_search | Multi-turn: Carry over URL từ lượt trước và nhận diện yêu cầu đọc nội dung -> gọi tool fetch. | `fetch {"url": "https://tech.com/openai-news"}` | PASS |
+| G07_multi_telegram_boundary | Multi-turn: Dù đã có sẵn nội dung từ các turn trước, hành động gửi (Telegram) vẫn phải hỏi confirm (yes_no) trước khi send. | `clarify {"response_type": "yes_no"}` | PASS |
+| G08_multi_football_mentions | Giữ nhóm tài khoản, từ khóa và hai giới hạn từ lịch sử; route tới football_mentions để lọc timeline và loại tweet trùng. | `football_mentions {"handles": ["Arsenal", "PremierLeague"], "keyword": "Chelsea", "per_account": 5, "max_results": 5}` | PASS |
+| G09_multi_lookup_topic_shift | Multi-turn: Chuyển đổi topic từ general sang news và cập nhật timeframe sang day. | `lookup {"query": "biến đổi khí hậu", "topic": "news", "timeframe": "day"}` | PASS |
+| G10_multi_football_stats_clarify | Giữ dữ liệu và tên đội Liverpool từ ngữ cảnh, cập nhật cửa sổ last_n=4 ở lượt cuối. | `football_stats {"team_a": "Liverpool", "last_n": 4}` | PASS |
+
+G05 sau tích hợp vẫn gọi `fetch` hai lần thay vì `football_headlines`, nên bị chấm sai routing dù đã làm rõ description của riêng tool mới. Chưa sửa prompt hoặc khai báo tool của các bạn khác để ép đổi hành vi. Cần tiếp tục cải thiện routing nhiều nguồn; không sửa expected để biến lỗi này thành PASS.
+
+Tool code được kiểm tra bằng unit test; [run trước khi pull](../../starter_v0/runs/v5_B_group_openrouter_20261111T004856648556.json) từng cho thấy headlines đọc được hai nguồn (4.000 ký tự mỗi nguồn) và mentions đọc 10 bài, không có bài khớp Chelsea trong mẫu. Kết quả này là bằng chứng lịch sử, không thay thế eval sau tích hợp. Nội dung rỗng ở URL mẫu G06 và trường hợp không có tweet khớp vẫn cần phân biệt với lỗi routing. Eval riêng của tool do thành viên khác phụ trách không được tổng hợp từ cấu hình API máy này.
 
 ### B4. Live Chat Evidence
 
-Lấy từ `starter_v0/transcripts/*.transcript.json`.
+**Chờ CP5 bổ sung.** Eval nhóm ở B3 không thay thế transcript live. Cần transcript thật từ `chat.py`, gồm yêu cầu thường, thiếu thông tin rồi bổ sung và yêu cầu gửi/đăng; sau đó điền bảng dưới.
 
 | Turn | User Request | Tool Calls | Version Evidence | Outcome |
 |---|---|---|---|---|
-|  |  |  |  |  |
+| Chờ bổ sung | | | | |
 
 ### B5a. Required Evidence — Tool mới, unit test, UI
 
 | Item | Evidence File | What Worked | Risk / Guardrail |
 |---|---|---|---|
-| Tool mới (`tools/<tên>/`) |  |  |  |
-| Unit test tool mới (≥ 3 test/tool) | `pytest` output (0 failed) |  |  |
-| UI (lệnh chạy + link dùng thử) |  |  |  |
+| Tool mới `football_stats` | [tool.py](../../starter_v0/tools/football_stats/tool.py), [TOOL.md](../../starter_v0/tools/football_stats/TOOL.md) | Tính thống kê và so sánh; G01/G10 có output thật | Validation trả error dict; không tự tạo dữ liệu thiếu |
+| Tool mới `football_headlines` | [tool.py](../../starter_v0/tools/football_headlines/tool.py), [TOOL.md](../../starter_v0/tools/football_headlines/TOOL.md) | 13 lượt unit test; đọc 2 nguồn ở run trước pull; G05 sau pull còn sai routing | Loại trùng, giới hạn request, lỗi riêng và bài rỗng |
+| Tool mới `football_mentions` | [tool.py](../../starter_v0/tools/football_mentions/tool.py), [TOOL.md](../../starter_v0/tools/football_mentions/TOOL.md) | G08 đọc 2 tài khoản thật; 15 lượt unit test | Lọc trong mẫu timeline, loại ID trùng, lỗi từng tài khoản |
+| Unit test tool mới (≥ 3 test/tool) | [test_tools_todo.py](../../starter_v0/tests/test_tools_todo.py), output bên dưới | football_stats: 22; headlines: 13; mentions: 15 lượt test sau tham số hóa | Offline, mock HTTP; toàn suite không skip |
+| UI (CP5) | Chờ bổ sung theo A1 và B4 | Chưa có bằng chứng | Cần chạy thử và transcript thật |
 
-Tool unit tests: số test đã viết, và một ví dụ lỗi mà unit test bắt được nhưng eval không bắt được.
+Lệnh kiểm chứng từ `starter_v0/`: `python -m pytest -q`. Output thực tế:
+
+```text
+172 passed, 1 warning in 0.70s
+```
+
+Tổng 172 là toàn bộ suite sau tích hợp, gồm cả test của các thành viên khác; không phải toàn bộ do Trần Xuân Lộc viết. Phần của Lộc trong test_tools_todo.py vẫn có 64 lượt test: 50 cho ba tool và 14 stub đã hoàn thiện.
+
+0 failed, 0 skipped. Warning đến từ plugin anyio dùng tên CallSpec2 đã deprecated, không phải lỗi test. File test_tools_todo.py có 64 lượt test sau tham số hóa: 14 cho tool có sẵn, 22 cho football_stats, 13 cho headlines và 15 cho mentions. Test API assert request và output; có nhánh input sai, thiếu key, HTTP/timeout, nguồn rỗng và lỗi một phần.
+
+Ví dụ lỗi eval không bắt được: run group ban đầu G01 gọi đúng tool/team_a nhưng bỏ `team` trong từng trận; tool cũ trả success với 0 trận. Test `test_football_stats_malformed_record_returns_error_without_raising` giữ input lỗi đó và yêu cầu error dict, không raise. Test còn kiểm tra tỷ số thiếu/sai và window sai; happy path kiểm tra thống kê, fixture sân nhà/khách và cửa sổ gần nhất.
 
 ### B5. Bonus Evidence
 
-Chỉ điền nếu nhóm làm bonus (ghi riêng, tối đa 10 điểm). Tool có sẵn (`send`, `policy`, `papers`, `paper_text`) không tự được bonus.
+| Bonus | Trạng thái và bằng chứng |
+|---|---|
+| Test challenge | Toàn suite 172 passed, 0 failed, 0 skipped; xem output B5a và [unit test](../../starter_v0/tests/test_tools_todo.py). Đáp ứng điều kiện kỹ thuật bonus 1 điểm theo [RUBRIC](../../RUBRIC.md). |
+| Ít nhất 4 tool mới | Phần của Lộc có 3 tool. Việc tổng hợp số tool và bằng chứng của thành viên khác do nhóm bổ sung; chưa kết luận bonus này trong phạm vi báo cáo này. |
+| Gửi Telegram thật sau xác nhận | Chưa có transcript chứng minh; test send hiện dùng mock. |
 
-| Bonus | Evidence File | What Worked | Risk / Guardrail |
-|---|---|---|---|
-| Small Local Model | xem B7 |  |  |
-| Hơn 3 tool mới (≥ 4) |  |  |  |
-| `send` gửi thật lên Telegram sau xác nhận | transcript |  |  |
-| Test challenge (0 skipped / regression test) | `pytest` output |  |  |
-
-Test challenge: số bug tìm được trong tool có sẵn (nếu có), cách sửa, và test regression tương ứng.
+Đã triển khai 14 test stub cho tool có sẵn, gồm kiểm tra request/response và tách chỉ dẫn nhúng khỏi facts trong policy. Bonus test dựa vào toàn suite 0 skipped; không nhận là đã tìm/sửa bug tool có sẵn.
 
 ### B7. Small Local Model Challenge (bonus)
 
-Chỉ điền nếu nhóm làm bonus này.
-
-| Version | Model (provider) | Prompt/Tools | case_accuracy | tool_routing | argument | multiturn | Run File |
-|---|---|---|---|---|---|---|---|
-| v3 | (cloud) | v3 |  |  |  |  |  |
-| v3-<model> | (ollama) | v3 |  |  |  |  |  |
-| v3-<model> | (ollama) | v3 |  |  |  |  |  |
-| v4-local |  |  |  |  |  |  |  |
-| v5-local |  |  |  |  |  |  |  |
-
-Lỗi đặc thù của model nhỏ (đếm từ run JSON):
-
-| Failure Pattern | Count | Example Case | Fix Tried | Helped? |
-|---|---|---|---|---|
-| wrong / hallucinated tool |  |  |  |  |
-| invalid JSON args (`_invalid_json_arguments`) |  |  |  |  |
-| no tool call / answered directly |  |  |  |  |
-| missed `clarify` |  |  |  |  |
-| repeated / unnecessary calls |  |  |  |  |
-
-- Cái gì giúp model nhỏ gọi tool đúng hơn nhất? Bằng chứng?
-- Bản prompt tối ưu cho local chạy trên model cloud thì sao?
-- Khi nào nhóm sẽ chọn model local thay vì cloud cho agent này?
+Chưa thực hiện, không có run model local hoặc bảng so sánh để nhận bonus này.
 
 ## 5. Khó khăn và cách xử lý
 
-> Khó khăn chính và cách nhóm xử lý. Nếu gặp lỗi kỹ thuật (provider lỗi, hết quota API, tool không chạy), mô tả lỗi và dẫn bằng chứng: run JSON, log, ảnh chụp.
+- G03 cũ tham chiếu dữ liệu ở lượt trước nhưng lại là single turn: bổ sung hai item cụ thể để kiểm tra format thread mà không yêu cầu model đoán dữ liệu.
+- [Run trung gian](../../starter_v0/runs/v5_B_group_openrouter_20261110T232439410147.json) đạt 9/10 vì expected G01 buộc truyền last_n=5 dù hàm đã có default 5. Output thực tế đúng W-W/6 điểm. Bỏ điều kiện dư thừa này; giữ kiểm tra window không mặc định ở G10 (last_n=4). Không sửa prompt hoặc evaluator.
+- [Run lỗi kết nối](../../starter_v0/runs/v5_B_group_openrouter_20261110T232339619559.json) có 10 provider_error, measured_cases=0; giữ để giải thích sự cố, không dùng tính accuracy. Chạy lại sau khi được phép kết nối mạng.
+- Key Firecrawl/RapidAPI hiện có dùng được cho hai tool mới. Riêng URL mẫu G06 vẫn có nội dung rỗng, xem B3.
 
--
+- [Run đầu của hai tool mới](../../starter_v0/runs/v5_B_group_openrouter_20261111T004755847035.json) đạt 9/10: G05 gọi fetch hai lần thay vì football_headlines. Chỉ làm rõ description của tool headlines mới để ưu tiên đọc theo nhóm; không sửa prompt hoặc mô tả tool cũ. Run trước pull từng đạt 10/10; sau khi tích hợp 8 commit, G05 lại chọn fetch hai lần. [Run sau pull lần đầu](../../starter_v0/runs/v5_B_group_openrouter_20261111T011204644324.json) và run hiện tại đều 9/10, không có provider error.
 
 ## 6. Tổng hợp đóng góp
 
-Chi tiết đóng góp của từng thành viên nằm trong [TEAM.md](../../TEAM.md) và các báo cáo cá nhân `report/team/MSSV_HoTen.md`.
+Trần Xuân Lộc phụ trách ba tool CP3, unit test, eval CP4 và Test challenge; xem [TEAM.md](../../TEAM.md) và [báo cáo cá nhân](2A202603951_TranXuanLoc.md). Phân công và báo cáo của thành viên khác cần được người phụ trách xác nhận; không suy từ kết quả CP3/CP4 thành đóng góp CP1/CP2 hoặc CP5.
 
 ## 7. Hạn chế và hướng cải thiện — B6. Reflection
 
-- Fix nào thuộc `system_prompt.md`?
-- Fix nào thuộc `tools.yaml`?
-- Failure nào cần review thủ công thay vì chấm tự động?
-- Nếu có thêm một vòng, nhóm sẽ thử giả thuyết nào?
+Giữ nguyên system_prompt.md và khai báo tool cũ. Bổ sung hai khai báo tool mới vào tools.yaml, điều chỉnh description headlines dựa trên lỗi G05. Các sửa khác thuộc code/test và eval nhóm. Cần review thủ công output tool, nội dung từ chối và khả năng lấy dữ liệu thật; routing PASS chưa đủ chứng minh kết quả có ích. Vòng tiếp theo nên đo chất lượng dữ liệu nguồn và câu trả lời cuối end-to-end, bổ sung kiểm tra số trận/điểm thực tế ngoài routing. Không so trực tiếp accuracy giữa hai bộ case đã sửa như bằng chứng tối ưu prompt. Ưu tiên tiếp theo là xử lý G05 trong phạm vi tool mới; số đo hiện tại chưa đạt 10/10.
 
 ## 8. Tài liệu tham khảo
 
--
+- [Yêu cầu bài lab](../../README.md), [checkpoints](../../CHECKPOINTS.md), [rubric](../../RUBRIC.md).
+- [Contract tool](../../starter_v0/tools/README.md), [hướng dẫn API dùng chung](../../docs/TOOL-SETUP.md).
+- [Ví dụ unit test](../../starter_v0/tests/test_tools_examples.py) và ba file TOOL.md ở mục 3.1.

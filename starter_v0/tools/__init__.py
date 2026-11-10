@@ -18,6 +18,8 @@ from .social_search.tool import search_tweets
 from .send.tool import send_telegram
 from .lookup.tool import web_search
 from .football_stats.tool import analyze_football_form
+from .football_headlines.tool import collect_football_headlines
+from .football_mentions.tool import collect_football_mentions
 from .top_scorers.tool import top_scorers
 
 
@@ -38,6 +40,8 @@ TOOL_FUNCTIONS = {
     "papers": arxiv_search,
     "paper_text": get_arxiv_paper_text,
     "football_stats": analyze_football_form,
+    "football_headlines": collect_football_headlines,
+    "football_mentions": collect_football_mentions,
     "top_scorers": top_scorers,
     # TODO CP3 (student): register your new tool here, e.g. "my_tool": my_tool_function,
     # then declare it in artifacts/tools.yaml and run `pytest tests/test_tool_contract.py`.

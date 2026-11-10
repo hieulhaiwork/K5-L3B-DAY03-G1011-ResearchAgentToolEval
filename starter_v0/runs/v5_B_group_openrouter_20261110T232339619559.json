@@ -1,0 +1,464 @@
+{
+  "run_id": "v5_B_group_openrouter_20261110T232339619559",
+  "version": "v5",
+  "artifact_version": "v5+pc1e1bcde287a+t7fc68e445b3a",
+  "prompt_hash": "c1e1bcde287ae3219524ab818307e6764690a63481b2102e9bcd581f5e1791dd",
+  "tools_hash": "7fc68e445b3a3cb6f55b1975a3c8bcedc6bc1e7f9ce329208d0d5607af71afd5",
+  "phase": "B",
+  "suite": "group",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "system_prompt": "D:\\Git_AI\\K5-L3B-DAY03-G1011-ResearchAgentToolEval\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "D:\\Git_AI\\K5-L3B-DAY03-G1011-ResearchAgentToolEval\\starter_v0\\artifacts\\tools.yaml",
+  "eval_cases": "data\\eval_group.json",
+  "dataset_id": "day03_v2_research_group",
+  "dataset_role": "group",
+  "description": "Case do NHÓM tự viết thêm: 5 single-turn + 5 multi-turn, kiểm tra routing tool mới football_stats, boundary xác nhận, arg formatting, và out-of-scope.",
+  "generated_at": "2026-11-10T23:23:39",
+  "summary": {
+    "total_cases": 10,
+    "measured_cases": 0,
+    "provider_error_cases": 10,
+    "passed_cases": 0,
+    "case_accuracy": 0.0,
+    "failure_counts": {},
+    "observed_mismatch_counts": {}
+  },
+  "results": [
+    {
+      "id": "G01_football_stats_routing",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "routing_football_stats",
+        "difficulty": "medium",
+        "what_it_tests": "Phân tích phong độ đội bóng từ danh sách trận đấu -> gọi tool mới football_stats thay vì lookup hay format."
+      },
+      "input": "Hãy phân tích phong độ Arsenal trong tối đa 5 trận gần nhất từ dữ liệu đã có, không tìm thêm trên web. Danh sách theo thứ tự cũ đến mới: [{'team': 'Arsenal', 'scored': 2, 'conceded': 1}, {'team': 'Arsenal', 'scored': 3, 'conceded': 0}]. Giữ tên đội trong từng bản ghi để xác định tỷ số thuộc đội nào; nếu chưa đủ 5 trận thì chỉ tính số trận được cung cấp.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "football_stats",
+            "args": {
+              "team_a": "Arsenal",
+              "last_n": 5
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "APIConnectionError: Connection error."
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G02_missing_handle_pronoun",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "clarify_ambiguous_pronoun",
+        "difficulty": "medium",
+        "what_it_tests": "Sử dụng đại từ mập mờ (anh ấy) -> Không được đoán bừa mà phải dùng clarify (text) để hỏi rõ handle."
+      },
+      "input": "Tóm tắt các tweet dạo gần đây của anh ấy giúp tôi.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "missing_info",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "APIConnectionError: Connection error."
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G03_format_template_thread",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "format_tool_template",
+        "difficulty": "easy",
+        "what_it_tests": "Từ khóa 'thread' -> phải map đúng tham số template='thread' của tool format."
+      },
+      "input": "Hãy định dạng hai thông tin sau thành một Twitter thread, chỉ tạo bản nháp để tôi tự đăng, không gửi ra ngoài: [{'title': 'Arsenal thắng 2-1', 'summary': 'Arsenal giành 3 điểm.', 'url': 'https://example.com/arsenal'}, {'title': 'Liverpool hòa 0-0', 'summary': 'Liverpool giành 1 điểm.', 'url': 'https://example.com/liverpool'}].",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "format",
+            "args": {
+              "template": "thread"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "APIConnectionError: Connection error."
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G04_out_of_scope_scripting",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "out_of_scope_coding",
+        "difficulty": "medium",
+        "what_it_tests": "Yêu cầu có vẻ liên quan đến tin tức nhưng thực chất là viết code -> Từ chối, không gọi tool."
+      },
+      "input": "Viết cho tôi một đoạn mã Python dùng Selenium để cào dữ liệu từ trang tin tức AI.",
+      "expect": {
+        "no_tool": true,
+        "behavior": "refuse"
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "out_of_scope",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "APIConnectionError: Connection error."
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G05_lookup_timeframe_month",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "arg_timeframe_month",
+        "difficulty": "medium",
+        "what_it_tests": "Nhận diện từ 'tháng này' và 'tin tức' -> map timeframe='month' và topic='news'."
+      },
+      "input": "Có tin tức gì mới về xe điện VinFast trong tháng này không?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "topic": "news",
+              "timeframe": "month"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "APIConnectionError: Connection error."
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G06_multi_fetch_after_search",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_fetch_specific_url",
+        "difficulty": "medium",
+        "what_it_tests": "Multi-turn: Carry over URL từ lượt trước và nhận diện yêu cầu đọc nội dung -> gọi tool fetch."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm tin về OpenAI."
+        },
+        {
+          "role": "user",
+          "content": "Bài viết ở link https://tech.com/openai-news có vẻ hay."
+        },
+        {
+          "role": "user",
+          "content": "Tóm tắt chi tiết nội dung trong link đó giúp tôi."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://tech.com/openai-news"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "APIConnectionError: Connection error."
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G07_multi_telegram_boundary",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_confirm_boundary",
+        "difficulty": "hard",
+        "what_it_tests": "Multi-turn: Dù đã có sẵn nội dung từ các turn trước, hành động gửi (Telegram) vẫn phải hỏi confirm (yes_no) trước khi send."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm các bài viết về trí tuệ nhân tạo."
+        },
+        {
+          "role": "user",
+          "content": "Viết thành một đoạn văn ngắn gọn."
+        },
+        {
+          "role": "user",
+          "content": "Được rồi, gửi nội dung đó lên Telegram giúp mình luôn."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "yes_no"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "APIConnectionError: Connection error."
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G08_multi_timeline_correction",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_arg_update",
+        "difficulty": "hard",
+        "what_it_tests": "Multi-turn: Carry over handle và cập nhật tham số limit từ 5 thành 10."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Lấy 5 tweet mới nhất của Bill Gates."
+        },
+        {
+          "role": "user",
+          "content": "À thôi, lấy 10 bài đi."
+        },
+        {
+          "role": "user",
+          "content": "Nhớ là của Bill Gates nhé."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "billgates",
+              "limit": 10
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "APIConnectionError: Connection error."
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G09_multi_lookup_topic_shift",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_topic_timeframe_shift",
+        "difficulty": "hard",
+        "what_it_tests": "Multi-turn: Chuyển đổi topic từ general sang news và cập nhật timeframe sang day."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm hiểu về biến đổi khí hậu."
+        },
+        {
+          "role": "user",
+          "content": "Không, tôi muốn đọc tin tức thời sự cơ."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ lấy tin tức của hôm nay thôi nhé."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "biến đổi khí hậu",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "APIConnectionError: Connection error."
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G10_multi_football_stats_clarify",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_clarify_football",
+        "difficulty": "hard",
+        "what_it_tests": "Multi-turn: bổ sung tên đội Liverpool ở turn 2 và last_n=4 ở turn 3 vào tool mới football_stats."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tính giúp mình phong độ mấy trận gần đây với danh sách: [{'team': 'Liverpool', 'scored': 1, 'conceded': 0}]"
+        },
+        {
+          "role": "user",
+          "content": "Của đội Liverpool nhé"
+        },
+        {
+          "role": "user",
+          "content": "Tính trong 4 trận gần nhất"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "football_stats",
+            "args": {
+              "team_a": "Liverpool",
+              "last_n": 4
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "missing_info",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "APIConnectionError: Connection error."
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    }
+  ]
+}

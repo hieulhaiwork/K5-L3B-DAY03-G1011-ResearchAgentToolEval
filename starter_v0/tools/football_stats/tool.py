@@ -18,6 +18,7 @@ def analyze_football_form(
                  - 'scored' and 'conceded' (or 'home_score' and 'away_score')
         team_b: Optional second team name to compare against.
         last_n: Number of most recent matches to consider (default 5, must be > 0).
+                Matches must be ordered oldest to newest; this tool does not sort dates.
 
     Returns:
         Dict containing form string (e.g. W-W-D-L), points, stats, and optional comparison.
@@ -28,6 +29,11 @@ def analyze_football_form(
     if matches is None or not isinstance(matches, list):
         return {"status": "error", "error": "matches must be a list of match records"}
 
+    if team_b is not None and (not isinstance(team_b, str) or not team_b.strip()):
+        return {"status": "error", "error": "team_b must be a non-empty string when provided"}
+
+    if isinstance(last_n, bool) or not isinstance(last_n, (int, str)):
+        return {"status": "error", "error": "last_n must be a positive integer"}
     try:
         n = int(last_n)
         if n <= 0:
@@ -36,6 +42,35 @@ def analyze_football_form(
         return {"status": "error", "error": "last_n must be an integer"}
 
     clean_team_a = team_a.strip().lower()
+
+    # Reject incomplete records rather than silently inventing 0-0 scores or
+    # returning success with zero analyzed matches (as in group run G01).
+    def _score(value: Any) -> int:
+        if isinstance(value, bool) or not isinstance(value, (int, str)):
+            raise ValueError("scores must be non-negative integers")
+        score = int(value)
+        if score < 0:
+            raise ValueError("scores must be non-negative integers")
+        return score
+
+    for index, match in enumerate(matches):
+        try:
+            if not isinstance(match, dict):
+                raise ValueError("each match must be an object")
+            if "team" in match:
+                names, scores = ("team",), ("scored", "conceded")
+            else:
+                names = ("home_team", "away_team")
+                scores = ("home_score", "away_score")
+            for key in names:
+                if not isinstance(match.get(key), str) or not match[key].strip():
+                    raise ValueError(f"{key} must be a non-empty string")
+            for key in scores:
+                if key not in match:
+                    raise ValueError(f"missing {key}")
+                _score(match[key])
+        except (ValueError, TypeError) as exc:
+            return {"status": "error", "error": f"matches[{index}]: {exc}"}
 
     def _extract_team_matches(team_name: str) -> list[tuple[int, int]]:
         """Extract (scored, conceded) pairs for a team from the matches list."""

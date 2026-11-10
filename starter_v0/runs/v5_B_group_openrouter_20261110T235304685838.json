@@ -1,0 +1,936 @@
+{
+  "run_id": "v5_B_group_openrouter_20261110T235304685838",
+  "version": "v5",
+  "artifact_version": "v5+pc1e1bcde287a+t7fc68e445b3a",
+  "prompt_hash": "c1e1bcde287ae3219524ab818307e6764690a63481b2102e9bcd581f5e1791dd",
+  "tools_hash": "7fc68e445b3a3cb6f55b1975a3c8bcedc6bc1e7f9ce329208d0d5607af71afd5",
+  "phase": "B",
+  "suite": "group",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "system_prompt": "D:\\Git_AI\\K5-L3B-DAY03-G1011-ResearchAgentToolEval\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "D:\\Git_AI\\K5-L3B-DAY03-G1011-ResearchAgentToolEval\\starter_v0\\artifacts\\tools.yaml",
+  "eval_cases": "data\\eval_group.json",
+  "dataset_id": "day03_v2_research_group",
+  "dataset_role": "group",
+  "description": "Case do NHÓM tự viết thêm: 5 single-turn + 5 multi-turn, kiểm tra routing tool mới football_stats, boundary xác nhận, arg formatting, và out-of-scope.",
+  "generated_at": "2026-11-10T23:53:04",
+  "summary": {
+    "total_cases": 10,
+    "measured_cases": 10,
+    "provider_error_cases": 0,
+    "passed_cases": 10,
+    "case_accuracy": 1.0,
+    "tool_routing_accuracy": 1.0,
+    "argument_accuracy": 1.0,
+    "multiturn_accuracy": 1.0,
+    "failure_counts": {},
+    "observed_mismatch_counts": {}
+  },
+  "results": [
+    {
+      "id": "G01_football_stats_routing",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "routing_football_stats",
+        "difficulty": "medium",
+        "what_it_tests": "Phân tích phong độ đội bóng từ danh sách trận đấu -> gọi tool mới football_stats thay vì lookup hay format."
+      },
+      "input": "Hãy phân tích phong độ Arsenal trong tối đa 5 trận gần nhất từ dữ liệu đã có, không tìm thêm trên web. Danh sách theo thứ tự cũ đến mới: [{'team': 'Arsenal', 'scored': 2, 'conceded': 1}, {'team': 'Arsenal', 'scored': 3, 'conceded': 0}]. Giữ tên đội trong từng bản ghi để xác định tỷ số thuộc đội nào; nếu chưa đủ 5 trận thì chỉ tính số trận được cung cấp.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "football_stats",
+            "args": {
+              "team_a": "Arsenal"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "football_stats",
+            "args": {
+              "team_a": "Arsenal",
+              "matches": [
+                {
+                  "team": "Arsenal",
+                  "scored": 2,
+                  "conceded": 1
+                },
+                {
+                  "team": "Arsenal",
+                  "scored": 3,
+                  "conceded": 0
+                }
+              ]
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "football_stats",
+          "args": {
+            "team_a": "Arsenal",
+            "matches": [
+              {
+                "team": "Arsenal",
+                "scored": 2,
+                "conceded": 1
+              },
+              {
+                "team": "Arsenal",
+                "scored": 3,
+                "conceded": 0
+              }
+            ]
+          },
+          "result": {
+            "status": "success",
+            "team_a": {
+              "team": "Arsenal",
+              "matches_analyzed": 2,
+              "form": "W-W",
+              "points": 6,
+              "max_possible_points": 6,
+              "wins": 2,
+              "draws": 0,
+              "losses": 0,
+              "goals_scored": 5,
+              "goals_conceded": 1,
+              "goal_diff": 4,
+              "clean_sheets": 1,
+              "win_rate_percent": 100.0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "G02_missing_handle_pronoun",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "clarify_ambiguous_pronoun",
+        "difficulty": "medium",
+        "what_it_tests": "Sử dụng đại từ mập mờ (anh ấy) -> Không được đoán bừa mà phải dùng clarify (text) để hỏi rõ handle."
+      },
+      "input": "Tóm tắt các tweet dạo gần đây của anh ấy giúp tôi.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn có thể cho tôi biết tên tài khoản Twitter mà bạn muốn tôi tóm tắt các tweet gần đây không?",
+              "response_type": "text"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn có thể cho tôi biết tên tài khoản Twitter mà bạn muốn tôi tóm tắt các tweet gần đây không?",
+            "response_type": "text"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn có thể cho tôi biết tên tài khoản Twitter mà bạn muốn tôi tóm tắt các tweet gần đây không?",
+            "response_type": "text",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G03_format_template_thread",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "format_tool_template",
+        "difficulty": "easy",
+        "what_it_tests": "Từ khóa 'thread' -> phải map đúng tham số template='thread' của tool format."
+      },
+      "input": "Hãy định dạng hai thông tin sau thành một Twitter thread, chỉ tạo bản nháp để tôi tự đăng, không gửi ra ngoài: [{'title': 'Arsenal thắng 2-1', 'summary': 'Arsenal giành 3 điểm.', 'url': 'https://example.com/arsenal'}, {'title': 'Liverpool hòa 0-0', 'summary': 'Liverpool giành 1 điểm.', 'url': 'https://example.com/liverpool'}].",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "format",
+            "args": {
+              "template": "thread"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "format",
+            "args": {
+              "items": [
+                {
+                  "title": "Arsenal thắng 2-1",
+                  "url": "https://example.com/arsenal",
+                  "summary": "Arsenal giành 3 điểm."
+                },
+                {
+                  "title": "Liverpool hòa 0-0",
+                  "url": "https://example.com/liverpool",
+                  "summary": "Liverpool giành 1 điểm."
+                }
+              ],
+              "template": "thread",
+              "headline": "Kết quả các trận đấu hôm nay"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "format",
+          "args": {
+            "items": [
+              {
+                "title": "Arsenal thắng 2-1",
+                "url": "https://example.com/arsenal",
+                "summary": "Arsenal giành 3 điểm."
+              },
+              {
+                "title": "Liverpool hòa 0-0",
+                "url": "https://example.com/liverpool",
+                "summary": "Liverpool giành 1 điểm."
+              }
+            ],
+            "template": "thread",
+            "headline": "Kết quả các trận đấu hôm nay"
+          },
+          "result": {
+            "tool": "render_digest",
+            "template": "thread",
+            "markdown": "1/ Arsenal giành 3 điểm. - [example.com](https://example.com/arsenal)\n\n2/ Liverpool giành 1 điểm. - [example.com](https://example.com/liverpool)",
+            "item_count": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "G04_out_of_scope_scripting",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "out_of_scope_coding",
+        "difficulty": "medium",
+        "what_it_tests": "Yêu cầu có vẻ liên quan đến tin tức nhưng thực chất là viết code -> Từ chối, không gọi tool."
+      },
+      "input": "Viết cho tôi một đoạn mã Python dùng Selenium để cào dữ liệu từ trang tin tức AI.",
+      "expect": {
+        "no_tool": true,
+        "behavior": "refuse"
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "Xin lỗi, nhưng tôi không thể giúp bạn với yêu cầu về mã Python hoặc lập trình. Nếu bạn cần thông tin về tin tức AI, tôi có thể hỗ trợ tìm kiếm hoặc cung cấp thông tin liên quan. Bạn có muốn tôi giúp gì khác không?",
+        "case_failure_type": "out_of_scope",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G05_lookup_timeframe_month",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "arg_timeframe_month",
+        "difficulty": "medium",
+        "what_it_tests": "Nhận diện từ 'tháng này' và 'tin tức' -> map timeframe='month' và topic='news'."
+      },
+      "input": "Có tin tức gì mới về xe điện VinFast trong tháng này không?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "topic": "news",
+              "timeframe": "month"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "VinFast electric vehicles",
+              "topic": "news",
+              "timeframe": "month",
+              "max_results": 5
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "VinFast electric vehicles",
+            "topic": "news",
+            "timeframe": "month",
+            "max_results": 5
+          },
+          "result": {
+            "tool": "web_search",
+            "query": "VinFast electric vehicles",
+            "topic": "news",
+            "timeframe": "month",
+            "items": [
+              {
+                "title": "VinFast",
+                "url": "https://tavily.com/knowledge/company/hSD1qJ1zYfEQ",
+                "source": "tavily.com",
+                "summary": "# VINFAST\nID: hSD1qJ1zYfEQ\nWebsite: www.vinfastauto.eu\nHeadquarters: Cat Hai, Hai Phong, Vietnam\nLinkedIn: www.linkedin.com/company/vinfast · 384,903 followers\nIndustry: Motor Vehicle Manufacturing\nCompany type: Privately Held\nParent company: Vingroup (www.vingroup.net/) [...] Description: VinFast is a company that provides compact and technical high-end electric vehicles. They offer solutions for businesses and provide services such as total cost of ownership. [...] ## Products and services\nKeywords: automotive, car, e-scooter, vehicles, manufacturing, transportation, technical, compact, solutions, electric vehicles, high-end, manufacturing-industrial",
+                "score": 0.9094659
+              },
+              {
+                "title": "Charged EVs | VinFast introduces electric bus lineup to the US - Charged EVs",
+                "url": "https://chargedevs.com/newswire/vinfast-introduces-electric-bus-lineup-to-the-us",
+                "source": "chargedevs.com",
+                "summary": "VinFast’s electric bus lineup features LFP battery technology. VinFast’s electric buses are designed for urban transportation and include driver assistance systems that use cameras and radar to provide real-time safety alerts.\n\nApproximately 2,000 VinFast electric buses are currently operating in Vietnam. [...] Vietnamese EV manufacturer VinFast has announced plans to bring its electric bus models to the US market through a partnership with NexMove Certified, a joint venture of Transportation Management Services (TMS) and Zeem Solutions.\n\nNexMove will offer the buses as a service, combining the vehicle, charging infrastructure, maintenance and operations under a single agreement.\n\nDeliveries of certified, homologated vehicles are expected to start in 2028. [...] VinFast North America CEO Brian Finnerty said: “We are doubling down on our investment in the US and working with partners such as NexMove to help cities, transit operators and businesses accelerate the transition to sustainable mobility. This partnership advances our vision of making electric transportation more accessible while building a lasting presence for VinFast in one of the world’s most important markets.”\n\nSource: VinFast\n\nShare on Facebook Share\n\nShare on TwitterTweet",
+                "score": 0.86928266
+              },
+              {
+                "title": "VinFast Auto: Impressive Sales, Terrible Economics (NASDAQ:VFS) | Seeking Alpha",
+                "url": "https://seekingalpha.com/article/4955220-vinfast-auto-impressive-sales-terrible-economics",
+                "source": "seekingalpha.com",
+                "summary": "## Thesis\n\nVinFast Auto Ltd. (VFS) is an electric vehicle manufacturer out of Vietnam that's backed by Vingroup. The company makes everything from electric SUVs and scooters to buses and commercial vehicles. And while it's been growing rapidly in\n\nThis article was written by",
+                "score": 0.8396422
+              },
+              {
+                "title": "L.A.’s Newest Ride-Hailing Service Consists of 500 VinFast EVs",
+                "url": "https://www.caranddriver.com/news/a74162971/green-sm-los-angeles-ride-hailing-vinfast-vf8-ev",
+                "source": "caranddriver.com",
+                "summary": "The company’s fleet is made up of VinFast VF8 EVs. Though VinFast hasn’t gained much traction in the United States since its U.S. debut in 2023, the brand is the most popular automaker in Vietnam. The electric VF8 seats five and, perhaps most importantly for Green SM’s mission, emits zero emissions.\n\nxView full post on X [...] A fleet of cyan-colored electric cars has just hit the streets of Los Angeles, and they’re hoping to make a dent in the city’s ride-hailing sector. Vietnamese company Green SM aims to stand out by offering an entirely electric fleet driven by trained drivers. [...] Green SM\n\n Green SM, a ride-hailing service based in Vietnam, launched a fleet of 500 VinFast VF8 EVs in Los Angeles earlier this week.\n Unlike other popular ride services such as Uber and Lyft, Green SM owns its own fleet and hires and trains full-time drivers.\n L.A. riders can call a car by using the Green SM app, calling the hotline, or hailing a vehicle on the street.",
+                "score": 0.8358192
+              },
+              {
+                "title": "VINFAST REPORTS UNAUDITED SECOND QUARTER 2026 FINANCIAL RESULTS | VinFast",
+                "url": "https://vinfastauto.us/investor-relations/news/vinfast-reports-unaudited-second-quarter-2026-financial-results",
+                "source": "vinfastauto.us",
+                "summary": "Recent Business Updates\n\nProduct and Technology\n\nThe VF Wild REEV is the latest addition to VinFast’s product portfolio. Built on VinFast’s next-generation large-vehicle platform, it combines an electric drivetrain with extended-range capability, giving customers greater flexibility for longer-distance driving while retaining the core driving characteristics of an EV. The VF Wild is now available in Vietnam, and the Company expects to bring it to international markets next year. [...] Mr. Pham Nhat Quan Anh, CEO andChairman of VinFast, said: “VinFast entered the second half of 2026 with strong momentum across our core markets and continued progress in expanding our global platform. During the quarter, we reached several important milestones, including continued growth across both electric four-wheelers and two-wheelers. We are also broadening the financial and ecosystem foundation supporting our long-term strategy. Looking ahead, our priorities remain focused on scaling up [...] VinFast VinFast\n\n VinFast Videos\n Our Reports\n News & Events\n Governance\n SEC Filings\n Stock\n Sustainability\n FAQs\n\nNews\n\n# VINFAST REPORTS UNAUDITED SECOND QUARTER 2026 FINANCIAL RESULTS\n\nOctober 19, 2026\n\nSingapore, October 19, 2026 – VinFast Auto Ltd. (“VinFast” or the “Company”) (Nasdaq: VFS), a pure-play electric vehicle (“EV”) company with the mission of making EVs accessible to everyone, today announced its unaudited financial results for the second quarter ended June 30, 2026.",
+                "score": 0.82082915
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G06_multi_fetch_after_search",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_fetch_specific_url",
+        "difficulty": "medium",
+        "what_it_tests": "Multi-turn: Carry over URL từ lượt trước và nhận diện yêu cầu đọc nội dung -> gọi tool fetch."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm tin về OpenAI."
+        },
+        {
+          "role": "user",
+          "content": "Bài viết ở link https://tech.com/openai-news có vẻ hay."
+        },
+        {
+          "role": "user",
+          "content": "Tóm tắt chi tiết nội dung trong link đó giúp tôi."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://tech.com/openai-news"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://tech.com/openai-news"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "fetch",
+          "args": {
+            "url": "https://tech.com/openai-news"
+          },
+          "result": {
+            "tool": "read_url",
+            "url": "https://tech.com/openai-news",
+            "items": [
+              {
+                "title": "https://tech.com/openai-news",
+                "url": "https://tech.com/openai-news",
+                "source": "tech.com",
+                "summary": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G07_multi_telegram_boundary",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_confirm_boundary",
+        "difficulty": "hard",
+        "what_it_tests": "Multi-turn: Dù đã có sẵn nội dung từ các turn trước, hành động gửi (Telegram) vẫn phải hỏi confirm (yes_no) trước khi send."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm các bài viết về trí tuệ nhân tạo."
+        },
+        {
+          "role": "user",
+          "content": "Viết thành một đoạn văn ngắn gọn."
+        },
+        {
+          "role": "user",
+          "content": "Được rồi, gửi nội dung đó lên Telegram giúp mình luôn."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "yes_no"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn có xác nhận muốn gửi nội dung về trí tuệ nhân tạo lên Telegram không?",
+              "response_type": "yes_no"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn có xác nhận muốn gửi nội dung về trí tuệ nhân tạo lên Telegram không?",
+            "response_type": "yes_no"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn có xác nhận muốn gửi nội dung về trí tuệ nhân tạo lên Telegram không?",
+            "response_type": "yes_no",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G08_multi_timeline_correction",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_arg_update",
+        "difficulty": "hard",
+        "what_it_tests": "Multi-turn: Carry over handle và cập nhật tham số limit từ 5 thành 10."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Lấy 5 tweet mới nhất của Bill Gates."
+        },
+        {
+          "role": "user",
+          "content": "À thôi, lấy 10 bài đi."
+        },
+        {
+          "role": "user",
+          "content": "Nhớ là của Bill Gates nhé."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "billgates",
+              "limit": 10
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "BillGates",
+              "limit": 10
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "timeline",
+          "args": {
+            "screenname": "BillGates",
+            "limit": 10
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "screenname": "BillGates",
+            "items": [
+              {
+                "title": "Thank you for bringing us together, @vonderleyen. AI adoption and preparedness have to move together. We can’t anticipat",
+                "summary": "Thank you for bringing us together, @vonderleyen. AI adoption and preparedness have to move together. We can’t anticipate everything, but we can build the institutions, technical capacity, and safeguards to respond as the technology advances.",
+                "url": "https://x.com/BillGates/status/2113752066665623816",
+                "source": "@BillGates",
+                "date": "Fri Oct 23 21:58:58 +0000 2026",
+                "metrics": {
+                  "favorites": 1286,
+                  "retweets": 206,
+                  "views": "510202"
+                }
+              },
+              {
+                "title": "AI is the most profound technology I’ve seen, both in its ability to help people and to disrupt their lives. I’m optimis",
+                "summary": "AI is the most profound technology I’ve seen, both in its ability to help people and to disrupt their lives. I’m optimistic about the good it can do, but we need to take its risks seriously. https://t.co/MZuSaceOYr",
+                "url": "https://x.com/BillGates/status/2113720109076451662",
+                "source": "@BillGates",
+                "date": "Fri Oct 23 19:51:59 +0000 2026",
+                "metrics": {
+                  "favorites": 2406,
+                  "retweets": 417,
+                  "views": "2324411"
+                }
+              },
+              {
+                "title": "I’m hopeful that as we build more plants like this one, we can bring affordable, reliable, clean electricity to more peo",
+                "summary": "I’m hopeful that as we build more plants like this one, we can bring affordable, reliable, clean electricity to more people.",
+                "url": "https://x.com/BillGates/status/2112347360173171116",
+                "source": "@BillGates",
+                "date": "Tue Oct 20 00:57:10 +0000 2026",
+                "metrics": {
+                  "favorites": 930,
+                  "retweets": 177,
+                  "views": "948297"
+                }
+              },
+              {
+                "title": "This kind of commitment will help turn promising research into breakthroughs for families who need them. https://t.co/Tg",
+                "summary": "This kind of commitment will help turn promising research into breakthroughs for families who need them. https://t.co/TghI8ADPDG",
+                "url": "https://x.com/BillGates/status/2110500778268135781",
+                "source": "@BillGates",
+                "date": "Wed Oct 14 22:39:31 +0000 2026",
+                "metrics": {
+                  "favorites": 828,
+                  "retweets": 128,
+                  "views": "1594412"
+                }
+              },
+              {
+                "title": "Just as we regulate planes, cars, and medicines, we need safeguards that help us realize AI's incredible potential while",
+                "summary": "Just as we regulate planes, cars, and medicines, we need safeguards that help us realize AI's incredible potential while reducing the risks. They won’t eliminate every harm, but they can help prevent misuse by bad actors. We’re not where we need to be yet—and this deserves much more of our attention.",
+                "url": "https://x.com/BillGates/status/2109335188685885492",
+                "source": "@BillGates",
+                "date": "Sun Oct 11 17:27:53 +0000 2026",
+                "metrics": {
+                  "favorites": 3203,
+                  "retweets": 636,
+                  "views": "1292028"
+                }
+              },
+              {
+                "title": "Ken’s incredible generosity will make a huge, lasting impact.",
+                "summary": "Ken’s incredible generosity will make a huge, lasting impact.",
+                "url": "https://x.com/BillGates/status/2105753675511771625",
+                "source": "@BillGates",
+                "date": "Thu Oct 01 20:16:13 +0000 2026",
+                "metrics": {
+                  "favorites": 2059,
+                  "retweets": 174,
+                  "views": "1046005"
+                }
+              },
+              {
+                "title": "I appreciated the opportunity to speak with @ezraklein  at length about the state of AI. I believe the world isn't awake",
+                "summary": "I appreciated the opportunity to speak with @ezraklein  at length about the state of AI. I believe the world isn't awake to the dangers of this technology and the choices humanity has to make. AI will either be the greatest tool for opportunity and equality we've ever seen—or the cause of immense, unprecedented harm. Which way things go is up to us. https://t.co/ZW69yCnW2L",
+                "url": "https://x.com/BillGates/status/2105084993827704946",
+                "source": "@BillGates",
+                "date": "Tue Sep 29 23:59:07 +0000 2026",
+                "metrics": {
+                  "favorites": 3432,
+                  "retweets": 662,
+                  "views": "793243"
+                }
+              },
+              {
+                "title": "We need to put the appropriate AI safeguards and monitoring in place now—to both prevent a loss of control and stop bad ",
+                "summary": "We need to put the appropriate AI safeguards and monitoring in place now—to both prevent a loss of control and stop bad actors from using the tech to cause harm. If we minimize the risks, we’ll get to benefit from AI’s immense potential in fields like medicine, education, and agriculture. https://t.co/AhdmzkswQm",
+                "url": "https://x.com/BillGates/status/2104702470777929791",
+                "source": "@BillGates",
+                "date": "Mon Sep 28 22:39:07 +0000 2026",
+                "metrics": {
+                  "favorites": 1927,
+                  "retweets": 356,
+                  "views": "580836"
+                }
+              },
+              {
+                "title": "Congratulations on an extraordinary career, Warren. I’m lucky to call you my friend and mentor. https://t.co/H3nUXmkcNo",
+                "summary": "Congratulations on an extraordinary career, Warren. I’m lucky to call you my friend and mentor. https://t.co/H3nUXmkcNo",
+                "url": "https://x.com/BillGates/status/2101102624858837138",
+                "source": "@BillGates",
+                "date": "Sat Sep 19 00:14:37 +0000 2026",
+                "metrics": {
+                  "favorites": 9446,
+                  "retweets": 729,
+                  "views": "1446644"
+                }
+              },
+              {
+                "title": "Thank you for the warm welcome, @ncbn. It’s exciting to witness Andhra Pradesh’s growth being accelerated through AI, te",
+                "summary": "Thank you for the warm welcome, @ncbn. It’s exciting to witness Andhra Pradesh’s growth being accelerated through AI, technology, and innovations across health, agriculture &amp; education.",
+                "url": "https://x.com/BillGates/status/2023509972714496206",
+                "source": "@BillGates",
+                "date": "Mon Feb 16 21:29:07 +0000 2026",
+                "metrics": {
+                  "favorites": 13672,
+                  "retweets": 2480,
+                  "views": "1820405"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G09_multi_lookup_topic_shift",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_topic_timeframe_shift",
+        "difficulty": "hard",
+        "what_it_tests": "Multi-turn: Chuyển đổi topic từ general sang news và cập nhật timeframe sang day."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm hiểu về biến đổi khí hậu."
+        },
+        {
+          "role": "user",
+          "content": "Không, tôi muốn đọc tin tức thời sự cơ."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ lấy tin tức của hôm nay thôi nhé."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "biến đổi khí hậu",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "biến đổi khí hậu",
+              "topic": "news",
+              "timeframe": "day",
+              "max_results": 5
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "biến đổi khí hậu",
+            "topic": "news",
+            "timeframe": "day",
+            "max_results": 5
+          },
+          "result": {
+            "tool": "web_search",
+            "query": "biến đổi khí hậu",
+            "topic": "news",
+            "timeframe": "day",
+            "items": [
+              {
+                "title": "COP31 kêu gọi thế giới đẩy nhanh nỗ lực ứng phó biến đổi khí hậu",
+                "url": "https://hanoionline.vn/cop31-keu-goi-the-gioi-day-nhanh-no-luc-ung-pho-bien-doi-khi-hau-246261110112952368.htm",
+                "source": "hanoionline.vn",
+                "summary": "Hội nghị lần thứ 31 các bên tham gia Công ước khung của Liên hợp quốc về biến đổi khí hậu (COP31) sẽ diễn ra từ ngày 9 đến 20/11 tại thành phố Antalya, Thổ Nhĩ Kỳ, trong bối cảnh sức ép cắt giảm khí thải và bảo đảm an ninh năng lượng ngày càng gia tăng. Chuyển đổi sang năng lượng sạch dự kiến sẽ là một trong những vấn đề trọng tm được thảo luận tại hội nghị.\n\nTừ khoá\n\nBiến đổi Khí hậu  COP31  ứng phó biến đổi khí hậu\n\n## Tin tức\n\nNghị sĩ Cộng hòa đề xuất luận tội Bộ trưởng Chiến tranh Mỹ [...] Liên minh chu u (EU) khẳng định sẽ phối hợp với các đối tác quốc tế nhằm thúc đẩy mạnh mẽ hành động khí hậu toàn cầu tại Hội nghị lần thứ 31 các bên tham gia Công ước khung của Liên hợp quốc về biến đổi khí hậu (COP31), diễn ra tại Antalya (Thổ Nhĩ Kỳ) từ ngày 9-20/11.\n\nCOP31 tập trung thúc đẩy chuyển đổi năng lượng sạch \n\n### COP31 tập trung thúc đẩy chuyển đổi năng lượng sạch [...] Báo và Phát thanh Truyền hình Hà Nội   TRANG THÔNG TIN ĐIỆN TỬ   \nCỦA CƠ QUAN BÁO VÀ PHÁT THANH TRUYỀN HÌNH HÀ NỘI\n\n# COP31 kêu gọi thế giới đẩy nhanh nỗ lực ứng phó biến đổi khí hậu\n\nMinh Thúy\n\nHội nghị lần thứ 31 các bên tham gia Công ước khung của Liên hợp quốc về biến đổi khí hậu (COP31) khai mạc ngày 9/11 tại Thổ Nhĩ Kỳ, với lời kêu gọi cộng đồng quốc tế đẩy nhanh hành động ứng phó trước tình trạng nóng lên toàn cầu.\n\nCOP31 kêu gọi thế giới đẩy nhanh nỗ lực ứng phó biến đổi khí hậu",
+                "score": 0.66699636
+              },
+              {
+                "title": "COP31: Thế giới khẩn trương thúc đẩy hành động ứng phó biến đổi khí hậu",
+                "url": "https://baophutho.vn/cop31-the-gioi-khan-truong-thuc-day-hanh-dong-ung-pho-bien-doi-khi-hau-264265.htm",
+                "source": "baophutho.vn",
+                "summary": "Hội nghị lần thứ 31 các bên tham gia Công ước khung của LHQ về biến đổi khí hậu (COP31) chính thức khai mạc tại thành phố Antalya, Thổ Nhĩ Kỳ,",
+                "score": 0.57064295
+              },
+              {
+                "title": "Thứ trưởng Lê Trọng Yên: Hoàn thiện chính sách ứng phó với biến đổi khí hậu phải khả thi, bám sát thực tiễn",
+                "url": "https://thanhtra.com.vn/moi-truong-9DBF44B9E/thu-truong-le-trong-yen-hoan-thien-chinh-sach-ung-pho-voi-bien-doi-khi-hau-phai-kha-thi-bam-sat-thuc-tien-7ea761899.html",
+                "source": "thanhtra.com.vn",
+                "summary": "Toàn cảnh Hội thảo tham vấn dự thảo Nghị định của Chính phủ quy định chi tiết một số điều của Luật Bảo vệ môi trường về ứng phó với biến đổi khí hậu.",
+                "score": 0.54724693
+              },
+              {
+                "title": "Hoàn thiện quy định về ứng phó với biến đổi khí hậu",
+                "url": "https://nongnghiepmoitruong.vn/video/hoan-thien-quy-dinh-ve-ung-pho-voi-bien-doi-khi-hau-tv840802.html",
+                "source": "nongnghiepmoitruong.vn",
+                "summary": "Sáng 10/11, Hội thảo tham vấn dự thảo Nghị định quy định chi tiết một số điều của Luật Bảo vệ môi trường về ứng phó với biến đổi khí hậu đã được tổ chức.",
+                "score": 0.53094244
+              },
+              {
+                "title": "Hành động khẩn cấp vì khí hậu",
+                "url": "https://nhandan.vn/hanh-dong-khan-cap-vi-khi-hau-post1001233.html",
+                "source": "nhandan.vn",
+                "summary": "Hàng chục triệu người tị nạn đối mặt mối nguy hiểm liên quan khí hậu, trong khi các cam kết và mục tiêu khí hậu, cũng như nguồn tài chính cho tăng cường",
+                "score": 0.18155359
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G10_multi_football_stats_clarify",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_clarify_football",
+        "difficulty": "hard",
+        "what_it_tests": "Multi-turn: bổ sung tên đội Liverpool ở turn 2 và last_n=4 ở turn 3 vào tool mới football_stats."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tính giúp mình phong độ mấy trận gần đây với danh sách: [{'team': 'Liverpool', 'scored': 1, 'conceded': 0}]"
+        },
+        {
+          "role": "user",
+          "content": "Của đội Liverpool nhé"
+        },
+        {
+          "role": "user",
+          "content": "Tính trong 4 trận gần nhất"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "football_stats",
+            "args": {
+              "team_a": "Liverpool",
+              "last_n": 4
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "football_stats",
+            "args": {
+              "team_a": "Liverpool",
+              "matches": [
+                {
+                  "team": "Liverpool",
+                  "scored": 1,
+                  "conceded": 0
+                }
+              ],
+              "last_n": 4
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "football_stats",
+          "args": {
+            "team_a": "Liverpool",
+            "matches": [
+              {
+                "team": "Liverpool",
+                "scored": 1,
+                "conceded": 0
+              }
+            ],
+            "last_n": 4
+          },
+          "result": {
+            "status": "success",
+            "team_a": {
+              "team": "Liverpool",
+              "matches_analyzed": 1,
+              "form": "W",
+              "points": 3,
+              "max_possible_points": 3,
+              "wins": 1,
+              "draws": 0,
+              "losses": 0,
+              "goals_scored": 1,
+              "goals_conceded": 0,
+              "goal_diff": 1,
+              "clean_sheets": 1,
+              "win_rate_percent": 100.0
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
