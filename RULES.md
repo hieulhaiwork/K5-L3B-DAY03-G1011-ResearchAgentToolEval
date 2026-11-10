@@ -19,7 +19,7 @@
 - Không commit API key, password hoặc file `.env`.
 - Copy `starter_v0/.env.example` thành `starter_v0/.env` rồi điền giá trị. Các biến dùng trong bài:
   - Provider (chọn một): `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`.
-  - Tool: `TAVILY_API_KEY`, `FIRECRAWL_API_KEY`, `RAPIDAPI_KEY`, `RAPIDAPI_TWITTER_HOST`, `ARXIV_USER_AGENT`.
+  - Tool: `TAVILY_API_KEY`, `FIRECRAWL_API_KEY`, `RAPIDAPI_KEY`, `RAPIDAPI_TWITTER_HOST`, `ARXIV_USER_AGENT`, `API_FOOTBALL_KEY`.
   - Bonus: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `OLLAMA_BASE_URL`, `OLLAMA_MODEL`.
 - Cách lấy từng key xem [docs/TOOL-SETUP.md](docs/TOOL-SETUP.md).
 - Tool trong lab gọi API thật. Kiểm tra `runs/` và `transcripts/` trước khi commit để chắc không có key, token hay dữ liệu cá nhân.
