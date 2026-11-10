@@ -45,7 +45,7 @@ tools:
       required: [query]
 
   - name: lookup
-    description: "Tra cứu thông tin trên internet."
+    description: "Tra cứu thông tin, bài viết, hoặc tin tức tổng hợp trên internet."
     parameters:
       type: object
       properties:
