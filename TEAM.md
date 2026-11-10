@@ -16,12 +16,31 @@
 |   3 | Trần Xuân Lộc | 2A202603951     |    xuanloca2tv@gmail.com |   Kaylez-TXL       | CP3: 3 tool bóng đá, unit test; CP4: eval nhóm; bonus Test challenge |
 |   4 | Nguyễn Quang Tiệp | 2A202603946 | 26ai.tiepnq@vinuni.edu.vn | nguyenquangtiep |         |
 
-## Báo cáo cá nhân
+## Cá nhân
 
-- [Trần Xuân Lộc](report/team/2A202603951_TranXuanLoc.md): CP3/CP4 và Test challenge; phần tự đánh giá chờ cá nhân hoàn thiện.
-- [Lê Hiền Hiếu](report/team/2A202603940_LeHienHieu.md), [Dương Minh Chiến](report/team/2A202603921_DuongMinhChien.md): phần việc và bằng chứng được giữ theo báo cáo riêng của từng thành viên; không gộp eval tool riêng vào phần của Lộc.
-- Thông tin các dòng thành viên còn trống, phân công CP1/CP2/CP5 và commit chốt do nhóm xác nhận; không suy đoán trong báo cáo này.
+Mỗi thành viên đồng thời tạo một báo cáo riêng trong `report/` theo dạng:
 
+```text
+report/team/MSSV_HoTen.md
+```
+
+Ví dụ: `report/team/20241234_NguyenVanAn.md`.
+
+Sao chép mục dưới đây cho từng thành viên.
+
+## HoVaTen-MSSV
+
+### Phần việc phụ trách
+
+-
+
+### Đóng góp cụ thể
+
+-
+
+### Bằng chứng
+
+-
 ## Trần Xuân Lộc — 2A202603951
 
 ### Phần việc phụ trách
