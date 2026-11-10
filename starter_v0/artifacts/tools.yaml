@@ -20,7 +20,7 @@ tools:
     parameters:
       type: object
       properties:
-        question: {type: string, default: "", description: "Câu hỏi"}
+        question: {type: string, default: "", description: "Sử dụng BẮT BUỘC khi: 1) Cần hỏi xin URL, tên tài khoản mạng xã hội bị thiếu. 2) Cần xin phép/xác nhận (Yes/No) trước khi thực hiện hành động gửi tin (tool send)."}
         response_type: {type: string, enum: [text, yes_no, choice], default: "text", description: "Kiểu trả lời"}
         options: {type: array, default: [], items: {type: string}, description: "Các lựa chọn"}
       required: [question]
@@ -90,7 +90,7 @@ tools:
     parameters:
       type: object
       properties:
-        text: {type: string, default: "", description: "Nội dung"}
+        text: {type: string, default: "", description: "Gửi văn bản ra nền tảng bên ngoài (ví dụ: Telegram, Email). Chỉ được gọi SAU KHI đã dùng tool clarify hỏi user và nhận được sự đồng ý (confirmed=true)."}
         confirmed: {type: boolean, default: false, description: "Cờ xác nhận"}
       required: [text]
 
