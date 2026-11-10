@@ -123,3 +123,18 @@ tools:
         max_pages: {type: integer, default: 5, description: "Số trang"}
         max_chars: {type: integer, default: 8000, description: "Số ký tự"}
       required: [arxiv_url]
+
+  - name: football_stats
+    description: "Tính toán và so sánh phong độ (form W-D-L), điểm số, bàn thắng/bại của đội bóng qua các trận đấu gần đây. Dùng khi người dùng muốn phân tích phong độ gần đây hoặc so sánh phong độ 2 đội trước trận đấu. Không dùng cho tìm kiếm tin tức chung hay đọc web."
+    parameters:
+      type: object
+      properties:
+        team_a: {type: string, default: "", description: "Tên đội bóng chính cần phân tích phong độ"}
+        matches:
+          type: array
+          description: "Danh sách các trận đấu gần đây với thông tin tỷ số (scored, conceded hoặc home_score, away_score)"
+          items:
+            type: object
+        team_b: {type: string, default: "", description: "Tên đội bóng thứ hai nếu muốn so sánh phong độ đối đầu"}
+        last_n: {type: integer, default: 5, description: "Số trận gần nhất cần tính (mặc định là 5 trận)"}
+      required: [team_a, matches]

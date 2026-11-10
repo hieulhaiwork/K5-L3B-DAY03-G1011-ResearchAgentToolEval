@@ -110,13 +110,59 @@ def test_policy_instruction_like_lines_go_to_untrusted_text() -> None:
 #   2. bad / missing input from the model (empty string, wrong type, out-of-enum value)
 #   3. failure path (missing key, HTTP error, timeout) -> returns error dict, does not raise
 
-def test_my_new_tool_happy_path() -> None:
-    pytest.skip(TODO)
+def test_football_stats_happy_path_calculates_form_and_points() -> None:
+    func = TOOL_FUNCTIONS["football_stats"]
+    matches = [
+        {"team": "Arsenal", "opponent": "Chelsea", "scored": 2, "conceded": 0},
+        {"team": "Arsenal", "opponent": "Spurs", "scored": 3, "conceded": 1},
+        {"team": "Arsenal", "opponent": "Man City", "scored": 1, "conceded": 1},
+        {"team": "Chelsea", "opponent": "Fulham", "scored": 1, "conceded": 2},
+    ]
+    res = func(team_a="Arsenal", matches=matches, team_b="Chelsea", last_n=3)
+
+    assert res["status"] == "success"
+    assert res["team_a"]["team"] == "Arsenal"
+    assert res["team_a"]["matches_analyzed"] == 3
+    assert res["team_a"]["form"] == "W-W-D"
+    assert res["team_a"]["points"] == 7  # 3 + 3 + 1
+    assert res["team_a"]["goals_scored"] == 6
+    assert res["team_a"]["goals_conceded"] == 2
+    assert res["team_a"]["clean_sheets"] == 1
+
+    assert res["team_b"]["team"] == "Chelsea"
+    assert res["team_b"]["points"] == 0
+    assert res["team_b"]["form"] == "L"
+
+    assert "comparison" in res
+    assert res["comparison"]["better_form_team"] == "Arsenal"
+    assert res["comparison"]["points_diff"] == 7
 
 
-def test_my_new_tool_bad_input_from_model() -> None:
-    pytest.skip(TODO)
+def test_football_stats_bad_input_from_model() -> None:
+    func = TOOL_FUNCTIONS["football_stats"]
+
+    # Case 1: team_a is empty string
+    res_empty_team = func(team_a="", matches=[])
+    assert res_empty_team["status"] == "error"
+    assert "team_a" in res_empty_team["error"]
+
+    # Case 2: matches is not a list
+    res_bad_matches = func(team_a="Arsenal", matches="not-a-list")
+    assert res_bad_matches["status"] == "error"
+    assert "matches" in res_bad_matches["error"]
+
+    # Case 3: last_n is <= 0 or invalid string
+    res_invalid_n = func(team_a="Arsenal", matches=[], last_n=-5)
+    assert res_invalid_n["status"] == "error"
+    assert "last_n" in res_invalid_n["error"]
 
 
-def test_my_new_tool_failure_returns_error_dict() -> None:
-    pytest.skip(TODO)
+def test_football_stats_empty_matches_does_not_crash() -> None:
+    func = TOOL_FUNCTIONS["football_stats"]
+    # Model sends team with no matches played yet
+    res = func(team_a="Liverpool", matches=[])
+    assert res["status"] == "success"
+    assert res["team_a"]["matches_analyzed"] == 0
+    assert res["team_a"]["form"] == "N/A"
+    assert res["team_a"]["points"] == 0
+    assert res["team_a"]["win_rate_percent"] == 0.0
