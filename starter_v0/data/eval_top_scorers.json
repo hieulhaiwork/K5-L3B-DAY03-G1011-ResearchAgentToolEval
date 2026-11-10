@@ -1,0 +1,114 @@
+{
+  "dataset_id": "day03_top_scorers_routing",
+  "dataset_role": "extension",
+  "description": "Routing cases for the top_scorers football tool. Provider availability and season-safety behavior are verified by offline unit tests.",
+  "cases": [
+    {
+      "id": "T01_api_football_top_scorers",
+      "phase": "B",
+      "suite": "top_scorers",
+      "query": "Who are the top 10 scorers in the Premier League for 2025/26?",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "top_scorers",
+            "args": {
+              "competition": "Premier League",
+              "season": 2025,
+              "limit": 10,
+              "country": "England"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Routes a named league and explicit season to top_scorers; API-Football is the runtime primary provider."
+      }
+    },
+    {
+      "id": "T02_missing_key_uses_fallback",
+      "phase": "B",
+      "suite": "top_scorers",
+      "query": "Find the leading goal scorers in the Premier League.",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "top_scorers",
+            "args": {
+              "competition": "Premier League",
+              "limit": 10
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Routes a scorer query; the offline unit test verifies missing API_FOOTBALL_KEY activates safe SportScore fallback."
+      }
+    },
+    {
+      "id": "T03_historical_season_is_preserved",
+      "phase": "B",
+      "suite": "top_scorers",
+      "query": "Who were the top scorers in the Premier League in the 2018/19 season?",
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "top_scorers",
+            "args": {
+              "competition": "Premier League",
+              "season": 2018,
+              "country": "England"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Preserves the explicitly requested historical season; unit tests ensure unverified SportScore current data is never substituted."
+      }
+    },
+    {
+      "id": "T04_both_providers_unavailable",
+      "phase": "B",
+      "suite": "top_scorers",
+      "query": "Get the top scorers in the Premier League this season.",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "top_scorers",
+            "args": {
+              "competition": "Premier League",
+              "country": "England"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Routes to the tool; an offline unit test verifies structured data_unavailable output when both providers fail."
+      }
+    },
+    {
+      "id": "T05_ambiguous_competition",
+      "phase": "B",
+      "suite": "top_scorers",
+      "query": "Who is leading the league's goal-scoring table?",
+      "failure_type": "missing_info",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Asks which competition the user means rather than guessing a league."
+      }
+    }
+  ]
+}

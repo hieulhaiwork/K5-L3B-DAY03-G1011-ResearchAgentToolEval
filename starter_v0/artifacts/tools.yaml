@@ -123,3 +123,25 @@ tools:
         max_pages: {type: integer, default: 5, description: "Số trang"}
         max_chars: {type: integer, default: 8000, description: "Số ký tự"}
       required: [arxiv_url]
+
+  - name: top_scorers
+    description: "Use for football competition top scorers, Golden Boot rankings, goals, or assists. API-Football is primary; SportScore is a fallback only for verified competition slugs. Keep an explicitly requested season (starting year); never replace historical data with current data. If competition is ambiguous, ask the user to choose. Missing statistics remain null. SportScore results require visible dofollow attribution."
+    parameters:
+      type: object
+      properties:
+        competition:
+          type: string
+          description: "Exact football competition name or numeric API-Football league ID; do not guess an ambiguous competition."
+        season:
+          type: integer
+          default: null
+          description: "Optional starting year, e.g. 2025 for season 2025/26. Preserve an explicitly requested season."
+        limit:
+          type: integer
+          default: 10
+          description: "Number of ranked players to return (1-20)."
+        country:
+          type: string
+          default: null
+          description: "Optional country used to disambiguate competitions."
+      required: [competition]
