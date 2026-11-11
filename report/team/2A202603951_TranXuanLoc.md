@@ -34,5 +34,5 @@ CP3: hoàn thiện ba tool bóng đá và unit test. CP4: hoàn thiện bộ eva
 - AI/công cụ đã dùng và cách tự kiểm tra kết quả: Codex hỗ trợ code, test và báo cáo; kiểm chứng bằng pytest, eval API thật và đọc tool_results trong log.
 
 ## 5. Tự đánh giá
-
+- Em đã hoàn thành ba tool, unit test và bộ eval trong phần phụ trách. Qua bài này, em hiểu rõ hơn sự khác nhau giữa kiểm thử code và đánh giá cách model chọn tool. Kết quả eval hiện đạt 9/10; em cần cải thiện cách mô tả `football_headlines` để model chọn đúng khi đọc nhiều nguồn.
 ...
