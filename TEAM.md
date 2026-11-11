@@ -13,7 +13,7 @@
 | --: | ------ | ---- | ----- | ------ | ------- |
 |   1 |        |      |       |        |         |
 |   2 | Dương Minh Chiến | 2A202603921 | 26ai.chiendm3@vinuni.edu.vn | duongchien147 | CP3: 3 tool bóng đá (top_scorers, standings, team_fixtures), unit test; CP4: eval case routing cho 3 tool |
-|   3 | Trần Xuân Lộc | 2A202603951     |    xuanloca2tv@gmail.com |   Kaylez-TXL       | CP3: 3 tool bóng đá, unit test; CP4: eval nhóm; bonus Test challenge |
+|   3 | Trần Xuân Lộc | 2A202603951     | 26ai.loctx2@vinuni.edu.vn |   Kaylez-TXL       | CP3: 3 tool bóng đá, unit test; CP4: eval nhóm; bonus Test challenge |
 |   4 | Nguyễn Quang Tiệp | 2A202603946 | 26ai.tiepnq@vinuni.edu.vn | nguyenquangtiep |         |
 
 ## Cá nhân
