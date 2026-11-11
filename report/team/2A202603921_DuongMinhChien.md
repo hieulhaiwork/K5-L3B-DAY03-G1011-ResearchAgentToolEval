@@ -115,4 +115,15 @@ Các quy tắc xử lý dữ liệu:
 
 ## 5. Tự đánh giá
 
-...
+Những phần làm được:
+
+- Ba tool `top_scorers`, `standings`, `team_fixtures` chạy với dữ liệu thật. Khi nguồn chính lỗi, tool chuyển sang nguồn dự phòng hoặc trả lỗi kèm lý do, không trả dữ liệu sai mùa hay tỷ số tự điền. Có 77 unit test chạy offline, và 12 eval case đạt 12/12 với `openai/gpt-4o-mini` ở cả hai lần chạy.
+- Trước khi viết code, tôi gọi thử API thật để biết giới hạn: gói Free của API-Football chỉ mở mùa 2022–2024 và chặn `last`/`next`, còn widget team của SportScore trả dữ liệu mẫu. Các giới hạn này được ghi vào TOOL.md của từng tool.
+- Mỗi lần sửa mô tả tool đều có giả thuyết, chạy lại eval và ghi vào `version_log.csv` (v6–v10).
+
+Những phần chưa tốt và rút kinh nghiệm:
+
+- Bản đầu của `top_scorers` (`428df30`) sửa quá nhiều file dùng chung, trong đó có `system_prompt.md`, nên bị nhóm revert ở `142d701`. Từ đó tôi chỉ thêm file mới và thêm dòng vào file chung.
+- Ở v7, câu tôi thêm vào mô tả `standings` và `team_fixtures` làm case G08 của Lộc fail: model gọi `football_mentions` hai lần. Tôi phát hiện được vì chạy lại `eval_group.json` sau mỗi thay đổi. Sửa mô tả một tool có thể làm đổi cách model chọn tool khác, nên phải chạy lại cả bộ eval của nhóm, không chỉ case của mình.
+- Eval chỉ chấm tool và tham số, không bắt được lỗi dữ liệu phía nguồn. API-Football trả Matheus Cunha 30 bàn sau 66 trận cho mùa Premier League 2024, trong khi một mùa chỉ có 38 trận. Tool chuyển nguyên số liệu nên không tự phát hiện. Tôi chỉ thấy khi đọc response gốc, nên số liệu bất thường vẫn cần kiểm tra bằng tay.
+- Với key Free, `team_fixtures` không trả lời được phong độ của mùa đang đá. Muốn dùng thật thì cần key trả phí hoặc một nguồn dữ liệu khác.
