@@ -41,6 +41,7 @@ Sao chép mục dưới đây cho từng thành viên.
 ### Bằng chứng
 
 -
+
 ## Trần Xuân Lộc — 2A202603951
 
 ### Phần việc phụ trách
@@ -59,7 +60,7 @@ CP3: football_stats, football_headlines, football_mentions và unit test. CP4: 1
 - [Báo cáo cá nhân](report/team/2A202603951_TranXuanLoc.md), [báo cáo nhóm B3/B5a/B5](report/team/group_report.md).
 - [football_stats](starter_v0/tools/football_stats/tool.py), [football_headlines](starter_v0/tools/football_headlines/tool.py), [football_mentions](starter_v0/tools/football_mentions/tool.py); mỗi folder có TOOL.md.
 - [Unit test](starter_v0/tests/test_tools_todo.py), [bộ eval nhóm](starter_v0/data/eval_group.json), [run hiện tại](starter_v0/runs/v5_B_group_openrouter_20261111T011314148993.json).
-- Commit kỹ thuật đã có: `45804d1` (football_stats và eval nhóm).
+- Commit kỹ thuật: `45804d1` (football_stats và eval nhóm), `cfd1017` (hoàn thiện tool, test và bằng chứng CP3/CP4).
 
 ## Nguyễn Quang Tiệp — 2A202603946
 
