@@ -29,8 +29,8 @@ Nhóm trưởng phụ trách chính là thống nhất ý tưởng, phân chia c
     - starter_v0/artifacts/version_log.csv
     - starter_v0/app.py
 - AI/công cụ đã dùng và cách tự kiểm tra kết quả:
-+ Gemini Chat: Đề xuất hướng giải quyết cho mỗi lỗi mà tôi đã xác định nguyên nhân và cần một hướng để fix (không phải thay đổi prompt hộ tôi). Tự kiểm tra bằng cách đọc lại, thảo luận cùng NguyenQuangTiep để xác nhận theo logic rằng hướng phát triển đó có phù hợp không? Và thay đổi và chạy thử.
-+ Copilot: Code file app.py để demo streamlit. Thử nghiệm bằng cách chạy thử, dính 1 error và đã tự đọc logs và fix mà không cần copilot hỗ trợ nữa.
+    - Gemini Chat: Đề xuất hướng giải quyết cho mỗi lỗi mà tôi đã xác định nguyên nhân và cần một hướng để fix (không phải thay đổi prompt hộ tôi). Tự kiểm tra bằng cách đọc lại, thảo luận cùng NguyenQuangTiep để xác nhận theo logic rằng hướng phát triển đó có phù hợp không? Và thay đổi và chạy thử.
+    - Copilot: Code file app.py để demo streamlit. Thử nghiệm bằng cách chạy thử, dính 1 error và đã tự đọc logs và fix mà không cần copilot hỗ trợ nữa.
 
 ## 5. Tự đánh giá
 
