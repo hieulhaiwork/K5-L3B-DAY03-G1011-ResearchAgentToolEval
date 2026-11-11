@@ -12,7 +12,7 @@
 | STT | Họ tên | MSSV | Email | GitHub | Vai trò |
 | --: | ------ | ---- | ----- | ------ | ------- |
 |   1 |        |      |       |        |         |
-|   2 |        |      |       |        |         |
+|   2 | Dương Minh Chiến | 2A202603921 | 26ai.chiendm3@vinuni.edu.vn | duongchien147 | CP3: 3 tool bóng đá (top_scorers, standings, team_fixtures), unit test; CP4: eval case routing cho 3 tool |
 |   3 | Trần Xuân Lộc | 2A202603951     |    xuanloca2tv@gmail.com |   Kaylez-TXL       | CP3: 3 tool bóng đá, unit test; CP4: eval nhóm; bonus Test challenge |
 |   4 | Nguyễn Quang Tiệp | 2A202603946 | 26ai.tiepnq@vinuni.edu.vn | nguyenquangtiep |         |
 
@@ -78,3 +78,24 @@ CP3: football_stats, football_headlines, football_mentions và unit test. CP4: 1
 
 - [Báo cáo cá nhân](report/team/2A202603946_NguyenQuangTiep.md), [phân tích baseline và bảng version ở báo cáo nhóm](report/team/group_report.md).
 - [Run v0](starter_v0/runs/v0_B_base_openrouter_20261110T175817951797.json), [system prompt](starter_v0/artifacts/system_prompt.md), [tool declarations](starter_v0/artifacts/tools.yaml), [version log](starter_v0/artifacts/version_log.csv).
+
+## Dương Minh Chiến — 2A202603921
+
+### Phần việc phụ trách
+
+CP3: ba tool bóng đá mới `top_scorers` (vua phá lưới), `standings` (bảng xếp hạng đội), `team_fixtures` (N trận đã đá của một đội trong một mùa) và unit test cho từng tool. CP4: eval case routing cho ba tool, đặt ở file riêng để `eval_group.json` vẫn giữ đúng 10 case.
+
+### Đóng góp cụ thể
+
+- `top_scorers` và `standings` lấy dữ liệu từ API-Football, khi lỗi thì chuyển sang SportScore và ghi lý do vào `attempts`. SportScore không có trường mùa, nên hỏi mùa cũ thì tool trả `data_unavailable`, không đưa dữ liệu mùa hiện tại ra thay. Trường nguồn không có thì trả `null`, giải trùng tên thì trả `candidates` để agent hỏi lại.
+- `team_fixtures` trả `matches` đúng format fixture của `football_stats`, nên agent nối được `team_fixtures` → `football_stats`. Gói Free của API-Football chặn `last`/`next` và chỉ mở mùa 2022–2024, nên `season` là tham số bắt buộc và tool không có fallback (widget team của SportScore trả dữ liệu mẫu).
+- Ba tool dùng chung phần dò giải, cache 24h và xử lý lỗi; không retry khi gặp 429; API key không xuất hiện trong output. Chỉ thêm file mới và thêm dòng vào `tools/__init__.py`, `tools.yaml`, `.env.example`; không sửa system prompt hay tool của thành viên khác.
+- 77 unit test offline (26 `top_scorers`, 51 cho hai tool sau). Toàn suite sau lần rebase cuối: 233 passed, 0 failed. Chạy thật với key Free: `standings` mùa 2024 cho Liverpool 84 điểm đứng đầu; nối `team_fixtures` Arsenal 2024 sang `football_stats` ra phong độ `D-L-D-W-W`, khớp với `form` `"WWDLD"` của `standings`.
+- 12 eval case (mỗi tool 4 case, gồm 3 single-turn và 1 multi-turn). Các file đã qua kiểm tra định dạng của `run_eval.py` nhưng chưa chạy với LLM, nên chưa có tỷ lệ PASS.
+
+### Bằng chứng
+
+- [Báo cáo cá nhân](report/team/2A202603921_DuongMinhChien.md).
+- [top_scorers](starter_v0/tools/top_scorers/tool.py), [standings](starter_v0/tools/standings/tool.py), [team_fixtures](starter_v0/tools/team_fixtures/tool.py); mỗi folder có TOOL.md ghi giới hạn đã kiểm chứng bằng gọi thật.
+- Unit test: [test_top_scorers.py](starter_v0/tests/test_top_scorers.py), [test_standings.py](starter_v0/tests/test_standings.py), [test_team_fixtures.py](starter_v0/tests/test_team_fixtures.py). Eval: [eval_top_scorers.json](starter_v0/data/eval_top_scorers.json), [eval_standings.json](starter_v0/data/eval_standings.json), [eval_team_fixtures.json](starter_v0/data/eval_team_fixtures.json).
+- Commit kỹ thuật: `23e97e0` (top_scorers), `791e511` (standings và team_fixtures).
