@@ -11,27 +11,26 @@
 
 - Tên nhóm: G1011
 - Thành viên và phân công: xem [TEAM.md](../../TEAM.md)
-- Provider/model dùng cho v0–v3:
+- Provider/model dùng cho v0–v3: **OpenRouter / `openai/gpt-4o-mini`**
 
 ## 2. Mục tiêu và cách tiếp cận — PHẦN A: Giới thiệu agent
 
 ### A1. Agent này làm được gì
 
 > 1–2 câu mô tả agent dùng để làm gì (cho team khác hiểu nhanh).
+Agent hỗ trợ tìm tin bóng đá, đọc nhiều nguồn, lọc bài đăng X, so sánh phong độ, tra vua phá lưới, bảng xếp hạng và kết quả trận theo mùa. 
 
-Ví dụ: "Research agent: tìm tin theo từ khóa / theo tài khoản, đọc URL, tổng hợp thành digest, và gửi lên Telegram khi được xác nhận."
-
-Agent hỗ trợ tìm tin bóng đá, đọc nhiều nguồn, lọc bài đăng X, so sánh phong độ, tra vua phá lưới, bảng xếp hạng và kết quả trận theo mùa. Nhóm có sáu tool mới: ba tool của Trần Xuân Lộc và ba tool của Dương Minh Chiến.
+Ngoài ra, Agent có ranh giới bảo mật vững chắc, luôn xin phép (yes/no) trước khi thực hiện hành động gửi tin (Telegram)
 
 **Cách chạy UI:**
-
-> Lệnh chạy UI (ví dụ `streamlit run app.py`) và dependency đã thêm vào `starter_v0/requirements.txt`.
+> Lệnh chạy UI: `streamlit run app.py`
+> Dependency đã thêm vào `starter_v0/requirements.txt`: `streamlit>=1.31.0`
 
 **Link dùng thử (deploy):**
 
 > Dán link public để team khác mở thử ngay. Cách deploy nhanh bằng Cloudflare Tunnel xem README. Nếu deploy Vercel/Streamlit Cloud thì dán link đó.
 >
-> URL:
+> URL: 
 
 ### A2. Tool agent có
 
@@ -71,6 +70,19 @@ Agent hỗ trợ tìm tin bóng đá, đọc nhiều nguồn, lọc bài đăng 
 
 > Tóm tắt các thay đổi chính trong `starter_v0/artifacts/system_prompt.md` và `starter_v0/artifacts/tools.yaml`, và tool mới nhóm viết (tên, làm gì, khi nào agent nên gọi).
 
+Bản `system_prompt` khởi tạo (v0) chứa nhiều chỉ thị "độc hại" (traps) đánh lừa LLM như: *"hates being asked questions", "make a sensible guess", "pick a well-known account like Sam Altman"*, hay *"just go ahead and do it"*. Hệ quả là Agent liên tục bịa đặt thông tin và tự ý gửi tin nhắn không xin phép. Nhóm đã áp dụng chiến lược tinh chỉnh tịnh tiến để sửa chữa:
+
+**1. Tái cấu trúc System Prompt (`artifacts/system_prompt.md`):**
+Nhóm đã xóa bỏ hoàn toàn các chỉ dẫn suy đoán vô căn cứ và định hình lại tư duy của Agent thông qua 3 quy tắc cốt lõi (Core Rules) mang tính ép buộc cao (Strong Directives):
+- Cấm tuyệt đối việc bịa URL hoặc tên tài khoản. Nếu thiếu thông tin đầu vào, bắt buộc phải gọi tool `clarify`.
+- Bất kỳ hành động ghi/gửi/xuất bản nào (như dùng tool `send`) đều phải bị chặn lại. Agent BẮT BUỘC phải gọi `clarify` để xin phép người dùng trước khi gửi.
+- Định vị nghiêm ngặt Agent là "News and Research Assistant". Ép Agent phải lịch sự từ chối bằng văn bản trực tiếp (không gọi tool) đối với các câu hỏi về Toán học hay Lập trình (Code).
+
+**2. Thiết kế lại Schema Công cụ (`artifacts/tools.yaml`):**
+Thay vì "fix cứng" logic vào prompt, nhóm áp dụng Schema Engineering để Agent tự suy luận thông qua cấu trúc dữ liệu:
+- **Tách bạch tham số tìm kiếm (`lookup`):** Định nghĩa rõ `query` chỉ chứa từ khóa lõi (vd: 'AI'), còn từ khóa phân loại (như 'tin tức') phải được map vào tham số `topic: "news"`.
+- **Thiết lập Hierarchy of Priorities cho `clarify`:** Đưa `response_type` vào mảng `required`. Để giải quyết xung đột mục tiêu (Goal Conflict) khi user yêu cầu "Đăng tin" nhưng lại chưa cung cấp nội dung, nhóm đã mô tả rõ quy tắc ưu tiên trong `response_type`: **Hành động xin phép (`yes_no`) luôn có ưu tiên cao nhất**, chặn ngay lập tức các rủi ro bảo mật trước khi hỏi xin thêm dữ liệu nội dung (`text`).
+
 ### 3.1. Ba tool do Trần Xuân Lộc phụ trách
 
 | Tool | Phần code | Phạm vi |
@@ -101,10 +113,12 @@ Lấy từ `starter_v0/artifacts/version_log.csv` và `starter_v0/runs/*.json`. 
 
 | Version | Changed Artifact | Hypothesis | Metric Before | Metric After | Run File |
 | ------- | ---------------- | ---------- | ------------: | -----------: | -------- |
-| v0      | baseline         |            |               |              |          |
-| v1      |                  |            |               |              |          |
-| v2      |                  |            |               |              |          |
-| v3      |                  |            |               |              |          |
+| v0      | baseline         | Đo baseline ban đầu | | 0.65 | `runs/v0_B_base_openrouter_20261110T175817951797.json` |
+| v1      | `system_prompt.md`, `tools.yaml` | Thêm rule yêu cầu không được hallucinate và bắt buộc gọi `clarify` (`yes_no`) trước khi send. Sửa mô tả tool `send`. Model sẽ biết cách hỏi lại thay vì tự bịa/hành động. | 0.65 | 0.75 | `runs/v1_B_base_openrouter_20261110T184215020710.json` |
+| v2      | `system_prompt.md`,`tools.yaml` | Thêm Rule 3: OUT OF SCOPE. Định vị rõ Persona và ép model từ chối các chủ đề Toán, Code. | 0.75 | 0.80 | `runs/v2_B_base_openrouter_20261110T185229303847.json` |
+| v3      | `system_prompt.md`,`tools.yaml` | Xóa bỏ các lệnh "độc hại" trong prompt gốc (như "make a sensible guess", "finish in a single step") để tránh model bị xung đột mục tiêu. | 0.80 | 0.90 | `runs/v3_B_base_openrouter_20261110T190227841847.json` |
+| v4      | `system_prompt.md`,`tools.yaml` | Sửa mô tả `response_type` trong tool `clarify` và cho vào mảng `required`. Model sẽ tự suy luận đúng định dạng args. | 0.90 | 0.95 | `runs/v4_B_base_openrouter_20261110T191119584247.json` |
+| v5      | `tools.yaml` | Áp dụng Hierarchy of Priorities cho `response_type` của tool `clarify` để giải quyết triệt để case ưu tiên xin phép (yes_no) thay vì xin dữ liệu khi nội dung send bị rỗng. | 0.95 | 1.00 | `runs/v5_B_base_openrouter_<timestamp>.json` *(Cần thay file name V5 thật của bạn vào đy)* |
 
 ### B2. Failure Analysis
 
@@ -112,7 +126,13 @@ Lấy từ `results[*].result.failures` trong run JSON.
 
 | Case ID | Failure Type | Actual Tool Calls | What Failed | Fix |
 | ------- | ------------ | ----------------- | ----------- | --- |
-|         |              |                   |             |     |
+| R03_web_news_routing | wrong_tool | lookup(query="AI news") | query: expected 'AI', got 'AI news' | (V3) Chỉnh sửa mô tả tham số query và topic trong lookup để tách rõ từ khóa và thể loại. |
+| R08_out_of_scope | out_of_scope | send(text="Nguyên hàm...") | unexpected_tool_call (expected no tool) | (V2) Bổ sung Core Rule OUT OF SCOPE vào system_prompt. |
+| R10_missing_handle | missing_info | timeline(screenname="sama") | missing tool call clarify; extra tool timeline | (V1 & V3) Thêm Rule cấm hallucinate và xóa chỉ dẫn "pick a well-known account like Sam Altman" khỏi prompt gốc. |
+| R11_missing_url | missing_info | fetch(url="example.com") | missing tool clarify; extra tool fetch | (V1 & V4) Thêm rule bắt buộc clarify nếu thiếu URL, và đưa response_type vào mảng required của tool clarify. |
+| R12_confirm_before_send | wrong_boundary | send(text="Bản tin này") | missing tool clarify; extra tool send | (V1 & V5) Đặt Boundary Rule bắt buộc dùng clarify (yes_no) trước khi send, và thiết lập thứ tự ưu tiên cho response_type. |
+| R13_parallel_web_and_tweets | wrong_tool | lookup(query="AI news") | query: expected 'AI'; topic: expected 'news' | Giống cách xử lý tham số của case R03. |
+| R14_out_of_scope_coding | out_of_scope | send(text="def fibonacci...") | unexpected_tool_call (expected no tool) | Xử lý bằng Core Rule OUT OF SCOPE giống case R08. |
 
 ### B3. Team Eval Cases
 
@@ -238,14 +258,18 @@ Chi tiết đóng góp của từng thành viên nằm trong [TEAM.md](../../TEA
 
 - Trần Xuân Lộc: football_stats, football_headlines, football_mentions; 77 lượt test, eval nhóm 10 case và Test challenge. [Báo cáo cá nhân](2A202603951_TranXuanLoc.md).
 - Dương Minh Chiến: top_scorers, standings, team_fixtures; 77 lượt test và 12 eval case riêng. [Báo cáo cá nhân](2A202603921_DuongMinhChien.md).
+- Lê Hiền Hiếu (Nhóm trưởng): Điều phối, phân tích lỗi (Failure Analysis), viết System Prompt v1->v5, setup Streamlit UI và tổng hợp Group Report. [Báo cáo cá nhân](2A202603940_LeHienHieu.md)
+- Nguyễn Quang Tiệp: Đồng thiết kế System Prompt v1->v5, phân tích Schema Tool.yaml và xây dựng Hypothesis testing qua từng phiên bản. [Báo cáo cá nhân](2A202603946_NguyenQuangTiep.md)
 
 ## 7. Hạn chế và hướng cải thiện — B6. Reflection
 
 - Fix nào thuộc `system_prompt.md`?
 
-Giữ nguyên system prompt trong phần CP3/CP4.
+Các Fix liên quan đến việc đặt ra Ranh giới An Toàn (Boundary), Cấm bịa đặt (Hallucination) và định vị rõ vai trò (Persona - Out of Scope) để chấn chỉnh hành vi lõi của LLM.
 
 - Fix nào thuộc `tools.yaml`?
+
+Khai báo mô tả tham số chi tiết để điều khiển luồng (ví dụ: gán hierarchy priority cho response_type của clarify, phân biệt topic news/general).
 
 Khai báo football_stats tự tìm khi không có matches; mô tả rõ đọc nhiều nguồn của headlines và lọc nhiều timeline của mentions.
 
@@ -253,11 +277,11 @@ Khai báo `top_scorers`, `standings`, `team_fixtures` với mô tả khi nào d�
 
 - Failure nào cần review thủ công thay vì chấm tự động?
 
-Cần xem nội dung tool trả về, nguồn rỗng và nội dung từ chối; routing PASS chưa bảo đảm câu trả lời có ích.
+Cần xem nội dung tool trả về, nguồn rỗng và nội dung từ chối; routing PASS chưa bảo đảm câu trả lời có ích (nhất là đối với API-Football hoặc SportScore). Ngoài ra, Tool Unit Test chỉ cover phần Data/Code, không cover được logic suy luận của Model.
 
 - Nếu có thêm một vòng, nhóm sẽ thử giả thuyết nào?
 
-Thử làm rõ điều kiện gọi tool để giảm lỗi chọn fetch ở G05; đo trên cùng bộ case.
+Thử làm rõ điều kiện gọi tool để giảm lỗi chọn fetch ở G05; đo trên cùng bộ case (Đưa điều kiện cấm dùng fetch khi có >= 2 URLs vào system prompt).
 
 ## 8. Tài liệu tham khảo
 
