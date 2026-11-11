@@ -18,13 +18,15 @@
 ### A1. Agent này làm được gì
 
 > 1–2 câu mô tả agent dùng để làm gì (cho team khác hiểu nhanh).
+
 Agent hỗ trợ tìm tin bóng đá, đọc nhiều nguồn, lọc bài đăng X, so sánh phong độ, tra vua phá lưới, bảng xếp hạng và kết quả trận theo mùa. 
 
 Ngoài ra, Agent có ranh giới bảo mật vững chắc, luôn xin phép (yes/no) trước khi thực hiện hành động gửi tin (Telegram)
 
 **Cách chạy UI:**
-> Lệnh chạy UI: `streamlit run app.py`
-> Dependency đã thêm vào `starter_v0/requirements.txt`: `streamlit>=1.31.0`
+Lệnh chạy UI: `streamlit run app.py`
+
+Dependency đã thêm vào `starter_v0/requirements.txt`: `streamlit>=1.31.0`
 
 **Link dùng thử (deploy):**
 
