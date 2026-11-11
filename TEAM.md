@@ -12,7 +12,7 @@
 | STT | Họ tên | MSSV | Email | GitHub | Vai trò |
 | --: | ------ | ---- | ----- | ------ | ------- |
 |   1 | Lê Hiền Hiếu  | 2A202603940     |  26ai.hieulh@vinuni.edu.vn     |  hieulhaiwork      |  PM/AI Optimizer       |
-|   2 |        |      |       |        |         |
+|   2 | Dương Minh Chiến | 2A202603921 | 26ai.chiendm3@vinuni.edu.vn | duongchien147 | CP3: 3 tool bóng đá (top_scorers, standings, team_fixtures), unit test; CP4: eval case routing cho 3 tool |
 |   3 | Trần Xuân Lộc | 2A202603951     |    xuanloca2tv@gmail.com |   Kaylez-TXL       | CP3: 3 tool bóng đá, unit test; CP4: eval nhóm; bonus Test challenge |
 |   4 | Nguyễn Quang Tiệp | 2A202603946 | 26ai.tiepnq@vinuni.edu.vn | nguyenquangtiep |         |
 
@@ -102,8 +102,8 @@ CP3: ba tool bóng đá mới `top_scorers` (vua phá lưới), `standings` (b�
 - `top_scorers` và `standings` lấy dữ liệu từ API-Football, khi lỗi thì chuyển sang SportScore và ghi lý do vào `attempts`. SportScore không có trường mùa, nên hỏi mùa cũ thì tool trả `data_unavailable`, không đưa dữ liệu mùa hiện tại ra thay. Trường nguồn không có thì trả `null`, giải trùng tên thì trả `candidates` để agent hỏi lại.
 - `team_fixtures` trả `matches` đúng format fixture của `football_stats`, nên agent nối được `team_fixtures` → `football_stats`. Gói Free của API-Football chặn `last`/`next` và chỉ mở mùa 2022–2024, nên `season` là tham số bắt buộc và tool không có fallback (widget team của SportScore trả dữ liệu mẫu).
 - Ba tool dùng chung phần dò giải, cache 24h và xử lý lỗi; không retry khi gặp 429; API key không xuất hiện trong output. Chỉ thêm file mới và thêm dòng vào `tools/__init__.py`, `tools.yaml`, `.env.example`; không sửa system prompt hay tool của thành viên khác.
-- 77 unit test offline (26 `top_scorers`, 51 cho hai tool sau). Toàn suite sau lần rebase cuối: 233 passed, 0 failed. Chạy thật với key Free: `standings` mùa 2024 cho Liverpool 84 điểm đứng đầu; nối `team_fixtures` Arsenal 2024 sang `football_stats` ra phong độ `D-L-D-W-W`, khớp với `form` `"WWDLD"` của `standings`.
-- 12 eval case (mỗi tool 4 case, gồm 3 single-turn và 1 multi-turn). Các file đã qua kiểm tra định dạng của `run_eval.py` nhưng chưa chạy với LLM, nên chưa có tỷ lệ PASS.
+- 77 unit test offline (26 `top_scorers`, 51 cho hai tool sau). Toàn suite trên `main` mới nhất: 246 passed, 0 failed. Chạy thật với key Free: `standings` mùa 2024 cho Liverpool 84 điểm đứng đầu; nối `team_fixtures` Arsenal 2024 sang `football_stats` ra phong độ `D-L-D-W-W`, khớp với `form` `"WWDLD"` của `standings`.
+- 12 eval case (mỗi tool 4 case, gồm 3 single-turn và 1 multi-turn). Chạy OpenRouter/openai/gpt-4o-mini, nhãn v10 trên code mới nhất: 12/12 PASS ở cả hai lần chạy. Bản đầu (v6) chỉ 7/12 vì model hỏi `clarify` xác nhận dù đã đủ thông tin và đổi "2023/24" thành 2024; sửa mô tả hai tool `standings`, `team_fixtures` qua v7–v10 thì hết lỗi.
 
 ### Bằng chứng
 
