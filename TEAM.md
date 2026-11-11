@@ -11,7 +11,7 @@
 
 | STT | Họ tên | MSSV | Email | GitHub | Vai trò |
 | --: | ------ | ---- | ----- | ------ | ------- |
-|   1 |        |      |       |        |         |
+|   1 | Lê Hiền Hiếu  | 2A202603940     |  26ai.hieulh@vinuni.edu.vn     |  hieulhaiwork      |  PM/AI Optimizer       |
 |   2 |        |      |       |        |         |
 |   3 | Trần Xuân Lộc | 2A202603951     |    xuanloca2tv@gmail.com |   Kaylez-TXL       | CP3: 3 tool bóng đá, unit test; CP4: eval nhóm; bonus Test challenge |
 |   4 | Nguyễn Quang Tiệp | 2A202603946 | 26ai.tiepnq@vinuni.edu.vn | nguyenquangtiep |         |
