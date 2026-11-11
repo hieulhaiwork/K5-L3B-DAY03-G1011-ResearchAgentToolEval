@@ -1,0 +1,950 @@
+{
+  "run_id": "v10_B_group_openrouter_20261111T110009615199",
+  "version": "v10",
+  "artifact_version": "v10+pc1e1bcde287a+t47da2c1229e5",
+  "prompt_hash": "c1e1bcde287ae3219524ab818307e6764690a63481b2102e9bcd581f5e1791dd",
+  "tools_hash": "47da2c1229e5cbc93f4d76f12e852ce209e8086f85299f72604b7b801630929d",
+  "phase": "B",
+  "suite": "group",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "system_prompt": "D:\\LAB3\\K5-L3B-DAY03-G1011-ResearchAgentToolEval\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "D:\\LAB3\\K5-L3B-DAY03-G1011-ResearchAgentToolEval\\starter_v0\\artifacts\\tools.yaml",
+  "eval_cases": "data\\eval_standings.json",
+  "dataset_id": "day03_v2_standings",
+  "dataset_role": "group",
+  "description": "Case routing cho tool mới standings (file riêng, không thay 10 case của eval_group.json). Eval chỉ chấm tool + args ở lượt đầu; hành vi provider (API-Football -> SportScore, season protection, cả hai lỗi) được kiểm tra bằng unit test trong tests/test_standings.py.",
+  "generated_at": "2026-11-11T11:00:09",
+  "summary": {
+    "total_cases": 4,
+    "measured_cases": 4,
+    "provider_error_cases": 0,
+    "passed_cases": 4,
+    "case_accuracy": 1.0,
+    "tool_routing_accuracy": 1.0,
+    "argument_accuracy": 1.0,
+    "multiturn_accuracy": 1.0,
+    "failure_counts": {},
+    "observed_mismatch_counts": {}
+  },
+  "results": [
+    {
+      "id": "S01_standings_historic_season",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "routing_standings_args",
+        "difficulty": "medium",
+        "what_it_tests": "Route tới standings và chuyển mùa '2023/24' thành năm bắt đầu season=2023."
+      },
+      "input": "Bảng xếp hạng chung cuộc Premier League mùa 2023/24 thế nào?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "standings",
+            "args": {
+              "season": 2023
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "standings",
+            "args": {
+              "competition": "Premier League",
+              "season": 2023,
+              "country": "England"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "standings",
+          "args": {
+            "competition": "Premier League",
+            "season": 2023,
+            "country": "England"
+          },
+          "result": {
+            "tool": "standings",
+            "status": "success",
+            "competition": {
+              "id": 39,
+              "name": "Premier League",
+              "country": "England",
+              "slug": null
+            },
+            "season": {
+              "requested": 2023,
+              "actual": 2023,
+              "verified": true
+            },
+            "provider": {
+              "name": "API-Football",
+              "fallback_used": false,
+              "source_url": "https://www.api-football.com/"
+            },
+            "attribution": null,
+            "groups": [
+              {
+                "group": "Premier League",
+                "rows": [
+                  {
+                    "rank": 1,
+                    "team_id": 50,
+                    "team": "Manchester City",
+                    "played": 38,
+                    "win": 28,
+                    "draw": 7,
+                    "lose": 3,
+                    "goals_for": 96,
+                    "goals_against": 34,
+                    "goal_diff": 62,
+                    "points": 91,
+                    "form": "WWWWW",
+                    "description": "Promotion - Champions League (Group Stage: )"
+                  },
+                  {
+                    "rank": 2,
+                    "team_id": 42,
+                    "team": "Arsenal",
+                    "played": 38,
+                    "win": 28,
+                    "draw": 5,
+                    "lose": 5,
+                    "goals_for": 91,
+                    "goals_against": 29,
+                    "goal_diff": 62,
+                    "points": 89,
+                    "form": "WWWWW",
+                    "description": "Promotion - Champions League (Group Stage: )"
+                  },
+                  {
+                    "rank": 3,
+                    "team_id": 40,
+                    "team": "Liverpool",
+                    "played": 38,
+                    "win": 24,
+                    "draw": 10,
+                    "lose": 4,
+                    "goals_for": 86,
+                    "goals_against": 41,
+                    "goal_diff": 45,
+                    "points": 82,
+                    "form": "WDWDL",
+                    "description": "Promotion - Champions League (Group Stage: )"
+                  },
+                  {
+                    "rank": 4,
+                    "team_id": 66,
+                    "team": "Aston Villa",
+                    "played": 38,
+                    "win": 20,
+                    "draw": 8,
+                    "lose": 10,
+                    "goals_for": 76,
+                    "goals_against": 61,
+                    "goal_diff": 15,
+                    "points": 68,
+                    "form": "LDLDW",
+                    "description": "Promotion - Champions League (Group Stage: )"
+                  },
+                  {
+                    "rank": 5,
+                    "team_id": 47,
+                    "team": "Tottenham",
+                    "played": 38,
+                    "win": 20,
+                    "draw": 6,
+                    "lose": 12,
+                    "goals_for": 74,
+                    "goals_against": 61,
+                    "goal_diff": 13,
+                    "points": 66,
+                    "form": "WLWLL",
+                    "description": "Promotion - Europa League (Group Stage: )"
+                  },
+                  {
+                    "rank": 6,
+                    "team_id": 49,
+                    "team": "Chelsea",
+                    "played": 38,
+                    "win": 18,
+                    "draw": 9,
+                    "lose": 11,
+                    "goals_for": 77,
+                    "goals_against": 63,
+                    "goal_diff": 14,
+                    "points": 63,
+                    "form": "WWWWW",
+                    "description": "Promotion - Europa Conference League (Qualification: )"
+                  },
+                  {
+                    "rank": 7,
+                    "team_id": 34,
+                    "team": "Newcastle",
+                    "played": 38,
+                    "win": 18,
+                    "draw": 6,
+                    "lose": 14,
+                    "goals_for": 85,
+                    "goals_against": 62,
+                    "goal_diff": 23,
+                    "points": 60,
+                    "form": "WLDWW",
+                    "description": null
+                  },
+                  {
+                    "rank": 8,
+                    "team_id": 33,
+                    "team": "Manchester United",
+                    "played": 38,
+                    "win": 18,
+                    "draw": 6,
+                    "lose": 14,
+                    "goals_for": 57,
+                    "goals_against": 58,
+                    "goal_diff": -1,
+                    "points": 60,
+                    "form": "WWLLD",
+                    "description": "Promotion - Europa League (Group Stage: )"
+                  },
+                  {
+                    "rank": 9,
+                    "team_id": 48,
+                    "team": "West Ham",
+                    "played": 38,
+                    "win": 14,
+                    "draw": 10,
+                    "lose": 14,
+                    "goals_for": 60,
+                    "goals_against": 74,
+                    "goal_diff": -14,
+                    "points": 52,
+                    "form": "LWLDL",
+                    "description": null
+                  },
+                  {
+                    "rank": 10,
+                    "team_id": 52,
+                    "team": "Crystal Palace",
+                    "played": 38,
+                    "win": 13,
+                    "draw": 10,
+                    "lose": 15,
+                    "goals_for": 57,
+                    "goals_against": 58,
+                    "goal_diff": -1,
+                    "points": 49,
+                    "form": "WWWDW",
+                    "description": null
+                  },
+                  {
+                    "rank": 11,
+                    "team_id": 51,
+                    "team": "Brighton",
+                    "played": 38,
+                    "win": 12,
+                    "draw": 12,
+                    "lose": 14,
+                    "goals_for": 55,
+                    "goals_against": 62,
+                    "goal_diff": -7,
+                    "points": 48,
+                    "form": "LLDWL",
+                    "description": null
+                  },
+                  {
+                    "rank": 12,
+                    "team_id": 35,
+                    "team": "Bournemouth",
+                    "played": 38,
+                    "win": 13,
+                    "draw": 9,
+                    "lose": 16,
+                    "goals_for": 54,
+                    "goals_against": 67,
+                    "goal_diff": -13,
+                    "points": 48,
+                    "form": "LLLWW",
+                    "description": null
+                  },
+                  {
+                    "rank": 13,
+                    "team_id": 36,
+                    "team": "Fulham",
+                    "played": 38,
+                    "win": 13,
+                    "draw": 8,
+                    "lose": 17,
+                    "goals_for": 55,
+                    "goals_against": 61,
+                    "goal_diff": -6,
+                    "points": 47,
+                    "form": "WLDDL",
+                    "description": null
+                  },
+                  {
+                    "rank": 14,
+                    "team_id": 39,
+                    "team": "Wolves",
+                    "played": 38,
+                    "win": 13,
+                    "draw": 7,
+                    "lose": 18,
+                    "goals_for": 50,
+                    "goals_against": 65,
+                    "goal_diff": -15,
+                    "points": 46,
+                    "form": "LLLWL",
+                    "description": null
+                  },
+                  {
+                    "rank": 15,
+                    "team_id": 45,
+                    "team": "Everton",
+                    "played": 38,
+                    "win": 13,
+                    "draw": 9,
+                    "lose": 16,
+                    "goals_for": 40,
+                    "goals_against": 51,
+                    "goal_diff": -11,
+                    "points": 40,
+                    "form": "LWDWW",
+                    "description": null
+                  },
+                  {
+                    "rank": 16,
+                    "team_id": 55,
+                    "team": "Brentford",
+                    "played": 38,
+                    "win": 10,
+                    "draw": 9,
+                    "lose": 19,
+                    "goals_for": 56,
+                    "goals_against": 65,
+                    "goal_diff": -9,
+                    "points": 39,
+                    "form": "LWDLW",
+                    "description": null
+                  },
+                  {
+                    "rank": 17,
+                    "team_id": 65,
+                    "team": "Nottingham Forest",
+                    "played": 38,
+                    "win": 9,
+                    "draw": 9,
+                    "lose": 20,
+                    "goals_for": 49,
+                    "goals_against": 67,
+                    "goal_diff": -18,
+                    "points": 32,
+                    "form": "WLWLL",
+                    "description": null
+                  },
+                  {
+                    "rank": 18,
+                    "team_id": 1359,
+                    "team": "Luton",
+                    "played": 38,
+                    "win": 6,
+                    "draw": 8,
+                    "lose": 24,
+                    "goals_for": 52,
+                    "goals_against": 85,
+                    "goal_diff": -33,
+                    "points": 26,
+                    "form": "LLDLL",
+                    "description": "Relegation - Championship"
+                  },
+                  {
+                    "rank": 19,
+                    "team_id": 44,
+                    "team": "Burnley",
+                    "played": 38,
+                    "win": 5,
+                    "draw": 9,
+                    "lose": 24,
+                    "goals_for": 41,
+                    "goals_against": 78,
+                    "goal_diff": -37,
+                    "points": 24,
+                    "form": "LLLDW",
+                    "description": "Relegation - Championship"
+                  },
+                  {
+                    "rank": 20,
+                    "team_id": 62,
+                    "team": "Sheffield Utd",
+                    "played": 38,
+                    "win": 3,
+                    "draw": 7,
+                    "lose": 28,
+                    "goals_for": 35,
+                    "goals_against": 104,
+                    "goal_diff": -69,
+                    "points": 16,
+                    "form": "LLLLL",
+                    "description": "Relegation - Championship"
+                  }
+                ]
+              }
+            ],
+            "count": 20,
+            "warning": null,
+            "attempts": [
+              {
+                "provider": "API-Football",
+                "status": "success"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "S02_standings_not_top_scorers",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "routing_standings_vs_top_scorers",
+        "difficulty": "medium",
+        "what_it_tests": "Câu hỏi về thứ hạng/điểm của đội phải route tới standings, không phải top_scorers (bảng xếp hạng cầu thủ) hay lookup."
+      },
+      "input": "Đội nào đang đứng đầu La Liga và hơn đội nhì bao nhiêu điểm?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "standings",
+            "args": {}
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "standings",
+            "args": {
+              "competition": "La Liga"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "standings",
+          "args": {
+            "competition": "La Liga"
+          },
+          "result": {
+            "tool": "standings",
+            "status": "error",
+            "error": "data_unavailable",
+            "message": "No provider could supply verified standings: API-Football: plan_restriction; SportScore: competition_not_found",
+            "attempts": [
+              {
+                "provider": "API-Football",
+                "status": "failed",
+                "reason": "plan_restriction",
+                "message": "API-Football: Free plans do not have access to this season, try from 2022 to 2024.",
+                "http_status": null
+              },
+              {
+                "provider": "SportScore",
+                "status": "failed",
+                "reason": "competition_not_found",
+                "message": "No verified SportScore slug for 'La Liga'. Try again with the competition's country.",
+                "http_status": null
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "S03_standings_missing_competition",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "clarify_missing_competition",
+        "difficulty": "medium",
+        "what_it_tests": "Không nêu giải đấu -> phải gọi clarify hỏi giải nào, không tự đoán competition rồi gọi standings."
+      },
+      "input": "Cho mình xem bảng xếp hạng hiện tại với.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn muốn xem bảng xếp hạng của giải đấu nào?",
+              "response_type": "text"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn muốn xem bảng xếp hạng của giải đấu nào?",
+            "response_type": "text"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn muốn xem bảng xếp hạng của giải đấu nào?",
+            "response_type": "text",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "S04_multi_standings_details_across_turns",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_standings_args",
+        "difficulty": "hard",
+        "what_it_tests": "Multi-turn: gom giải (turn 2) + mùa 2022/23 -> season=2022 (turn 3) vào một lệnh standings."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Mình muốn xem bảng xếp hạng các đội."
+        },
+        {
+          "role": "user",
+          "content": "Serie A của Ý nhé."
+        },
+        {
+          "role": "user",
+          "content": "Mùa 2022/23 ấy."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "standings",
+            "args": {
+              "season": 2022
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "standings",
+            "args": {
+              "competition": "Serie A",
+              "season": 2022,
+              "country": "Italy"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "standings",
+          "args": {
+            "competition": "Serie A",
+            "season": 2022,
+            "country": "Italy"
+          },
+          "result": {
+            "tool": "standings",
+            "status": "success",
+            "competition": {
+              "id": 135,
+              "name": "Serie A",
+              "country": "Italy",
+              "slug": null
+            },
+            "season": {
+              "requested": 2022,
+              "actual": 2022,
+              "verified": true
+            },
+            "provider": {
+              "name": "API-Football",
+              "fallback_used": false,
+              "source_url": "https://www.api-football.com/"
+            },
+            "attribution": null,
+            "groups": [
+              {
+                "group": "Serie A",
+                "rows": [
+                  {
+                    "rank": 1,
+                    "team_id": 492,
+                    "team": "Napoli",
+                    "played": 38,
+                    "win": 28,
+                    "draw": 6,
+                    "lose": 4,
+                    "goals_for": 77,
+                    "goals_against": 28,
+                    "goal_diff": 49,
+                    "points": 90,
+                    "form": "WDWLW",
+                    "description": "Promotion - Champions League (Group Stage: )"
+                  },
+                  {
+                    "rank": 2,
+                    "team_id": 487,
+                    "team": "Lazio",
+                    "played": 38,
+                    "win": 22,
+                    "draw": 8,
+                    "lose": 8,
+                    "goals_for": 60,
+                    "goals_against": 30,
+                    "goal_diff": 30,
+                    "points": 74,
+                    "form": "WWWDL",
+                    "description": "Promotion - Champions League (Group Stage: )"
+                  },
+                  {
+                    "rank": 3,
+                    "team_id": 505,
+                    "team": "Inter",
+                    "played": 38,
+                    "win": 23,
+                    "draw": 3,
+                    "lose": 12,
+                    "goals_for": 71,
+                    "goals_against": 42,
+                    "goal_diff": 29,
+                    "points": 72,
+                    "form": "WWLWW",
+                    "description": "Promotion - Champions League (Group Stage: )"
+                  },
+                  {
+                    "rank": 4,
+                    "team_id": 489,
+                    "team": "AC Milan",
+                    "played": 38,
+                    "win": 20,
+                    "draw": 10,
+                    "lose": 8,
+                    "goals_for": 64,
+                    "goals_against": 43,
+                    "goal_diff": 21,
+                    "points": 70,
+                    "form": "WWWLW",
+                    "description": "Promotion - Champions League (Group Stage: )"
+                  },
+                  {
+                    "rank": 5,
+                    "team_id": 499,
+                    "team": "Atalanta",
+                    "played": 38,
+                    "win": 19,
+                    "draw": 7,
+                    "lose": 12,
+                    "goals_for": 66,
+                    "goals_against": 48,
+                    "goal_diff": 18,
+                    "points": 64,
+                    "form": "WLWLL",
+                    "description": "Promotion - Europa League (Group Stage: )"
+                  },
+                  {
+                    "rank": 6,
+                    "team_id": 497,
+                    "team": "AS Roma",
+                    "played": 38,
+                    "win": 18,
+                    "draw": 9,
+                    "lose": 11,
+                    "goals_for": 50,
+                    "goals_against": 38,
+                    "goal_diff": 12,
+                    "points": 63,
+                    "form": "WLDDL",
+                    "description": "Promotion - Europa League (Group Stage: )"
+                  },
+                  {
+                    "rank": 7,
+                    "team_id": 496,
+                    "team": "Juventus",
+                    "played": 38,
+                    "win": 22,
+                    "draw": 6,
+                    "lose": 10,
+                    "goals_for": 56,
+                    "goals_against": 33,
+                    "goal_diff": 23,
+                    "points": 62,
+                    "form": "WLLWW",
+                    "description": "Promotion - Europa Conference League (Qualification: )"
+                  },
+                  {
+                    "rank": 8,
+                    "team_id": 502,
+                    "team": "Fiorentina",
+                    "played": 38,
+                    "win": 15,
+                    "draw": 11,
+                    "lose": 12,
+                    "goals_for": 53,
+                    "goals_against": 43,
+                    "goal_diff": 10,
+                    "points": 56,
+                    "form": "WWDWL",
+                    "description": null
+                  },
+                  {
+                    "rank": 9,
+                    "team_id": 500,
+                    "team": "Bologna",
+                    "played": 38,
+                    "win": 14,
+                    "draw": 12,
+                    "lose": 12,
+                    "goals_for": 53,
+                    "goals_against": 49,
+                    "goal_diff": 4,
+                    "points": 54,
+                    "form": "WDWDD",
+                    "description": null
+                  },
+                  {
+                    "rank": 10,
+                    "team_id": 503,
+                    "team": "Torino",
+                    "played": 38,
+                    "win": 14,
+                    "draw": 11,
+                    "lose": 13,
+                    "goals_for": 42,
+                    "goals_against": 41,
+                    "goal_diff": 1,
+                    "points": 53,
+                    "form": "LWDWD",
+                    "description": null
+                  },
+                  {
+                    "rank": 11,
+                    "team_id": 1579,
+                    "team": "Monza",
+                    "played": 38,
+                    "win": 14,
+                    "draw": 10,
+                    "lose": 14,
+                    "goals_for": 48,
+                    "goals_against": 52,
+                    "goal_diff": -4,
+                    "points": 52,
+                    "form": "LLWWD",
+                    "description": null
+                  },
+                  {
+                    "rank": 12,
+                    "team_id": 494,
+                    "team": "Udinese",
+                    "played": 38,
+                    "win": 11,
+                    "draw": 13,
+                    "lose": 14,
+                    "goals_for": 47,
+                    "goals_against": 48,
+                    "goal_diff": -1,
+                    "points": 46,
+                    "form": "LLLLW",
+                    "description": null
+                  },
+                  {
+                    "rank": 13,
+                    "team_id": 488,
+                    "team": "Sassuolo",
+                    "played": 38,
+                    "win": 12,
+                    "draw": 9,
+                    "lose": 17,
+                    "goals_for": 47,
+                    "goals_against": 61,
+                    "goal_diff": -14,
+                    "points": 45,
+                    "form": "LDLLD",
+                    "description": null
+                  },
+                  {
+                    "rank": 14,
+                    "team_id": 511,
+                    "team": "Empoli",
+                    "played": 38,
+                    "win": 10,
+                    "draw": 13,
+                    "lose": 15,
+                    "goals_for": 37,
+                    "goals_against": 49,
+                    "goal_diff": -12,
+                    "points": 43,
+                    "form": "LDWDW",
+                    "description": null
+                  },
+                  {
+                    "rank": 15,
+                    "team_id": 514,
+                    "team": "Salernitana",
+                    "played": 38,
+                    "win": 9,
+                    "draw": 15,
+                    "lose": 14,
+                    "goals_for": 48,
+                    "goals_against": 62,
+                    "goal_diff": -14,
+                    "points": 42,
+                    "form": "LWDWL",
+                    "description": null
+                  },
+                  {
+                    "rank": 16,
+                    "team_id": 867,
+                    "team": "Lecce",
+                    "played": 38,
+                    "win": 8,
+                    "draw": 12,
+                    "lose": 18,
+                    "goals_for": 33,
+                    "goals_against": 46,
+                    "goal_diff": -13,
+                    "points": 36,
+                    "form": "LWDDL",
+                    "description": null
+                  },
+                  {
+                    "rank": 17,
+                    "team_id": 515,
+                    "team": "Spezia",
+                    "played": 38,
+                    "win": 6,
+                    "draw": 13,
+                    "lose": 19,
+                    "goals_for": 31,
+                    "goals_against": 62,
+                    "goal_diff": -31,
+                    "points": 31,
+                    "form": "LLDWL",
+                    "description": "Serie A (Additional match: )"
+                  },
+                  {
+                    "rank": 18,
+                    "team_id": 504,
+                    "team": "Verona",
+                    "played": 38,
+                    "win": 7,
+                    "draw": 10,
+                    "lose": 21,
+                    "goals_for": 31,
+                    "goals_against": 59,
+                    "goal_diff": -28,
+                    "points": 31,
+                    "form": "LDLLW",
+                    "description": "Serie A (Additional match: )"
+                  },
+                  {
+                    "rank": 19,
+                    "team_id": 520,
+                    "team": "Cremonese",
+                    "played": 38,
+                    "win": 5,
+                    "draw": 12,
+                    "lose": 21,
+                    "goals_for": 36,
+                    "goals_against": 69,
+                    "goal_diff": -33,
+                    "points": 27,
+                    "form": "WLLLW",
+                    "description": "Relegation - Serie B"
+                  },
+                  {
+                    "rank": 20,
+                    "team_id": 498,
+                    "team": "Sampdoria",
+                    "played": 38,
+                    "win": 3,
+                    "draw": 10,
+                    "lose": 25,
+                    "goals_for": 24,
+                    "goals_against": 71,
+                    "goal_diff": -47,
+                    "points": 19,
+                    "form": "LDLDL",
+                    "description": "Relegation - Serie B"
+                  }
+                ]
+              }
+            ],
+            "count": 20,
+            "warning": null,
+            "attempts": [
+              {
+                "provider": "API-Football",
+                "status": "success"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

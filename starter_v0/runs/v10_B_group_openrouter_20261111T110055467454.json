@@ -1,0 +1,326 @@
+{
+  "run_id": "v10_B_group_openrouter_20261111T110055467454",
+  "version": "v10",
+  "artifact_version": "v10+pc1e1bcde287a+t47da2c1229e5",
+  "prompt_hash": "c1e1bcde287ae3219524ab818307e6764690a63481b2102e9bcd581f5e1791dd",
+  "tools_hash": "47da2c1229e5cbc93f4d76f12e852ce209e8086f85299f72604b7b801630929d",
+  "phase": "B",
+  "suite": "group",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "system_prompt": "D:\\LAB3\\K5-L3B-DAY03-G1011-ResearchAgentToolEval\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "D:\\LAB3\\K5-L3B-DAY03-G1011-ResearchAgentToolEval\\starter_v0\\artifacts\\tools.yaml",
+  "eval_cases": "data\\eval_top_scorers.json",
+  "dataset_id": "day03_v2_top_scorers",
+  "dataset_role": "group",
+  "description": "Case routing cho tool mới top_scorers (file riêng, không thay 10 case của eval_group.json). Eval chỉ chấm tool + args ở lượt đầu; hành vi fallback provider (API-Football -> SportScore, season protection, cả hai lỗi) được kiểm tra bằng unit test trong tests/test_top_scorers.py.",
+  "generated_at": "2026-11-11T11:00:55",
+  "summary": {
+    "total_cases": 4,
+    "measured_cases": 4,
+    "provider_error_cases": 0,
+    "passed_cases": 4,
+    "case_accuracy": 1.0,
+    "tool_routing_accuracy": 1.0,
+    "argument_accuracy": 1.0,
+    "multiturn_accuracy": 1.0,
+    "failure_counts": {},
+    "observed_mismatch_counts": {}
+  },
+  "results": [
+    {
+      "id": "T01_top_scorers_season_and_limit",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "routing_top_scorers_args",
+        "difficulty": "medium",
+        "what_it_tests": "Route tới top_scorers (không phải lookup) và chuyển mùa '2025/26' thành năm bắt đầu season=2025, limit=10."
+      },
+      "input": "Top 10 cầu thủ ghi bàn nhiều nhất Premier League mùa 2025/26 là ai?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "top_scorers",
+            "args": {
+              "season": 2025,
+              "limit": 10
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "top_scorers",
+            "args": {
+              "competition": "Premier League",
+              "season": 2025,
+              "limit": 10
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "top_scorers",
+          "args": {
+            "competition": "Premier League",
+            "season": 2025,
+            "limit": 10
+          },
+          "result": {
+            "tool": "top_scorers",
+            "status": "error",
+            "error": "data_unavailable",
+            "message": "No provider could supply verified top-scorer data: API-Football: rate_limited; SportScore: season_unverifiable",
+            "attempts": [
+              {
+                "provider": "API-Football",
+                "status": "failed",
+                "reason": "rate_limited",
+                "message": "API-Football: Too many requests. Your rate limit is 10 requests per minute.",
+                "http_status": null
+              },
+              {
+                "provider": "SportScore",
+                "status": "failed",
+                "reason": "season_unverifiable",
+                "message": "SportScore has no season filter or season metadata, so season 2025 cannot be verified; current-season data is not used as a substitute",
+                "http_status": null
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "T02_top_scorers_routing_not_lookup",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "routing_top_scorers",
+        "difficulty": "easy",
+        "what_it_tests": "Câu hỏi vua phá lưới không dùng từ 'top scorers' vẫn phải route tới top_scorers thay vì lookup/football_stats."
+      },
+      "input": "Ai đang dẫn đầu cuộc đua Chiếc giày vàng ở Serie A?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "top_scorers",
+            "args": {}
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "top_scorers",
+            "args": {
+              "competition": "Serie A"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "top_scorers",
+          "args": {
+            "competition": "Serie A"
+          },
+          "result": {
+            "tool": "top_scorers",
+            "status": "error",
+            "error": "data_unavailable",
+            "message": "No provider could supply verified top-scorer data: API-Football: rate_limited; SportScore: competition_not_found",
+            "attempts": [
+              {
+                "provider": "API-Football",
+                "status": "failed",
+                "reason": "rate_limited",
+                "message": "API-Football: Too many requests. Your rate limit is 10 requests per minute.",
+                "http_status": null
+              },
+              {
+                "provider": "SportScore",
+                "status": "failed",
+                "reason": "competition_not_found",
+                "message": "No verified SportScore slug for 'Serie A'. Try again with the competition's country.",
+                "http_status": null
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "T03_top_scorers_missing_competition",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "clarify_missing_competition",
+        "difficulty": "medium",
+        "what_it_tests": "Không nêu giải đấu -> phải gọi clarify hỏi giải nào, không tự đoán competition rồi gọi top_scorers."
+      },
+      "input": "Cho mình xem danh sách vua phá lưới với.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn muốn xem vua phá lưới của giải nào?",
+              "response_type": "text"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn muốn xem vua phá lưới của giải nào?",
+            "response_type": "text"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn muốn xem vua phá lưới của giải nào?",
+            "response_type": "text",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "T04_multi_top_scorers_details_across_turns",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_top_scorers_args",
+        "difficulty": "hard",
+        "what_it_tests": "Multi-turn: gom giải (turn 2) + mùa 2024/25 -> season=2024 và limit=5 (turn 3) vào một lệnh top_scorers, giữ đúng mùa lịch sử user yêu cầu."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Mình muốn xem top cầu thủ ghi bàn."
+        },
+        {
+          "role": "user",
+          "content": "Giải Bundesliga của Đức nhé."
+        },
+        {
+          "role": "user",
+          "content": "Lấy top 5 của mùa 2024/25 thôi."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "top_scorers",
+            "args": {
+              "season": 2024,
+              "limit": 5
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "top_scorers",
+            "args": {
+              "competition": "Bundesliga",
+              "season": 2024,
+              "limit": 5,
+              "country": "Germany"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "top_scorers",
+          "args": {
+            "competition": "Bundesliga",
+            "season": 2024,
+            "limit": 5,
+            "country": "Germany"
+          },
+          "result": {
+            "tool": "top_scorers",
+            "status": "error",
+            "error": "data_unavailable",
+            "message": "No provider could supply verified top-scorer data: API-Football: rate_limited; SportScore: season_unverifiable",
+            "attempts": [
+              {
+                "provider": "API-Football",
+                "status": "failed",
+                "reason": "rate_limited",
+                "message": "API-Football: Too many requests. Your rate limit is 10 requests per minute.",
+                "http_status": null
+              },
+              {
+                "provider": "SportScore",
+                "status": "failed",
+                "reason": "season_unverifiable",
+                "message": "SportScore has no season filter or season metadata, so season 2024 cannot be verified; current-season data is not used as a substitute",
+                "http_status": null
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

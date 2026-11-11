@@ -1,0 +1,611 @@
+{
+  "run_id": "v9_B_group_openrouter_20261111T105755156691",
+  "version": "v9",
+  "artifact_version": "v9+pc1e1bcde287a+t1b158f126217",
+  "prompt_hash": "c1e1bcde287ae3219524ab818307e6764690a63481b2102e9bcd581f5e1791dd",
+  "tools_hash": "1b158f126217364cb58fb4f0957f67b8d42897ca9a01658461f07d83b6f4f591",
+  "phase": "B",
+  "suite": "group",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "system_prompt": "D:\\LAB3\\K5-L3B-DAY03-G1011-ResearchAgentToolEval\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "D:\\LAB3\\K5-L3B-DAY03-G1011-ResearchAgentToolEval\\starter_v0\\artifacts\\tools.yaml",
+  "eval_cases": "data\\eval_top_scorers.json",
+  "dataset_id": "day03_v2_top_scorers",
+  "dataset_role": "group",
+  "description": "Case routing cho tool mới top_scorers (file riêng, không thay 10 case của eval_group.json). Eval chỉ chấm tool + args ở lượt đầu; hành vi fallback provider (API-Football -> SportScore, season protection, cả hai lỗi) được kiểm tra bằng unit test trong tests/test_top_scorers.py.",
+  "generated_at": "2026-11-11T10:57:55",
+  "summary": {
+    "total_cases": 4,
+    "measured_cases": 4,
+    "provider_error_cases": 0,
+    "passed_cases": 4,
+    "case_accuracy": 1.0,
+    "tool_routing_accuracy": 1.0,
+    "argument_accuracy": 1.0,
+    "multiturn_accuracy": 1.0,
+    "failure_counts": {},
+    "observed_mismatch_counts": {}
+  },
+  "results": [
+    {
+      "id": "T01_top_scorers_season_and_limit",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "routing_top_scorers_args",
+        "difficulty": "medium",
+        "what_it_tests": "Route tới top_scorers (không phải lookup) và chuyển mùa '2025/26' thành năm bắt đầu season=2025, limit=10."
+      },
+      "input": "Top 10 cầu thủ ghi bàn nhiều nhất Premier League mùa 2025/26 là ai?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "top_scorers",
+            "args": {
+              "season": 2025,
+              "limit": 10
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "top_scorers",
+            "args": {
+              "competition": "Premier League",
+              "season": 2025,
+              "limit": 10
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "top_scorers",
+          "args": {
+            "competition": "Premier League",
+            "season": 2025,
+            "limit": 10
+          },
+          "result": {
+            "tool": "top_scorers",
+            "status": "error",
+            "error": "ambiguous_competition",
+            "message": "API-Football found several competitions named 'Premier League'; ask the user which one.",
+            "candidates": [
+              {
+                "id": 39,
+                "name": "Premier League",
+                "country": "England",
+                "type": "League"
+              },
+              {
+                "id": 110,
+                "name": "Premier League",
+                "country": "Wales",
+                "type": "League"
+              },
+              {
+                "id": 322,
+                "name": "Premier League",
+                "country": "Jamaica",
+                "type": "League"
+              },
+              {
+                "id": 330,
+                "name": "Premier League",
+                "country": "Kuwait",
+                "type": "League"
+              },
+              {
+                "id": 380,
+                "name": "Premier League",
+                "country": "Hong-Kong",
+                "type": "League"
+              },
+              {
+                "id": 390,
+                "name": "Premier League",
+                "country": "Lebanon",
+                "type": "League"
+              },
+              {
+                "id": 333,
+                "name": "Premier League",
+                "country": "Ukraine",
+                "type": "League"
+              },
+              {
+                "id": 233,
+                "name": "Premier League",
+                "country": "Egypt",
+                "type": "League"
+              },
+              {
+                "id": 570,
+                "name": "Premier League",
+                "country": "Ghana",
+                "type": "League"
+              },
+              {
+                "id": 422,
+                "name": "Premier League",
+                "country": "Barbados",
+                "type": "League"
+              },
+              {
+                "id": 342,
+                "name": "Premier League",
+                "country": "Armenia",
+                "type": "League"
+              },
+              {
+                "id": 116,
+                "name": "Premier League",
+                "country": "Belarus",
+                "type": "League"
+              },
+              {
+                "id": 389,
+                "name": "Premier League",
+                "country": "Kazakhstan",
+                "type": "League"
+              },
+              {
+                "id": 585,
+                "name": "Premier League",
+                "country": "Uganda",
+                "type": "League"
+              },
+              {
+                "id": 363,
+                "name": "Premier League",
+                "country": "Ethiopia",
+                "type": "League"
+              },
+              {
+                "id": 235,
+                "name": "Premier League",
+                "country": "Russia",
+                "type": "League"
+              },
+              {
+                "id": 279,
+                "name": "Premier League",
+                "country": "Malaysia",
+                "type": "League"
+              },
+              {
+                "id": 368,
+                "name": "Premier League",
+                "country": "Singapore",
+                "type": "League"
+              },
+              {
+                "id": 393,
+                "name": "Premier League",
+                "country": "Malta",
+                "type": "League"
+              },
+              {
+                "id": 417,
+                "name": "Premier League",
+                "country": "Bahrain",
+                "type": "League"
+              },
+              {
+                "id": 414,
+                "name": "Premier League",
+                "country": "Bermuda",
+                "type": "League"
+              },
+              {
+                "id": 412,
+                "name": "Premier League",
+                "country": "Botswana",
+                "type": "League"
+              },
+              {
+                "id": 398,
+                "name": "Premier League",
+                "country": "Bangladesh",
+                "type": "League"
+              },
+              {
+                "id": 569,
+                "name": "Premier League",
+                "country": "Kyrgyzstan",
+                "type": "League"
+              },
+              {
+                "id": 425,
+                "name": "Premier League",
+                "country": "Syria",
+                "type": "League"
+              },
+              {
+                "id": 584,
+                "name": "Premier League",
+                "country": "Libya",
+                "type": "League"
+              },
+              {
+                "id": 409,
+                "name": "Premier League",
+                "country": "Namibia",
+                "type": "League"
+              },
+              {
+                "id": 416,
+                "name": "Premier League",
+                "country": "Belize",
+                "type": "League"
+              },
+              {
+                "id": 762,
+                "name": "Premier League",
+                "country": "Mauritania",
+                "type": "League"
+              },
+              {
+                "id": 764,
+                "name": "Premier League",
+                "country": "Mongolia",
+                "type": "League"
+              },
+              {
+                "id": 847,
+                "name": "Premier League",
+                "country": "Eswatini",
+                "type": "League"
+              },
+              {
+                "id": 868,
+                "name": "Premier League",
+                "country": "Pakistan",
+                "type": "League"
+              },
+              {
+                "id": 870,
+                "name": "Premier League",
+                "country": "Crimea",
+                "type": "League"
+              },
+              {
+                "id": 962,
+                "name": "Premier League",
+                "country": "Lesotho",
+                "type": "League"
+              },
+              {
+                "id": 1031,
+                "name": "Premier League",
+                "country": "Bhutan",
+                "type": "League"
+              }
+            ],
+            "attempts": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "T02_top_scorers_routing_not_lookup",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "routing_top_scorers",
+        "difficulty": "easy",
+        "what_it_tests": "Câu hỏi vua phá lưới không dùng từ 'top scorers' vẫn phải route tới top_scorers thay vì lookup/football_stats."
+      },
+      "input": "Ai đang dẫn đầu cuộc đua Chiếc giày vàng ở Serie A?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "top_scorers",
+            "args": {}
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "top_scorers",
+            "args": {
+              "competition": "Serie A"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "top_scorers",
+          "args": {
+            "competition": "Serie A"
+          },
+          "result": {
+            "tool": "top_scorers",
+            "status": "error",
+            "error": "ambiguous_competition",
+            "message": "API-Football found several competitions named 'Serie A'; ask the user which one.",
+            "candidates": [
+              {
+                "id": 135,
+                "name": "Serie A",
+                "country": "Italy",
+                "type": "League"
+              },
+              {
+                "id": 71,
+                "name": "Serie A",
+                "country": "Brazil",
+                "type": "League"
+              }
+            ],
+            "attempts": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "T03_top_scorers_missing_competition",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "clarify_missing_competition",
+        "difficulty": "medium",
+        "what_it_tests": "Không nêu giải đấu -> phải gọi clarify hỏi giải nào, không tự đoán competition rồi gọi top_scorers."
+      },
+      "input": "Cho mình xem danh sách vua phá lưới với.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn muốn xem vua phá lưới của giải nào?",
+              "response_type": "text"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn muốn xem vua phá lưới của giải nào?",
+            "response_type": "text"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn muốn xem vua phá lưới của giải nào?",
+            "response_type": "text",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "T04_multi_top_scorers_details_across_turns",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_top_scorers_args",
+        "difficulty": "hard",
+        "what_it_tests": "Multi-turn: gom giải (turn 2) + mùa 2024/25 -> season=2024 và limit=5 (turn 3) vào một lệnh top_scorers, giữ đúng mùa lịch sử user yêu cầu."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Mình muốn xem top cầu thủ ghi bàn."
+        },
+        {
+          "role": "user",
+          "content": "Giải Bundesliga của Đức nhé."
+        },
+        {
+          "role": "user",
+          "content": "Lấy top 5 của mùa 2024/25 thôi."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "top_scorers",
+            "args": {
+              "season": 2024,
+              "limit": 5
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "top_scorers",
+            "args": {
+              "competition": "Bundesliga",
+              "season": 2024,
+              "limit": 5,
+              "country": "Germany"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "top_scorers",
+          "args": {
+            "competition": "Bundesliga",
+            "season": 2024,
+            "limit": 5,
+            "country": "Germany"
+          },
+          "result": {
+            "tool": "top_scorers",
+            "status": "success",
+            "competition": {
+              "id": 78,
+              "name": "Bundesliga",
+              "country": "Germany",
+              "slug": null
+            },
+            "season": {
+              "requested": 2024,
+              "actual": 2024,
+              "verified": true
+            },
+            "provider": {
+              "name": "API-Football",
+              "fallback_used": false,
+              "source_url": "https://www.api-football.com/"
+            },
+            "attribution": null,
+            "scorers": [
+              {
+                "rank": 1,
+                "player_id": 184,
+                "player": "H. Kane",
+                "nationality": "England",
+                "age": 32,
+                "position": "Attacker",
+                "photo": "https://media.api-sports.io/football/players/184.png",
+                "team_id": 157,
+                "team": "Bayern München",
+                "goals": 26,
+                "assists": 8,
+                "penalties": 9,
+                "appearances": 31,
+                "minutes": 2389
+              },
+              {
+                "rank": 2,
+                "player_id": 106851,
+                "player": "S. Machino",
+                "nationality": "Japan",
+                "age": 26,
+                "position": "Attacker",
+                "photo": "https://media.api-sports.io/football/players/106851.png",
+                "team_id": 163,
+                "team": "Borussia Mönchengladbach",
+                "goals": 22,
+                "assists": 4,
+                "penalties": 4,
+                "appearances": 66,
+                "minutes": 3922
+              },
+              {
+                "rank": 3,
+                "player_id": 794,
+                "player": "P. Schick",
+                "nationality": "Czechia",
+                "age": 29,
+                "position": "Attacker",
+                "photo": "https://media.api-sports.io/football/players/794.png",
+                "team_id": 168,
+                "team": "Bayer Leverkusen",
+                "goals": 21,
+                "assists": 0,
+                "penalties": 1,
+                "appearances": 33,
+                "minutes": 1693
+              },
+              {
+                "rank": 4,
+                "player_id": 21393,
+                "player": "S. Guirassy",
+                "nationality": "Guinea",
+                "age": 29,
+                "position": "Attacker",
+                "photo": "https://media.api-sports.io/football/players/21393.png",
+                "team_id": 165,
+                "team": "Borussia Dortmund",
+                "goals": 21,
+                "assists": 4,
+                "penalties": 6,
+                "appearances": 30,
+                "minutes": 2602
+              },
+              {
+                "rank": 5,
+                "player_id": 2598,
+                "player": "R. Dōan",
+                "nationality": "Japan",
+                "age": 27,
+                "position": "Midfielder",
+                "photo": "https://media.api-sports.io/football/players/2598.png",
+                "team_id": 169,
+                "team": "Eintracht Frankfurt",
+                "goals": 20,
+                "assists": 14,
+                "penalties": 0,
+                "appearances": 68,
+                "minutes": 5750
+              }
+            ],
+            "count": 5,
+            "warning": null,
+            "attempts": [
+              {
+                "provider": "API-Football",
+                "status": "success"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
