@@ -16,19 +16,20 @@ CP3: hoàn thiện ba tool bóng đá và unit test. CP4: hoàn thiện bộ eva
 
 ## 3. Đóng góp cụ thể
 
-- `football_stats`: tính phong độ, điểm và bàn thắng/bại từ danh sách trận; kiểm tra dữ liệu thiếu hoặc sai.
+- `football_stats`: tự tìm kết quả bằng Tavily/Firecrawl, tính phong độ hai đội và trả nguồn từng trận; mặc định 5 trận, hỗ trợ tên MU.
 - `football_headlines`: dùng Firecrawl đọc nhiều link, loại URL trùng và ghi lỗi từng nguồn.
 - `football_mentions`: dùng RapidAPI lấy timeline nhiều tài khoản X, lọc từ khóa và loại tweet trùng.
-- Hoàn thiện đăng ký, khai báo và TOOL.md; viết 50 lượt test cho ba tool và triển khai 14 test stub có sẵn, tổng 64 lượt sau tham số hóa. Các test chạy offline bằng mock.
-- Cập nhật eval và báo cáo; giữ nguyên system prompt và khai báo tool cũ của nhóm. `top_scorers` do bạn Chiến phụ trách, không thuộc phần việc cá nhân này.
+- Hoàn thiện đăng ký, khai báo và TOOL.md; viết 63 lượt test cho ba tool và triển khai 14 test stub có sẵn, tổng 77 lượt sau tham số hóa. Các test chạy offline bằng mock.
+- Cập nhật eval và báo cáo; giữ nguyên system prompt và khai báo tool của thành viên khác. `top_scorers` do bạn Chiến phụ trách, không thuộc phần việc cá nhân này.
 
 ## 4. Bằng chứng
 
 - File/commit/PR: `45804d1` (football_stats và eval nhóm), `cfd1017` (hoàn thiện tool, test và bằng chứng CP3/CP4).
 
 - Code và tài liệu: [football_stats](../../starter_v0/tools/football_stats/TOOL.md), [football_headlines](../../starter_v0/tools/football_headlines/TOOL.md), [football_mentions](../../starter_v0/tools/football_mentions/TOOL.md); mỗi thư mục có `tool.py`.
-- [Unit test](../../starter_v0/tests/test_tools_todo.py): toàn dự án **172 passed, 0 failed, 0 skipped**, gồm cả test của các thành viên khác. Phần cá nhân có 64 lượt test như mục 3; đáp ứng điều kiện Test challenge của bài.
-- [Eval nhóm](../../starter_v0/data/eval_group.json), [log hiện tại](../../starter_v0/runs/v5_B_group_openrouter_20261111T011314148993.json): **9/10 PASS**, không có provider error. G05 còn gọi `fetch` hai lần thay vì `football_headlines`; đây là lỗi chọn tool cần cải thiện.
+- [Unit test](../../starter_v0/tests/test_tools_todo.py): toàn dự án **246 passed, 0 failed, 0 skipped**, gồm cả test của các thành viên khác. Phần cá nhân có 77 lượt test như mục 3; đáp ứng điều kiện Test challenge của bài.
+- [Eval nhóm](../../starter_v0/data/eval_group.json), [log cuối cùng](../../starter_v0/runs/v5_B_group_openrouter_20261111T101438249469.json): **9/10 PASS**, không lỗi provider; G05 chọn fetch hai lần thay headlines.
+- [Transcript kiểm thử](../../starter_v0/transcripts/v5_openrouter_20261111T095625859539.transcript.json): câu hỏi Liverpool/MU gọi football_stats không cần nhập tỷ số, tự lấy 5 trận mỗi đội và trả so sánh có nguồn.
 - Chạy eval trên máy cá nhân bằng OpenRouter / `openai/gpt-4o-mini`, nhãn v5. Chi tiết output và giới hạn tại B3/B5a của [báo cáo nhóm](group_report.md).
 
 - AI/công cụ đã dùng và cách tự kiểm tra kết quả: Codex hỗ trợ code, test và báo cáo; kiểm chứng bằng pytest, eval API thật và đọc tool_results trong log.

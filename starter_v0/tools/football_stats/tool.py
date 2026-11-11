@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from .research import canonical_team, find_recent_matches
+
 
 def analyze_football_form(
     team_a: str,
@@ -9,11 +11,12 @@ def analyze_football_form(
     team_b: str | None = None,
     last_n: int = 5,
 ) -> dict[str, Any]:
-    """Calculate and compare football form, points, and goal stats over recent matches.
+    """Find recent results when no matches are supplied, then calculate football form.
 
     Args:
         team_a: Name of the primary team to analyze.
-        matches: List of match dicts. Each dict should have:
+        matches: Omit to discover current results via Tavily/Firecrawl. When explicitly
+                 supplied, this is a list of match dicts. Each dict should have:
                  - 'team' or 'home_team'/'away_team'
                  - 'scored' and 'conceded' (or 'home_score' and 'away_score')
         team_b: Optional second team name to compare against.
@@ -26,7 +29,7 @@ def analyze_football_form(
     if not team_a or not isinstance(team_a, str) or not team_a.strip():
         return {"status": "error", "error": "team_a must be a non-empty string"}
 
-    if matches is None or not isinstance(matches, list):
+    if matches is not None and not isinstance(matches, list):
         return {"status": "error", "error": "matches must be a list of match records"}
 
     if team_b is not None and (not isinstance(team_b, str) or not team_b.strip()):
@@ -40,6 +43,33 @@ def analyze_football_form(
             return {"status": "error", "error": "last_n must be a positive integer greater than 0"}
     except (ValueError, TypeError):
         return {"status": "error", "error": "last_n must be an integer"}
+
+    if matches is None:
+        if n > 20:
+            return {"status": "error", "error": "Automatic research supports last_n from 1 to 20"}
+        teams = [canonical_team(team_a)]
+        if team_b:
+            teams.append(canonical_team(team_b))
+        if len(teams) == 2 and teams[0].casefold() == teams[1].casefold():
+            return {"status": "error", "error": "Choose two different teams to compare"}
+        research = [find_recent_matches(team, n) for team in teams]
+        if any(item["status"] == "error" for item in research):
+            return {"status": "error", "error": "research_failed", "research": research,
+                    "message": "Could not retrieve enough supported source data to analyze the requested team(s)"}
+        result = analyze_football_form(teams[0], matches=[m for item in research for m in item["matches"]],
+                                       team_b=teams[1] if len(teams) == 2 else None, last_n=n)
+        result.update(data_mode="automatic_research", research=research,
+                      matches_used=[m for item in research for m in item["matches"]])
+        if "comparison" in result:
+            result["comparison"]["goals_scored_difference"] = result["team_a"]["goals_scored"] - result["team_b"]["goals_scored"]
+            result["comparison"]["points_a"] = result["team_a"]["points"]
+            result["comparison"]["points_b"] = result["team_b"]["points"]
+        if any(item["status"] == "partial" for item in research):
+            result["status"] = "partial"
+            result["warning"] = "Fewer than requested matches found; totals are based only on the listed matches"
+            if "comparison" in result:
+                result["comparison"] = {"better_form_team": None, "reason": "Insufficient equal-size samples for comparison"}
+        return result
 
     clean_team_a = team_a.strip().lower()
 

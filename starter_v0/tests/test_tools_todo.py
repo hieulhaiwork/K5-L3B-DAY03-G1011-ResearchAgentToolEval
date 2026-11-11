@@ -456,3 +456,160 @@ def test_football_mentions_invalid_api_shape_is_not_an_empty_success(monkeypatch
     result = TOOL_FUNCTIONS["football_mentions"](["Arsenal"], "Chelsea")
     assert result["status"] == "error"
     assert result["errors"][0]["error"] == "ValueError"
+
+
+# ---------------- football_stats: automatic research ----------------
+
+def _espn_row(home="Liverpool", away="Arsenal", score="2 - 1", day="Sun, Nov 8", state="FT", match_id="100", competition="Premier League"):
+    return (f"| {day} | [{home}](https://www.espn.com/soccer/team/_/id/1/home) | "
+            f"[{score}](https://www.espn.com/soccer/match/_/gameId/{match_id}/match) | "
+            f"[{away}](https://www.espn.com/soccer/team/_/id/2/away) | "
+            f"[{state}](https://www.espn.com/soccer/match/_/gameId/{match_id}/match) | {competition} |")
+
+
+def test_football_stats_parser_orders_matches_and_preserves_penalty_draw():
+    from datetime import date
+    from tools.football_stats.research import parse_results
+    penalty = _espn_row(score="1 - 1", day="Wed, Nov 4", state="FT-Pens", match_id="101")
+    penalty = penalty.replace("| [Arsenal]", "Liverpool win 6-5 on penalties | [Arsenal]")
+    text = "# Liverpool Results\nNovember, 2026\n" + "\n".join([
+        _espn_row(), penalty, _espn_row(day="Sun, Nov 15", match_id="102"),
+        _espn_row(state="HT", match_id="103"),
+        _espn_row(competition="Club Friendly", match_id="104"),
+        _espn_row(home="Chelsea", away="Arsenal", match_id="105"),
+    ])
+    records = parse_results(text, "Liverpool", "https://example.com/results", date(2026, 11, 11))
+    assert [row["date"] for row in records] == ["2026-11-04", "2026-11-08"]
+    assert records[0]["scored"] == records[0]["conceded"] == 1
+    assert records[0]["result_status"] == "FT-Pens"
+    assert records[1]["opponent"] == "Arsenal"
+    assert records[1]["source_url"].endswith("/100/match")
+
+
+def test_football_stats_parser_away_scores_duplicate_and_old_rows():
+    from datetime import date
+    from tools.football_stats.research import parse_results
+    row = _espn_row(home="Arsenal", away="Liverpool", score="3 - 2")
+    text = "# Liverpool Results\nNovember, 2026\n"+row+"\n"+row+"\nJanuary, 2026\n"+_espn_row(day="Sun, Jan 4",match_id="200")
+    records = parse_results(text, "Liverpool", "https://example.com/results", date(2026, 11, 11))
+    assert len(records) == 1
+    assert (records[0]["scored"], records[0]["conceded"]) == (2, 3)
+    assert records[0]["home_team"] == "Arsenal"
+    assert records[0]["away_team"] == "Liverpool"
+    assert (records[0]["home_score"], records[0]["away_score"]) == (3, 2)
+
+
+def test_football_stats_parser_rejects_wrong_team_page():
+    from datetime import date
+    from tools.football_stats.research import parse_results
+    with pytest.raises(ValueError, match="requested team"):
+        parse_results("# Liverpool Women Results\nNovember, 2026\n"+_espn_row(), "Liverpool", "https://example.com", date(2026,11,11))
+
+
+def test_football_stats_parser_requires_explicit_year_and_linked_scores():
+    from datetime import date
+    from tools.football_stats.research import parse_results
+    # No date heading or bare ungrounded score prose must not produce records.
+    assert parse_results("# Liverpool Results\n"+_espn_row(), "Liverpool", "https://example.com", date(2026,11,11)) == []
+    assert parse_results("# Liverpool Results\nNovember, 2026\nLiverpool won 2-1", "Liverpool", "https://example.com", date(2026,11,11)) == []
+
+
+def test_football_stats_automatic_search_and_scrape_requests(monkeypatch):
+    import requests
+    from datetime import date
+    from tools.football_stats.research import find_recent_matches
+    monkeypatch.setenv("TAVILY_API_KEY", "fake-tavily")
+    monkeypatch.setenv("FIRECRAWL_API_KEY", "fake-firecrawl")
+    calls=[]
+    url="https://www.espn.com/soccer/team/results/_/id/364/liverpool"
+    def post(endpoint, **kwargs):
+        calls.append((endpoint,kwargs))
+        if "tavily" in endpoint:
+            return FakeResponse({"results":[{"url":url},{"url":url+"?duplicate=1"},{"url":"https://other.example/results"}]})
+        return FakeResponse({"success":True,"data":{"markdown":"# Liverpool Results\nNovember, 2026\n"+_espn_row()}})
+    monkeypatch.setattr(requests,"post",post)
+    result=find_recent_matches("Liverpool",1,as_of=date(2026,11,11))
+    assert result["status"] == "success"
+    assert len(calls)==2
+    assert "Liverpool" in calls[0][1]["json"]["query"]
+    assert "time_range" not in calls[0][1]["json"]
+    assert calls[1][1]["json"] == {"url":url,"formats":["markdown"]}
+    assert calls[1][1]["headers"] == {"Authorization":"Bearer fake-firecrawl"}
+    assert result["matches"][0]["scored"]==2
+    assert result["matches"][0]["source_url"].endswith("/100/match")
+
+
+def test_football_stats_automatic_missing_keys_does_not_call_network(fake_http):
+    calls=fake_http(FakeResponse({}))
+    result=TOOL_FUNCTIONS["football_stats"](team_a="Liverpool",team_b="MU")
+    assert result["status"]=="error"
+    assert result["error"]=="research_failed"
+    assert result["research"][0]["error"]=="missing_api_key"
+    assert calls==[]
+
+
+def test_football_stats_automatic_aliases_and_comparison(monkeypatch):
+    from tools.football_stats import tool as module
+    calls=[]
+    def find(team,n):
+        calls.append((team,n))
+        return {"status":"success","team":team,"matches":[{"team":team,"scored":2 if team=="Liverpool" else 0,"conceded":1,"date":"2026-11-08","source_url":"https://example.com/match"}]}
+    monkeypatch.setattr(module,"find_recent_matches",find)
+    result=module.analyze_football_form("Liverpool",team_b="MU",last_n=1)
+    assert calls==[("Liverpool",1),("Manchester United",1)]
+    assert result["data_mode"]=="automatic_research"
+    assert result["team_a"]["points"]==3
+    assert result["team_b"]["points"]==0
+    assert result["comparison"]["better_form_team"]=="Liverpool"
+    assert result["comparison"]["goals_scored_difference"]==2
+    assert len(result["matches_used"])==2
+
+
+def test_football_stats_partial_research_does_not_rank_unequal_samples(monkeypatch):
+    from tools.football_stats import tool as module
+    def find(team,n):
+        return {"status":"partial","matches":[{"team":team,"scored":1,"conceded":0}]}
+    monkeypatch.setattr(module,"find_recent_matches",find)
+    result=module.analyze_football_form("Liverpool",team_b="MU",last_n=5)
+    assert result["status"]=="partial"
+    assert result["team_a"]["matches_analyzed"]==1
+    assert result["comparison"]["better_form_team"] is None
+    assert result["warning"]
+
+
+def test_football_stats_explicit_matches_remains_offline(monkeypatch):
+    from tools.football_stats import tool as module
+    def fail(*args,**kwargs):
+        raise AssertionError("Explicit input must not trigger research")
+    monkeypatch.setattr(module,"find_recent_matches",fail)
+    result=module.analyze_football_form("Liverpool",matches=[{"team":"Liverpool","scored":2,"conceded":1}])
+    assert result["status"]=="success"
+    assert result["team_a"]["points"]==3
+
+
+@pytest.mark.parametrize("kwargs",[{"last_n":21},{"team_b":"Liverpool"}])
+def test_football_stats_rejects_unbounded_or_duplicate_automatic_request(kwargs,fake_http):
+    calls=fake_http(FakeResponse({}))
+    result=TOOL_FUNCTIONS["football_stats"](team_a="Liverpool",**kwargs)
+    assert result["status"]=="error"
+    assert calls==[]
+
+
+@pytest.mark.parametrize("issue",["timeout","invalid_table"])
+def test_football_stats_research_source_failure_returns_error(monkeypatch,issue):
+    import requests
+    from datetime import date
+    from tools.football_stats.research import find_recent_matches
+    monkeypatch.setenv("TAVILY_API_KEY","fake-key")
+    monkeypatch.setenv("FIRECRAWL_API_KEY","secret-firecrawl")
+    def post(endpoint,**kwargs):
+        if "tavily" in endpoint:
+            return FakeResponse({"results":[{"url":"https://www.espn.com/soccer/team/results/_/id/364/liverpool"}]})
+        if issue=="timeout": raise requests.Timeout("secret-firecrawl")
+        return FakeResponse({"data":{"markdown":"unsupported page"}})
+    monkeypatch.setattr(requests,"post",post)
+    result=find_recent_matches("Liverpool",5,as_of=date(2026,11,11))
+    assert result["status"]=="error"
+    assert result["error"]=="results_unavailable"
+    assert result["errors"]
+    assert "secret-firecrawl" not in str(result)

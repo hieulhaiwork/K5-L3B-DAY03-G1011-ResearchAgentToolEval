@@ -1,0 +1,838 @@
+{
+  "run_id": "v5_B_group_openrouter_20261111T101438249469",
+  "version": "v5",
+  "artifact_version": "v5+pc1e1bcde287a+ta2a173b229b9",
+  "prompt_hash": "c1e1bcde287ae3219524ab818307e6764690a63481b2102e9bcd581f5e1791dd",
+  "tools_hash": "a2a173b229b9e8e055cc3a6812ed3dfdfd940c1aa999d0034e5c24ce9b147183",
+  "phase": "B",
+  "suite": "group",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "system_prompt": "D:\\Git_AI\\K5-L3B-DAY03-G1011-ResearchAgentToolEval\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "D:\\Git_AI\\K5-L3B-DAY03-G1011-ResearchAgentToolEval\\starter_v0\\artifacts\\tools.yaml",
+  "eval_cases": "data\\eval_group.json",
+  "dataset_id": "day03_v2_research_group",
+  "dataset_role": "group",
+  "description": "10 case nhóm (5 single + 5 multi), kiểm tra football_stats, football_headlines, football_mentions và các hành vi hỏi lại/định dạng/xác nhận.",
+  "generated_at": "2026-11-11T10:14:38",
+  "summary": {
+    "total_cases": 10,
+    "measured_cases": 10,
+    "provider_error_cases": 0,
+    "passed_cases": 9,
+    "case_accuracy": 0.9,
+    "tool_routing_accuracy": 0.9,
+    "argument_accuracy": 0.9,
+    "multiturn_accuracy": 1.0,
+    "failure_counts": {
+      "wrong_tool": 1
+    },
+    "observed_mismatch_counts": {
+      "missing_tool_call": 1
+    }
+  },
+  "results": [
+    {
+      "id": "G01_football_stats_routing",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "routing_football_stats",
+        "difficulty": "medium",
+        "what_it_tests": "Phân tích phong độ đội bóng từ danh sách trận đấu -> gọi tool mới football_stats thay vì lookup hay format."
+      },
+      "input": "Hãy phân tích phong độ Arsenal trong tối đa 5 trận gần nhất từ dữ liệu đã có, không tìm thêm trên web. Danh sách theo thứ tự cũ đến mới: [{'team': 'Arsenal', 'scored': 2, 'conceded': 1}, {'team': 'Arsenal', 'scored': 3, 'conceded': 0}]. Giữ tên đội trong từng bản ghi để xác định tỷ số thuộc đội nào; nếu chưa đủ 5 trận thì chỉ tính số trận được cung cấp.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "football_stats",
+            "args": {
+              "team_a": "Arsenal"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "football_stats",
+            "args": {
+              "team_a": "Arsenal",
+              "matches": [
+                {
+                  "team": "Arsenal",
+                  "scored": 2,
+                  "conceded": 1
+                },
+                {
+                  "team": "Arsenal",
+                  "scored": 3,
+                  "conceded": 0
+                }
+              ]
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "football_stats",
+          "args": {
+            "team_a": "Arsenal",
+            "matches": [
+              {
+                "team": "Arsenal",
+                "scored": 2,
+                "conceded": 1
+              },
+              {
+                "team": "Arsenal",
+                "scored": 3,
+                "conceded": 0
+              }
+            ]
+          },
+          "result": {
+            "status": "success",
+            "team_a": {
+              "team": "Arsenal",
+              "matches_analyzed": 2,
+              "form": "W-W",
+              "points": 6,
+              "max_possible_points": 6,
+              "wins": 2,
+              "draws": 0,
+              "losses": 0,
+              "goals_scored": 5,
+              "goals_conceded": 1,
+              "goal_diff": 4,
+              "clean_sheets": 1,
+              "win_rate_percent": 100.0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "G02_missing_handle_pronoun",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "clarify_ambiguous_pronoun",
+        "difficulty": "medium",
+        "what_it_tests": "Sử dụng đại từ mập mờ (anh ấy) -> Không được đoán bừa mà phải dùng clarify (text) để hỏi rõ handle."
+      },
+      "input": "Tóm tắt các tweet dạo gần đây của anh ấy giúp tôi.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn có thể cho tôi biết tên tài khoản Twitter mà bạn muốn tóm tắt các tweet gần đây không?",
+              "response_type": "text"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn có thể cho tôi biết tên tài khoản Twitter mà bạn muốn tóm tắt các tweet gần đây không?",
+            "response_type": "text"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn có thể cho tôi biết tên tài khoản Twitter mà bạn muốn tóm tắt các tweet gần đây không?",
+            "response_type": "text",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G03_format_template_thread",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "format_tool_template",
+        "difficulty": "easy",
+        "what_it_tests": "Từ khóa 'thread' -> phải map đúng tham số template='thread' của tool format."
+      },
+      "input": "Hãy định dạng hai thông tin sau thành một Twitter thread, chỉ tạo bản nháp để tôi tự đăng, không gửi ra ngoài: [{'title': 'Arsenal thắng 2-1', 'summary': 'Arsenal giành 3 điểm.', 'url': 'https://example.com/arsenal'}, {'title': 'Liverpool hòa 0-0', 'summary': 'Liverpool giành 1 điểm.', 'url': 'https://example.com/liverpool'}].",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "format",
+            "args": {
+              "template": "thread"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "format",
+            "args": {
+              "items": [
+                {
+                  "title": "Arsenal thắng 2-1",
+                  "url": "https://example.com/arsenal",
+                  "summary": "Arsenal giành 3 điểm."
+                },
+                {
+                  "title": "Liverpool hòa 0-0",
+                  "url": "https://example.com/liverpool",
+                  "summary": "Liverpool giành 1 điểm."
+                }
+              ],
+              "template": "thread",
+              "headline": ""
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "format",
+          "args": {
+            "items": [
+              {
+                "title": "Arsenal thắng 2-1",
+                "url": "https://example.com/arsenal",
+                "summary": "Arsenal giành 3 điểm."
+              },
+              {
+                "title": "Liverpool hòa 0-0",
+                "url": "https://example.com/liverpool",
+                "summary": "Liverpool giành 1 điểm."
+              }
+            ],
+            "template": "thread",
+            "headline": ""
+          },
+          "result": {
+            "tool": "render_digest",
+            "template": "thread",
+            "markdown": "1/ Arsenal giành 3 điểm. - [example.com](https://example.com/arsenal)\n\n2/ Liverpool giành 1 điểm. - [example.com](https://example.com/liverpool)",
+            "item_count": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "G04_out_of_scope_scripting",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "out_of_scope_coding",
+        "difficulty": "medium",
+        "what_it_tests": "Yêu cầu có vẻ liên quan đến tin tức nhưng thực chất là viết code -> Từ chối, không gọi tool."
+      },
+      "input": "Viết cho tôi một đoạn mã Python dùng Selenium để cào dữ liệu từ trang tin tức AI.",
+      "expect": {
+        "no_tool": true,
+        "behavior": "refuse"
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "Xin lỗi, nhưng tôi không thể giúp bạn với yêu cầu về mã Python hoặc lập trình. Tuy nhiên, nếu bạn cần thông tin hoặc tin tức liên quan đến AI, tôi có thể hỗ trợ bạn tìm kiếm. Bạn có muốn tôi tìm kiếm thông tin nào không?",
+        "case_failure_type": "out_of_scope",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G05_football_headlines_routing",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "batch_football_headlines",
+        "difficulty": "medium",
+        "what_it_tests": "Nhận diện yêu cầu đọc nhiều nguồn, chọn football_headlines thay vì gọi fetch riêng từng URL."
+      },
+      "input": "Đọc hai trang tin bóng đá https://www.arsenal.com/news và https://www.liverpoolfc.com/news trong một lần để chuẩn bị bản tin. Loại link trùng và báo riêng link lỗi, đọc tối đa 2 nguồn; chưa cần trình bày hoặc đăng bản tin.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "football_headlines",
+            "args": {
+              "urls": [
+                "https://www.arsenal.com/news",
+                "https://www.liverpoolfc.com/news"
+              ],
+              "max_articles": 2
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "routing_correct": false,
+        "args_correct": false,
+        "actual_tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://www.arsenal.com/news"
+            }
+          },
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://www.liverpoolfc.com/news"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": "missing_tool_call",
+        "failure_type": "wrong_tool",
+        "failures": [
+          "missing tool call football_headlines",
+          "extra tool call fetch",
+          "extra tool call fetch"
+        ]
+      },
+      "tool_results": [
+        {
+          "tool": "fetch",
+          "args": {
+            "url": "https://www.arsenal.com/news"
+          },
+          "result": {
+            "tool": "read_url",
+            "url": "https://www.arsenal.com/news",
+            "items": [
+              {
+                "title": "News | Arsenal FC Official Website | Arsenal.com",
+                "url": "https://www.arsenal.com/news",
+                "source": "arsenal.com",
+                "summary": "# News\n\n[All](https://www.arsenal.com/news/all/1)\n\n[Men](https://www.arsenal.com/news/men/1)\n\n[Women](https://www.arsenal.com/news/women/1)\n\n[Academy](https://www.arsenal.com/news/academy/1)\n\n[Club](https://www.arsenal.com/news/club/1)\n\nArticlesFeaturesLong ReadMatch ReportsTicketsQuizzes\n\n[![Renée: “It should be a really nice atmosphere”](https://assets.arsenal.com/prod/images/large_landscape/61db7431ad8d-gettyimages-2304472900.webp)\\\\\n\\\\\n**Renée: “It should be a really nice atmosphere”** \\\\\n\\\\\n6](https://www.arsenal.com/news/renee-it-should-be-a-really-nice-atmosphere-alpNW5R6pGOH) [![Every word of Renée’s pre-Barcelona press conference](https://assets.arsenal.com/prod/images/large_landscape/3eb0affe192f-gettyimages-2304482151.webp)\\\\\n\\\\\n**Every word of Renée’s pre-Barcelona press conference** \\\\\n\\\\\n20](https://www.arsenal.com/news/every-word-of-renees-pre-barcelona-press-conference-a1Mi10x0QIT4) [![Khari Ranson joins Billericay on short-term loan](https://assets.arsenal.com/prod/images/large_landscape/ca59d9ec40d4-barnet-england-khari-ranson-of-arsenal-looks-on-during-the-vertu-trophy-match-be.webp)\\\\\n\\\\\n**Khari Ranson joins Billericay on short-term loan** \\\\\n\\\\\n4](https://www.arsenal.com/news/khari-ranson-joins-billericay-on-short-term-loan-alATT3A92ISI) [![The best pre-Barcelona training snaps](https://assets.arsenal.com/prod/images/large_landscape/182d52a9f040-web-cover.webp)\\\\\n\\\\\n**The best pre-Barcelona training snaps** \\\\\n\\\\\n11](https://www.arsenal.com/news/the-best-pre-barcelona-training-snaps-apIOA1D8wBnY) [![Get early bird tickets for the women’s north London derby!](https://assets.arsenal.com/prod/images/large_landscape/b89b80e64f72-gettyimages-2301762410.webp)\\\\\n\\\\\n**Get early bird tickets for the women’s north London derby!** \\\\\n\\\\\n7](https://www.arsenal.com/news/get-early-bird-tickets-for-the-womens-north-london-derby-apce71f46pi3) [![Nine young Gunners called up for international duty](https://assets.arsenal.com/prod/images/large_landscape/a013303052a2-borehamwood-england-marli-salmon-of-arsenal-during-the-pl2-match-between-arsenal.webp)\\\\\n\\\\\n**Nine young Gunners called up for international duty** \\\\\n\\\\\n7](https://www.arsenal.com/news/nine-young-gunners-called-up-for-international-duty-aqRTz5X52Ans) [![Mosquera stars in latest episode of A Taste of Home](https://assets.arsenal.com/prod/images/large_landscape/387fdb8d1a31-261009-a-taste-of-home-mosquera-subbed-master-16x9-hd001-cropped.webp)\\\\\n\\\\\n**Mosquera stars in latest episode of A Taste of Home** \\\\\n\\\\\n1](https://www.arsenal.com/news/mosquera-stars-in-latest-episode-of-a-taste-of-home-a1VER2V4nVyh) [![Which stars are on November international duty?](https://assets.arsenal.com/prod/images/large_landscape/35dd8efee69b-swedens-forward-viktor-gyokeres-celebrates-scoring-the-3-1-goal-during-the-uefa.webp)\\\\\n\\\\\n**Which stars are on November international duty?** \\\\\n\\\\\n25](https://www.arsenal.com/news/which-stars-are-on-november-international-duty-aMEEl5x296aZ) [![Scanlon dreaming big with Gibraltar](https://assets.arsenal.com/prod/images/large_landscape/9da5f9cba69a-borehamwood-england-james-scanlon-of-arsenal-looks-on-prior-to-the-premier-leagu.webp)\\\\\n\\\\\n**Scanlon dreaming big with Gibraltar** \\\\\n\\\\\n9](https://www.arsenal.com/news/scanlon-dreaming-big-with-gibraltar-aLh4q2J9Ejc9) [![Berta named Best Executive at Golden Awards](https://assets.arsenal.com/prod/images/large_landscape/c55bafdcacdc-london-england-arsenal-sporting-director-andrea-berta-celebrates-after-the-premi.webp)\\\\\n\\\\\n**Berta named Best Executive at Golden Awards** \\\\\n\\\\\n22](https://www.arsenal.com/news/berta-named-best-executive-at-golden-awards-a4aVj9c0egAr) [![Watch the best of the boss against Hull with Bench Cam](https://assets.arsenal.com/prod/images/large_landscape/b788acb55cf3-london-england-mikel-arteta-manager-of-arsenal-reacts-during-the-premier-league.webp)\\\\\n\\\\\n**Watch the best of the boss against Hull with Bench Cam** \\\\\n\\\\\n8](https://www.arsenal.com/news/watch-the-best-of-the-bos"
+              }
+            ]
+          }
+        },
+        {
+          "tool": "fetch",
+          "args": {
+            "url": "https://www.liverpoolfc.com/news"
+          },
+          "result": {
+            "tool": "read_url",
+            "url": "https://www.liverpoolfc.com/news",
+            "items": [
+              {
+                "title": "News - Liverpool FC",
+                "url": "https://www.liverpoolfc.com/news",
+                "source": "liverpoolfc.com",
+                "summary": "• [2026/27 Premier League Matchday Hospitality On Sale Now](https://www.liverpoolfc.com/hospitality/fixtures)\n\n• [UEFA Champions League, League Phase Hospitality on sale now](https://ticketing.liverpoolfc.com/hospitality?cgcode=1554da46-5ee9-5ca5-7018-01a0443c7774&dd_referrer=https%3A%2F%2Fteams.public.onecdn.static.microsoft%2F)\n\n• [2026/27 LFC Legends Fixture Hospitality On Sale Now](https://www.liverpoolfc.com/hospitality/events/liverpool-legends-v-inter-legends?lfm_medium=site-link&lfm_source=liverpoolfc.com&lfm_content=ticker&lfm_campaign=fou-inter-legends-2627)\n\n• [2026/27 Premier League Matchday Hospitality On Sale Now](https://www.liverpoolfc.com/hospitality/fixtures)\n\n• [UEFA Champions League, League Phase Hospitality on sale now](https://ticketing.liverpoolfc.com/hospitality?cgcode=1554da46-5ee9-5ca5-7018-01a0443c7774&dd_referrer=https%3A%2F%2Fteams.public.onecdn.static.microsoft%2F)\n\n• [2026/27 LFC Legends Fixture Hospitality On Sale Now](https://www.liverpoolfc.com/hospitality/events/liverpool-legends-v-inter-legends?lfm_medium=site-link&lfm_source=liverpoolfc.com&lfm_content=ticker&lfm_campaign=fou-inter-legends-2627)\n\n[Standard Chartered Official Partner of LFC\\\\\n![Sponsor - Standard Chartered 2](https://contentfulproxy.stadion.io/rm6ms1yxue4m/46ctXaSUmzTLlhAyrHHFQ3/f59bb2c9d7b0972074b933ea2706cd5d/SponsorLogo_-_StandardChartered.png?fm=webp&fit=fill&f=face&w=256&h=256)](https://www.sc.com/en/)\n\n• [2026/27 Premier League Matchday Hospitality On Sale Now](https://www.liverpoolfc.com/hospitality/fixtures)\n\n• [UEFA Champions League, League Phase Hospitality on sale now](https://ticketing.liverpoolfc.com/hospitality?cgcode=1554da46-5ee9-5ca5-7018-01a0443c7774&dd_referrer=https%3A%2F%2Fteams.public.onecdn.static.microsoft%2F)\n\n• [2026/27 LFC Legends Fixture Hospitality On Sale Now](https://www.liverpoolfc.com/hospitality/events/liverpool-legends-v-inter-legends?lfm_medium=site-link&lfm_source=liverpoolfc.com&lfm_content=ticker&lfm_campaign=fou-inter-legends-2627)\n\n• [2026/27 Premier League Matchday Hospitality On Sale Now](https://www.liverpoolfc.com/hospitality/fixtures)\n\n• [UEFA Champions League, League Phase Hospitality on sale now](https://ticketing.liverpoolfc.com/hospitality?cgcode=1554da46-5ee9-5ca5-7018-01a0443c7774&dd_referrer=https%3A%2F%2Fteams.public.onecdn.static.microsoft%2F)\n\n• [2026/27 LFC Legends Fixture Hospitality On Sale Now](https://www.liverpoolfc.com/hospitality/events/liverpool-legends-v-inter-legends?lfm_medium=site-link&lfm_source=liverpoolfc.com&lfm_content=ticker&lfm_campaign=fou-inter-legends-2627)\n\n[Standard Chartered Official Partner of LFC\\\\\n![Sponsor - Standard Chartered 2](https://contentfulproxy.stadion.io/rm6ms1yxue4m/46ctXaSUmzTLlhAyrHHFQ3/f59bb2c9d7b0972074b933ea2706cd5d/SponsorLogo_-_StandardChartered.png?fm=webp&fit=fill&f=face&w=256&h=256)](https://www.sc.com/en/)\n\n[Liverpool squad visit club museum at Anfield - and get team photo on the Kop](https://www.liverpoolfc.com/news/liverpool-squad-visit-club-museum-at-anfield-team-photo-on-the-kop)\n\n![Squad Museum visit main 09.11.2026](https://contentfulproxy.stadion.io/rm6ms1yxue4m/6o4IYysOPRrqsDrN6CSuaV/32747bfe0e50bec4d0123ee5f1e95b03/Squad_Museum_visit_main_09.11.2026.jpg?fm=webp&fit=fill&f=center&w=3000&h=1687)\n\n[Men](https://www.liverpoolfc.com/news/category/men)\n\n### Liverpool squad visit club museum at Anfield - and get team photo on the Kop\n\nLiverpool’s players made a group visit to the LFC Museum at Anfield last week to further enhance their understanding of the history and culture behind England’s most successful football club and its supporters.\n\n7 hours ago [Read](https://www.liverpoolfc.com/news/liverpool-squad-visit-club-museum-at-anfield-team-photo-on-the-kop)\n\n## Latest News\n\n- [U21s match report: Liverpool beaten at Huddersfield in Jersey Mike's Trophy](https://www.liverpoolfc.com/news/match-report-jersey-mikes-trophy-huddersfield-town-liverpool)\n\n\n\n![lfc-u21-huddersfield-report-101126](https://contentfulproxy.stadi"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G06_multi_fetch_after_search",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_fetch_specific_url",
+        "difficulty": "medium",
+        "what_it_tests": "Multi-turn: Carry over URL từ lượt trước và nhận diện yêu cầu đọc nội dung -> gọi tool fetch."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm tin về OpenAI."
+        },
+        {
+          "role": "user",
+          "content": "Bài viết ở link https://tech.com/openai-news có vẻ hay."
+        },
+        {
+          "role": "user",
+          "content": "Tóm tắt chi tiết nội dung trong link đó giúp tôi."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://tech.com/openai-news"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://tech.com/openai-news"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "fetch",
+          "args": {
+            "url": "https://tech.com/openai-news"
+          },
+          "result": {
+            "tool": "read_url",
+            "url": "https://tech.com/openai-news",
+            "items": [
+              {
+                "title": "https://tech.com/openai-news",
+                "url": "https://tech.com/openai-news",
+                "source": "tech.com",
+                "summary": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G07_multi_telegram_boundary",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_confirm_boundary",
+        "difficulty": "hard",
+        "what_it_tests": "Multi-turn: Dù đã có sẵn nội dung từ các turn trước, hành động gửi (Telegram) vẫn phải hỏi confirm (yes_no) trước khi send."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm các bài viết về trí tuệ nhân tạo."
+        },
+        {
+          "role": "user",
+          "content": "Viết thành một đoạn văn ngắn gọn."
+        },
+        {
+          "role": "user",
+          "content": "Được rồi, gửi nội dung đó lên Telegram giúp mình luôn."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "yes_no"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn có xác nhận muốn gửi nội dung về trí tuệ nhân tạo lên Telegram không?",
+              "response_type": "yes_no"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn có xác nhận muốn gửi nội dung về trí tuệ nhân tạo lên Telegram không?",
+            "response_type": "yes_no"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn có xác nhận muốn gửi nội dung về trí tuệ nhân tạo lên Telegram không?",
+            "response_type": "yes_no",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G08_multi_football_mentions",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_football_mentions",
+        "difficulty": "medium",
+        "what_it_tests": "Giữ nhóm tài khoản, từ khóa và hai giới hạn từ lịch sử; route tới football_mentions để lọc timeline và loại tweet trùng."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Trong hai tài khoản X Arsenal và PremierLeague, tìm các bài có nhắc tới Chelsea."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ xem tối đa 5 bài có ID đầu tiên mỗi tài khoản, không tìm toàn X."
+        },
+        {
+          "role": "user",
+          "content": "Gộp kết quả, loại tweet trùng và trả tối đa 5 bài khớp kèm link gốc."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "football_mentions",
+            "args": {
+              "handles": [
+                "Arsenal",
+                "PremierLeague"
+              ],
+              "keyword": "Chelsea",
+              "per_account": 5,
+              "max_results": 5
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "football_mentions",
+            "args": {
+              "handles": [
+                "Arsenal",
+                "PremierLeague"
+              ],
+              "keyword": "Chelsea",
+              "per_account": 5,
+              "max_results": 5
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "football_mentions",
+          "args": {
+            "handles": [
+              "Arsenal",
+              "PremierLeague"
+            ],
+            "keyword": "Chelsea",
+            "per_account": 5,
+            "max_results": 5
+          },
+          "result": {
+            "tool": "football_mentions",
+            "status": "success",
+            "handles": [
+              "arsenal",
+              "premierleague"
+            ],
+            "keyword": "Chelsea",
+            "items": [],
+            "errors": [],
+            "scanned_count": 10,
+            "matched_count": 0,
+            "truncated": false,
+            "note": "Literal phrase match in recent fetched timelines only; no pagination, no completeness or fact verification guarantee"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G09_multi_lookup_topic_shift",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_topic_timeframe_shift",
+        "difficulty": "hard",
+        "what_it_tests": "Multi-turn: Chuyển đổi topic từ general sang news và cập nhật timeframe sang day."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm hiểu về biến đổi khí hậu."
+        },
+        {
+          "role": "user",
+          "content": "Không, tôi muốn đọc tin tức thời sự cơ."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ lấy tin tức của hôm nay thôi nhé."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "biến đổi khí hậu",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "biến đổi khí hậu",
+              "topic": "news",
+              "timeframe": "day",
+              "max_results": 5
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "biến đổi khí hậu",
+            "topic": "news",
+            "timeframe": "day",
+            "max_results": 5
+          },
+          "result": {
+            "tool": "web_search",
+            "query": "biến đổi khí hậu",
+            "topic": "news",
+            "timeframe": "day",
+            "items": [
+              {
+                "title": "COP31: Thế giới khẩn trương thúc đẩy hành động ứng phó biến đổi khí hậu",
+                "url": "https://baophutho.vn/cop31-the-gioi-khan-truong-thuc-day-hanh-dong-ung-pho-bien-doi-khi-hau-264265.htm",
+                "source": "baophutho.vn",
+                "summary": "Theo báo cáo của Chương trình Môi trường LHQ (UNEP) công bố hồi tháng 10, thế giới đang đứng trước nguy cơ vượt ngưỡng tăng nhiệt 1,5 độ C so với thời kỳ tiền công nghiệp, ngay cả trong kịch bản lạc quan nhất. Đy là giới hạn nhiệt độ được xác lập trong Thỏa thuận Paris năm 2015 nhằm hạn chế những tác động nguy hiểm của biến đổi khí hậu. Báo cáo đồng thời kêu gọi các quốc gia cắt giảm mạnh lượng khí thải gy hiệu ứng nhà kính để hạn chế mức độ nóng lên toàn cầu. [...] Về lý thuyết, việc mở rộng điện khí hóa có thể góp phần giảm phát thải khí nhà kính thông qua đẩy nhanh quá trình thay thế các thiết bị sử dụng nhiên liệu hóa thạch. Những lĩnh vực được hướng tới bao gồm giao thông vận tải, hệ thống sưởi trong các tòa nhà, lò hơi, thiết bị nấu ăn và nhiều hoạt động sản xuất, tiêu dùng khác. [...] Các tổ chức hoạt động vì khí hậu cho rằng việc mở rộng sử dụng năng lượng tái tạo là giải pháp quan trọng nhằm giảm sự phụ thuộc vào nhiên liệu hóa thạch, đồng thời củng cố an ninh năng lượng. Tuy nhiên, trong bối cảnh thị trường năng lượng biến động, ngành công nghiệp dầu khí vẫn ghi nhận lợi nhuận lớn, trong khi một số quốc gia sở hữu nguồn dự trữ nhiên liệu hóa thạch tìm cách gia tăng sản lượng khai thác.",
+                "score": 0.6790723
+              },
+              {
+                "title": "Thứ trưởng Lê Trọng Yên: Hoàn thiện chính sách ứng phó với biến đổi khí hậu phải khả thi, bám sát thực tiễn",
+                "url": "https://thanhtra.com.vn/moi-truong-9DBF44B9E/thu-truong-le-trong-yen-hoan-thien-chinh-sach-ung-pho-voi-bien-doi-khi-hau-phai-kha-thi-bam-sat-thuc-tien-7ea761899.html",
+                "source": "thanhtra.com.vn",
+                "summary": "Định hướng đặt ra là xy dựng Việt Nam có môi trường sống trong lành, hài hòa với thiên nhiên, phát triển bền vững; hình thành hệ thống quản trị môi trường hiện đại và thích ứng hiệu quả với biến đổi khí hậu. Phát triển kinh tế xanh, tuần hoàn, các-bon thấp trở thành phương thức phát triển quan trọng, góp phần thực hiện mục tiêu phát thải ròng bằng 0 vào năm 2050. [...] Thứ trưởng Lê Trọng Yên cũng yêu cầu thảo luận về sự phối hợp giữa các bộ, ngành và doanh nghiệp trong tổ chức thực hiện. Phạm vi phối hợp bao gồm các hoạt động thích ứng với biến đổi khí hậu, quản lý phát thải khí nhà kính, phát triển thị trường các-bon và bảo vệ tầng ô-zôn.\n\nViệc tham vấn các nội dung trên nhằm tiếp tục hoàn thiện dự thảo, bảo đảm các quy định khi ban hành đáp ứng yêu cầu quản lý và phù hợp với điều kiện triển khai thực tế. [...] Thể chế hóa các chủ trương đó, nội dung về ứng phó với biến đổi khí hậu tại dự thảo Luật Bảo vệ môi trường sửa đổi, bổ sung có nhiều điểm mới so với Luật Bảo vệ môi trường năm 2020. Trong đó, dự thảo bổ sung nội dung về thích ứng với biến đổi khí hậu, bảo vệ tầng ô-zôn; quy định về quản lý phát thải khí nhà kính thay cho giảm nhẹ phát thải khí nhà kính và quy định chi tiết hơn về phát triển thị trường các-bon.",
+                "score": 0.633637
+              },
+              {
+                "title": "Hành động khẩn cấp vì khí hậu",
+                "url": "https://nhandan.vn/hanh-dong-khan-cap-vi-khi-hau-post1001233.html",
+                "source": "nhandan.vn",
+                "summary": "Hàng chục triệu người tị nạn đối mặt mối nguy hiểm liên quan khí hậu, trong khi các cam kết và mục tiêu khí hậu, cũng như nguồn tài chính cho tăng cường thích ứng vẫn không theo kịp yêu cầu. Đy là thực tế được các cơ quan LHQ nêu trong các báo cáo mới nhất, cho thấy tác động nghiêm trọng của biến đổi khí hậu (BĐKH) và yêu cầu cấp bách phải tăng cường hành động khẩn trương, hiệu quả.\n\nPrefer Nhan Dan on Google\n\n Biến đổi khí hậu ảnh hưởng hàng chục triệu người trên toàn cầu. Ảnh: BBC News [...] Biến đổi khí hậu ảnh hưởng hàng chục triệu người trên toàn cầu. Ảnh: BBC News\n\n \n\nRủi ro với 90 triệu người [...] Trong khi đó, báo cáo UN Climate Change của cơ quan LHQ về BĐKH cảnh báo rằng, các cam kết khí hậu mới nhất do các quốc gia đưa ra cũng chỉ cắt giảm lượng khí thải nhà kính toàn cầu khoảng 6% vào năm 2035. Con số này chỉ bằng một phần mười so mức giảm khoảng 60% so năm 2019 mà các nhà khoa học cho rằng cần thiết để hạn chế sự nóng lên toàn cầu ở mức 1,5oC.",
+                "score": 0.6132945
+              },
+              {
+                "title": "Nepal kêu gọi \"công bằng khí hậu\" tại COP31 | NHK WORLD-JAPAN News",
+                "url": "https://www3.nhk.or.jp/nhkworld/vi/news/20261110_RS15",
+                "source": "www3.nhk.or.jp",
+                "summary": "Ông Khanal nói: \"Khoa học đã chứng minh biến đổi khí hậu là một nguyên nhn dẫn tới thảm họa này\", đồng thời cho biết khí hậu thay đổi đang \"làm biến đổi cuộc sống, cảnh quan và tương lai của chúng ta\".  \n   \nÔng cho biết mặc dù lượng phát thải của Nepal chiếm không đáng kể trong tổng lượng phát thải toàn cầu, nhưng dãy Himalaya đang \"tan chảy với tốc độ bất thường\". [...] Trong bài phát biểu tại hội nghị khí hậu của Liên hợp quốc ở Thổ Nhĩ Kỳ, ngoại trưởng Nepal đã kêu gọi triển khai các biện pháp khẩn cấp nhằm ứng phó với những rủi ro biến đổi khí hậu gy ra cho các khu vực miền núi.  \n   \nÔng Shisir Khanal đưa ra lời kêu gọi về \"công bằng khí hậu\" khi phát biểu tại phiên họp toàn thể vào hôm thứ Hai, ngày khai mạc COP31. Ông nhắc tới các vụ lở bùn nghiêm trọng xảy ra vào tháng 8 tại khu vực dãy Himalaya dọc biên giới Nepal - Trung Quốc. [...] Các đại biểu từ nhiều quốc gia khác cũng thừa nhận những trận lũ quét này có liên quan tới biến đổi khí hậu và kêu gọi đẩy nhanh các nỗ lực ứng phó.  \n   \nTính đến cuối tháng 10, số người thiệt mạng trong thảm họa này ở cả hai bên biên giới lên tới khoảng 1.500 người. Hơn 5.700 người vẫn chưa rõ tung tích.",
+                "score": 0.58112484
+              },
+              {
+                "title": "Công nghệ sạch Trung Quốc tái định hình cuộc chiến khí hậu - Báo VnExpress",
+                "url": "https://vnexpress.net/cong-nghe-sach-trung-quoc-tai-dinh-hinh-cuoc-chien-khi-hau-5142911.html",
+                "source": "vnexpress.net",
+                "summary": "Tuy nhiên, tại Mỹ và nhiều nước chu u, công nghệ sạch Trung Quốc phải đối mặt với hàng loạt rào cản thương mại. Washington áp thuế hơn 100% đối với xe điện Trung Quốc nhằm bảo vệ nhà sản xuất trong nước và hạn chế hàng nhập khẩu. André Corrêa do Lago, nhà đàm phán khí hậu kỳ cựu của Brazil, nhận định các chính sách vốn được thiết kế để ứng phó biến đổi khí hậu hiện vấp phải phản đối mạnh mẽ không phải do tác động môi trường mà do lo ngại về thương mại và năng lực cạnh tranh.\n\nAn Khang tổng hợp [...] Khoản tiền Trung Quốc chi chủ yếu là giao dịch thương mại tập trung vào phát triển năng lượng sạch, trong khi hỗ trợ tài chính chống biến đổi khí hậu còn giúp phát triển kỹ thuật nông nghiệp bền vững hoặc khắc phục thiệt hại do bão lũ gy ra. Dù hai khoản đóng góp có bản chất khác nhau, so sánh vẫn cho thấy quy mô và sức ảnh hưởng ngày càng lớn của Trung Quốc trong quá trình chuyển dịch năng lượng tại nhiều nền kinh tế đang phát triển. [...] Bộ Thương mại Trung Quốc cho biết họ đang góp phần quan trọng vào chuyển đổi xanh trên toàn thế giới. Xuất khẩu điện gió và điện mặt trời của Bắc Kinh đã giảm khoảng 4,1 tỷ tấn CO2 toàn cầu trong 5 năm qua, tương đương khoảng 80% tổng lượng khí thải của Mỹ trong một năm.\n\nTuy nhiên, Trung Quốc vẫn là nước phát thải khí nhà kính lớn nhất thế giới (chiếm khoảng 1/3 lượng khí thải CO2 toàn cầu) do dn số đông, nhiều ngành công nghiệp nặng và hơn nửa sản lượng điện nội địa phụ thuộc vào than đá.",
+                "score": 0.5168393
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G10_multi_football_stats_clarify",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_clarify_football",
+        "difficulty": "hard",
+        "what_it_tests": "Multi-turn: bổ sung tên đội Liverpool ở turn 2 và last_n=4 ở turn 3 vào tool mới football_stats."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tính giúp mình phong độ mấy trận gần đây với danh sách: [{'team': 'Liverpool', 'scored': 1, 'conceded': 0}]"
+        },
+        {
+          "role": "user",
+          "content": "Của đội Liverpool nhé"
+        },
+        {
+          "role": "user",
+          "content": "Tính trong 4 trận gần nhất"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "football_stats",
+            "args": {
+              "team_a": "Liverpool",
+              "last_n": 4
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "football_stats",
+            "args": {
+              "team_a": "Liverpool",
+              "matches": [
+                {
+                  "team": "Liverpool",
+                  "scored": 1,
+                  "conceded": 0
+                }
+              ],
+              "last_n": 4
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "football_stats",
+          "args": {
+            "team_a": "Liverpool",
+            "matches": [
+              {
+                "team": "Liverpool",
+                "scored": 1,
+                "conceded": 0
+              }
+            ],
+            "last_n": 4
+          },
+          "result": {
+            "status": "success",
+            "team_a": {
+              "team": "Liverpool",
+              "matches_analyzed": 1,
+              "form": "W",
+              "points": 3,
+              "max_possible_points": 3,
+              "wins": 1,
+              "draws": 0,
+              "losses": 0,
+              "goals_scored": 1,
+              "goals_conceded": 0,
+              "goal_diff": 1,
+              "clean_sheets": 1,
+              "win_rate_percent": 100.0
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

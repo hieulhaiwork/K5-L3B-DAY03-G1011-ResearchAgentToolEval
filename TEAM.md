@@ -50,17 +50,19 @@ CP3: football_stats, football_headlines, football_mentions và unit test. CP4: 1
 
 ### Đóng góp cụ thể
 
-- Hoàn thiện validation và regression test football_stats; thêm headlines gom nhiều URL và mentions lọc nhiều timeline, có xử lý trùng và lỗi từng nguồn.
-- Thêm code, TOOL.md, đăng ký và khai báo tool mới; giữ nguyên system prompt và khai báo tool cũ của CP1/CP2.
-- Viết 50 lượt test cho ba tool sau tham số hóa (22 stats, 13 headlines, 15 mentions), triển khai 14 test stub có sẵn. Toàn suite đạt 172 passed, 0 failed, 0 skipped.
-- Chạy eval OpenRouter/openai/gpt-4o-mini trên máy cá nhân, nhãn v5; sau pull đạt 9/10 PASS (G05 còn sai routing). Tổng 172 test pass gồm cả test của thành viên khác.
+- Thêm khả năng tự tìm kết quả và tính phong độ cho football_stats; thêm headlines gom nhiều URL và mentions lọc nhiều timeline, có xử lý trùng và lỗi từng nguồn.
+- Thêm code, TOOL.md, đăng ký và khai báo tool mới; giữ nguyên system prompt và khai báo tool của thành viên khác.
+- Viết 63 lượt test cho ba tool sau tham số hóa (35 stats, 13 headlines, 15 mentions), triển khai 14 test stub có sẵn. Toàn suite đạt 246 passed, 0 failed, 0 skipped.
+- Chạy eval OpenRouter/openai/gpt-4o-mini trên máy cá nhân, nhãn v5; lần cuối đạt 9/10 PASS (G05 còn sai routing). Tổng 246 test pass gồm cả test của thành viên khác.
 
 ### Bằng chứng
 
 - [Báo cáo cá nhân](report/team/2A202603951_TranXuanLoc.md), [báo cáo nhóm B3/B5a/B5](report/team/group_report.md).
 - [football_stats](starter_v0/tools/football_stats/tool.py), [football_headlines](starter_v0/tools/football_headlines/tool.py), [football_mentions](starter_v0/tools/football_mentions/tool.py); mỗi folder có TOOL.md.
-- [Unit test](starter_v0/tests/test_tools_todo.py), [bộ eval nhóm](starter_v0/data/eval_group.json), [run hiện tại](starter_v0/runs/v5_B_group_openrouter_20261111T011314148993.json).
+- [Unit test](starter_v0/tests/test_tools_todo.py), [bộ eval nhóm](starter_v0/data/eval_group.json), [run hiện tại](starter_v0/runs/v5_B_group_openrouter_20261111T101438249469.json).
 - Commit kỹ thuật: `45804d1` (football_stats và eval nhóm), `cfd1017` (hoàn thiện tool, test và bằng chứng CP3/CP4).
+
+- [Transcript Liverpool/MU](starter_v0/transcripts/v5_openrouter_20261111T095625859539.transcript.json): tự tìm 5 trận mỗi đội và so sánh, không cần người dùng nhập tỷ số.
 
 ## Nguyễn Quang Tiệp — 2A202603946
 
