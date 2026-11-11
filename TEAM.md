@@ -60,3 +60,20 @@ CP3: football_stats, football_headlines, football_mentions và unit test. CP4: 1
 - [football_stats](starter_v0/tools/football_stats/tool.py), [football_headlines](starter_v0/tools/football_headlines/tool.py), [football_mentions](starter_v0/tools/football_mentions/tool.py); mỗi folder có TOOL.md.
 - [Unit test](starter_v0/tests/test_tools_todo.py), [bộ eval nhóm](starter_v0/data/eval_group.json), [run hiện tại](starter_v0/runs/v5_B_group_openrouter_20261111T011314148993.json).
 - Commit kỹ thuật đã có: `45804d1` (football_stats và eval nhóm).
+
+## Nguyễn Quang Tiệp — 2A202603946
+
+### Phần việc phụ trách
+
+- CP1: thiết lập và đánh giá baseline `v0`; CP2: phân tích lỗi và thử nghiệm tối ưu Prompt/Tool Calling qua `v1`–`v3`.
+
+### Đóng góp cụ thể
+
+- Chạy đánh giá base bằng OpenRouter / `openai/gpt-4o-mini`: `v0` có 20 case, 13 PASS (65%), 0 lỗi provider.
+- Phân tích 7 case FAIL: R03, R08, R10, R11, R12, R13, R14; phân loại lỗi arguments, thiếu thông tin, ngoài phạm vi và xác nhận trước khi gửi.
+- Thử nghiệm cải thiện các quy tắc chọn tool, hỏi lại khi thiếu thông tin và không gửi nội dung khi chưa xác nhận; kết quả `v1`–`v3` cần đối chiếu run JSON tương ứng.
+
+### Bằng chứng
+
+- [Báo cáo cá nhân](report/team/2A202603946_NguyenQuangTiep.md), [phân tích baseline và bảng version ở báo cáo nhóm](report/team/group_report.md).
+- [Run v0](starter_v0/runs/v0_B_base_openrouter_20261110T175817951797.json), [system prompt](starter_v0/artifacts/system_prompt.md), [tool declarations](starter_v0/artifacts/tools.yaml), [version log](starter_v0/artifacts/version_log.csv).
