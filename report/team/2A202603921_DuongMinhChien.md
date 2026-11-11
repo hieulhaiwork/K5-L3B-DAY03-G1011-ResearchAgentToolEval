@@ -92,12 +92,20 @@ Các quy tắc xử lý dữ liệu:
 - Chạy thật ngày 2026-11-10:
   - Premier League, mùa hiện tại: API-Football trả _"Free plans do not have access to this season, try from 2022 to 2024"_, tool fallback sang SportScore và trả top 5 (Haaland 9 bàn, Isak 7…), `season.verified: false`, có attribution.
   - Premier League, `season=2024`: API-Football trả dữ liệu, `verified: true`, không phải fallback.
-- `pytest` sau khi thêm `standings` và `team_fixtures` (đã rebase lên `main` mới nhất của nhóm): 51 test mới đều pass, toàn suite 233 passed, 0 failed, contract test xanh.
+- `pytest` sau khi thêm `standings` và `team_fixtures` (đã rebase lên `main` mới nhất của nhóm): 51 test mới đều pass, toàn suite 233 passed, 0 failed, contract test xanh. Sau khi kéo commit `8239fc1` của Lộc về: 246 passed, 0 failed.
 - Chạy thật ngày 2026-11-11:
   - `standings("Premier League", 2024, "England")`: API-Football, Liverpool hạng 1 với 84 điểm, Arsenal hạng 2 với 74 điểm.
   - `standings("Premier League", country="England")` cho mùa hiện tại: API-Football báo lỗi gói Free, tool fallback sang SportScore (`fallback_reason: plan_restriction`), trả bảng 20 đội với Arsenal dẫn đầu 27 điểm sau 10 trận, có attribution.
   - `team_fixtures("Arsenal", 2024, "Premier League", "England", 5)`: 5 trận cuối mùa, từ Arsenal 2-2 Crystal Palace đến Southampton 1-2 Arsenal. Đưa thẳng kết quả vào `football_stats` ra phong độ `D-L-D-W-W`, khớp với `form` `"WWDLD"` của `standings` khi đọc ngược.
   - `team_fixtures("Arsenal", 2025, country="England")`: `data_unavailable`, lý do `plan_restriction`. `team_fixtures("Arsenal", 2024)` không kèm `country`: `ambiguous_team`.
+- Eval với LLM ngày 2026-11-11, OpenRouter / `openai/gpt-4o-mini`, chạy 12 case của ba tool và chạy lại 10 case của `eval_group.json` để kiểm tra hồi quy. Mọi run đều có provider_error_cases=0.
+  - v6 (mô tả lúc commit `791e511`): `top_scorers` 4/4, `standings` 2/4, `team_fixtures` 1/4, tổng 7/12; `eval_group` 9/10. Cả 5 case fail đều do model gọi `clarify` dạng `yes_no` để xác nhận lại dù câu hỏi đã đủ giải, đội và mùa; F03 hỏi đúng chuyện mùa nhưng dùng `yes_no` thay vì `text`.
+  - v7: thêm câu "GỌI THẲNG …, KHÔNG gọi clarify để xác nhận lại" vào mô tả `standings` và `team_fixtures`. Tổng lên 10/12; còn S01 và F02 đổi "2023/24" thành `season=2024`. Nhưng `eval_group` giảm còn 8/10 vì G08 gọi `football_mentions` hai lần.
+  - v8: thêm quy tắc "lấy năm đứng trước dấu '/'" vào mô tả tham số `season` của hai tool. 12/12, nhưng `eval_group` vẫn 8/10 ở hai lần chạy. Chạy lại `eval_group` hai lần với `tools.yaml` của v6 (nhãn `v6check`) thì được 9/10 cả hai, nên tôi kết luận cách viết hoa mạnh của v7 gây ra lỗi G08.
+  - v9: viết lại hai câu đó bằng giọng bình thường, giữ nguyên ý. 12/12 (`standings`, `team_fixtures` chạy hai lần) và `eval_group` 9/10 ở cả hai lần.
+  - v10: kéo về commit `8239fc1` của Lộc, trong đó `football_stats` tự tìm kết quả trận gần đây khi không có `matches`. Tôi thêm ranh giới vào mô tả `team_fixtures`: mùa cụ thể đã qua thì dùng `team_fixtures`, phong độ gần đây không nêu mùa thì dùng `football_stats`. Kết quả 12/12 ở cả hai lần chạy ([top_scorers](../../starter_v0/runs/v10_B_group_openrouter_20261111T105958560103.json), [standings](../../starter_v0/runs/v10_B_group_openrouter_20261111T110009615199.json), [team_fixtures](../../starter_v0/runs/v10_B_group_openrouter_20261111T110021824098.json)).
+  - `eval_group` ở v10 là 8/10 cả hai lần (G05 và G08 fail). Với `tools.yaml` trên `main` không có thay đổi của tôi (nhãn `v10base`), kết quả cũng là 8/10 cả hai lần với cùng hai case, và hai run v5 Lộc commit hôm nay có một lần G08 pass, một lần fail. G08 không ổn định từ trước và không phải do mô tả của tôi; đây là case của Lộc nên tôi không sửa.
+  - Mọi thay đổi chỉ nằm ở mô tả `standings` và `team_fixtures` trong `tools.yaml`; system prompt và mô tả các tool khác giữ nguyên.
 - AI/công cụ đã dùng và cách tự kiểm tra kết quả: tôi dùng Claude Code để đọc codebase. Cách tôi kiểm tra kết quả:
   1. Gọi thử endpoint thật của API-Football và SportScore để lấy cấu trúc JSON thật rồi mới viết mock, không để AI tự đoán schema.
   2. Chạy `pytest` toàn suite và contract test sau mỗi thay đổi.

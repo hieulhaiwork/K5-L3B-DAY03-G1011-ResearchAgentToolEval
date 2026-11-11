@@ -1,0 +1,415 @@
+{
+  "run_id": "v10_B_group_openrouter_20261111T110120156692",
+  "version": "v10",
+  "artifact_version": "v10+pc1e1bcde287a+t47da2c1229e5",
+  "prompt_hash": "c1e1bcde287ae3219524ab818307e6764690a63481b2102e9bcd581f5e1791dd",
+  "tools_hash": "47da2c1229e5cbc93f4d76f12e852ce209e8086f85299f72604b7b801630929d",
+  "phase": "B",
+  "suite": "group",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "system_prompt": "D:\\LAB3\\K5-L3B-DAY03-G1011-ResearchAgentToolEval\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "D:\\LAB3\\K5-L3B-DAY03-G1011-ResearchAgentToolEval\\starter_v0\\artifacts\\tools.yaml",
+  "eval_cases": "data\\eval_team_fixtures.json",
+  "dataset_id": "day03_v2_team_fixtures",
+  "dataset_role": "group",
+  "description": "Case routing cho tool mới team_fixtures (file riêng, không thay 10 case của eval_group.json). Eval chỉ chấm tool + args ở lượt đầu; lọc trận đã đá, thứ tự thời gian, luân lưu, giới hạn gói Free được kiểm tra bằng unit test trong tests/test_team_fixtures.py.",
+  "generated_at": "2026-11-11T11:01:20",
+  "summary": {
+    "total_cases": 4,
+    "measured_cases": 4,
+    "provider_error_cases": 0,
+    "passed_cases": 4,
+    "case_accuracy": 1.0,
+    "tool_routing_accuracy": 1.0,
+    "argument_accuracy": 1.0,
+    "multiturn_accuracy": 1.0,
+    "failure_counts": {},
+    "observed_mismatch_counts": {}
+  },
+  "results": [
+    {
+      "id": "F01_team_fixtures_season_and_last_n",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "routing_team_fixtures_args",
+        "difficulty": "medium",
+        "what_it_tests": "Route tới team_fixtures, chuyển '2024/25' thành season=2024 và '5 trận cuối' thành last_n=5."
+      },
+      "input": "5 trận Premier League cuối cùng của Arsenal mùa 2024/25 có kết quả ra sao?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "team_fixtures",
+            "args": {
+              "season": 2024,
+              "last_n": 5
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "team_fixtures",
+            "args": {
+              "team": "Arsenal",
+              "season": 2024,
+              "competition": "Premier League",
+              "last_n": 5
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "team_fixtures",
+          "args": {
+            "team": "Arsenal",
+            "season": 2024,
+            "competition": "Premier League",
+            "last_n": 5
+          },
+          "result": {
+            "tool": "team_fixtures",
+            "status": "error",
+            "error": "ambiguous_team",
+            "message": "API-Football found several teams named 'Arsenal'; ask the user which one (or pass country / team id).",
+            "candidates": [
+              {
+                "id": 42,
+                "name": "Arsenal",
+                "country": "England",
+                "national": false
+              },
+              {
+                "id": 4403,
+                "name": "Arsenal",
+                "country": "Guadeloupe",
+                "national": true
+              },
+              {
+                "id": 9419,
+                "name": "Arsenal",
+                "country": "Belarus",
+                "national": false
+              }
+            ],
+            "attempts": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "F02_team_fixtures_before_football_stats",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "chain_team_fixtures_then_football_stats",
+        "difficulty": "hard",
+        "what_it_tests": "User không đưa danh sách trận -> lượt đầu phải lấy dữ liệu thật bằng team_fixtures; gọi football_stats ngay (với matches tự bịa) là sai."
+      },
+      "input": "Phân tích phong độ 5 trận cuối mùa 2023/24 của Liverpool ở Premier League giúp mình.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "team_fixtures",
+            "args": {
+              "season": 2023,
+              "last_n": 5
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "team_fixtures",
+            "args": {
+              "team": "Liverpool",
+              "season": 2023,
+              "competition": "Premier League",
+              "last_n": 5
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "team_fixtures",
+          "args": {
+            "team": "Liverpool",
+            "season": 2023,
+            "competition": "Premier League",
+            "last_n": 5
+          },
+          "result": {
+            "tool": "team_fixtures",
+            "status": "success",
+            "team": {
+              "id": 40,
+              "name": "Liverpool",
+              "country": "England"
+            },
+            "competition": {
+              "id": 39,
+              "name": "Premier League",
+              "country": "England"
+            },
+            "season": {
+              "requested": 2023,
+              "actual": 2023,
+              "verified": true
+            },
+            "provider": {
+              "name": "API-Football",
+              "fallback_used": false,
+              "source_url": "https://www.api-football.com/"
+            },
+            "order": "oldest_first",
+            "count": 5,
+            "fixtures_in_season": 38,
+            "finished_in_season": 38,
+            "matches": [
+              {
+                "fixture_id": 1035458,
+                "date": "2024-04-24T19:00:00+00:00",
+                "competition": "Premier League",
+                "round": "Regular Season - 29",
+                "home_team": "Everton",
+                "away_team": "Liverpool",
+                "home_score": 2,
+                "away_score": 0,
+                "venue": "away",
+                "decided_by": "regular_time",
+                "penalty_shootout": null
+              },
+              {
+                "fixture_id": 1035522,
+                "date": "2024-04-27T11:30:00+00:00",
+                "competition": "Premier League",
+                "round": "Regular Season - 35",
+                "home_team": "West Ham",
+                "away_team": "Liverpool",
+                "home_score": 2,
+                "away_score": 2,
+                "venue": "away",
+                "decided_by": "regular_time",
+                "penalty_shootout": null
+              },
+              {
+                "fixture_id": 1035530,
+                "date": "2024-05-05T15:30:00+00:00",
+                "competition": "Premier League",
+                "round": "Regular Season - 36",
+                "home_team": "Liverpool",
+                "away_team": "Tottenham",
+                "home_score": 4,
+                "away_score": 2,
+                "venue": "home",
+                "decided_by": "regular_time",
+                "penalty_shootout": null
+              },
+              {
+                "fixture_id": 1035535,
+                "date": "2024-05-13T19:00:00+00:00",
+                "competition": "Premier League",
+                "round": "Regular Season - 37",
+                "home_team": "Aston Villa",
+                "away_team": "Liverpool",
+                "home_score": 3,
+                "away_score": 3,
+                "venue": "away",
+                "decided_by": "regular_time",
+                "penalty_shootout": null
+              },
+              {
+                "fixture_id": 1035550,
+                "date": "2024-05-19T15:00:00+00:00",
+                "competition": "Premier League",
+                "round": "Regular Season - 38",
+                "home_team": "Liverpool",
+                "away_team": "Wolves",
+                "home_score": 2,
+                "away_score": 0,
+                "venue": "home",
+                "decided_by": "regular_time",
+                "penalty_shootout": null
+              }
+            ],
+            "warning": null,
+            "attempts": [
+              {
+                "provider": "API-Football",
+                "status": "success"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "F03_team_fixtures_missing_season",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "clarify_missing_season",
+        "difficulty": "medium",
+        "what_it_tests": "team_fixtures bắt buộc có season; user không nêu mùa -> gọi clarify hỏi mùa, không tự điền season."
+      },
+      "input": "Cho mình xem kết quả các trận của Chelsea với.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn có thể cho biết mùa giải mà bạn muốn xem kết quả các trận của Chelsea không?",
+              "response_type": "text"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn có thể cho biết mùa giải mà bạn muốn xem kết quả các trận của Chelsea không?",
+            "response_type": "text"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn có thể cho biết mùa giải mà bạn muốn xem kết quả các trận của Chelsea không?",
+            "response_type": "text",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "F04_multi_team_fixtures_details_across_turns",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_team_fixtures_args",
+        "difficulty": "hard",
+        "what_it_tests": "Multi-turn: gom đội (turn 1) + mùa 2022/23 và giải (turn 2) + 10 trận (turn 3) -> season=2022, last_n=10 trong một lệnh team_fixtures."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Mình muốn xem kết quả các trận của Real Madrid."
+        },
+        {
+          "role": "user",
+          "content": "Mùa 2022/23 nhé, chỉ tính La Liga."
+        },
+        {
+          "role": "user",
+          "content": "Lấy 10 trận cuối thôi."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "team_fixtures",
+            "args": {
+              "season": 2022,
+              "last_n": 10
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "team_fixtures",
+            "args": {
+              "team": "Real Madrid",
+              "season": 2022,
+              "competition": "La Liga",
+              "last_n": 10
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "team_fixtures",
+          "args": {
+            "team": "Real Madrid",
+            "season": 2022,
+            "competition": "La Liga",
+            "last_n": 10
+          },
+          "result": {
+            "tool": "team_fixtures",
+            "status": "error",
+            "error": "data_unavailable",
+            "message": "API-Football could not supply fixtures: rate_limited (HTTP 429: request quota exhausted, not retrying)",
+            "attempts": [
+              {
+                "provider": "API-Football",
+                "status": "failed",
+                "reason": "rate_limited",
+                "message": "HTTP 429: request quota exhausted, not retrying",
+                "http_status": 429
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
