@@ -125,19 +125,19 @@ tools:
       required: [arxiv_url]
 
   - name: football_stats
-    description: "Tính toán và so sánh phong độ (form W-D-L), điểm số, bàn thắng/bại của đội bóng qua các trận đấu gần đây. Dùng khi người dùng muốn phân tích phong độ gần đây hoặc so sánh phong độ 2 đội trước trận đấu. Không dùng cho tìm kiếm tin tức chung hay đọc web."
+    description: "TỰ TÌM kết quả trận gần đây rồi tính phong độ W-D-L, điểm và bàn thắng/bại của một hoặc hai đội. Khi user hỏi phong độ Liverpool/MU mà KHÔNG đưa tỷ số, gọi football_stats với team_a, team_b và last_n; BỎ HẲN matches để tool tự tìm qua Tavily/Firecrawl. TUYỆT ĐỐI không tự tạo danh sách tỷ số, không hỏi user nhập kết quả trận. Mặc định 5 trận đã kết thúc, mọi giải chính thức; MU được chuẩn hóa thành Manchester United. Khi so sánh hai đội, gọi MỘT LẦN với cả team_a và team_b để nhận comparison, không gọi riêng từng đội. Trình bày theo comparison và home_team/away_team trong matches_used, không tự đảo sân nhà/khách hoặc nói đội ghi nhiều bàn hơn nếu goals_scored_difference=0. Chỉ truyền matches khi dữ liệu cụ thể đã có trong ngữ cảnh. Tool trả nguồn và ngày từng trận; khi thiếu nguồn hoặc chưa đủ trận phải nói rõ, không đoán. Không dùng cho tin tức chung, vua phá lưới hoặc lịch trận sắp tới."
     parameters:
       type: object
       properties:
         team_a: {type: string, default: "", description: "Tên đội bóng chính cần phân tích phong độ"}
         matches:
           type: array
-          description: "Danh sách các trận đấu gần đây với thông tin tỷ số (scored, conceded hoặc home_score, away_score)"
+          description: "TÙY CHỌN. Bỏ tham số này để tool TỰ TÌM kết quả hiện tại. Chỉ truyền khi user/ngữ cảnh cung cấp sẵn tỷ số thật, không tự bịa. Mỗi trận có team/scored/conceded hoặc home_team/away_team/home_score/away_score, thứ tự cũ đến mới."
           items:
             type: object
         team_b: {type: string, default: "", description: "Tên đội bóng thứ hai nếu muốn so sánh phong độ đối đầu"}
-        last_n: {type: integer, default: 5, description: "Số trận gần nhất cần tính (mặc định là 5 trận)"}
-      required: [team_a, matches]
+        last_n: {type: integer, default: 5, description: "Số trận gần nhất cần tính, mặc định 5; chế độ tự tìm hỗ trợ 1–20."}
+      required: [team_a]
 
   - name: top_scorers
     description: "Lấy bảng xếp hạng vua phá lưới (top scorers) THẬT của một giải bóng đá: thứ hạng, cầu thủ, CLB, bàn thắng, kiến tạo, phạt đền. DÙNG KHI user hỏi top cầu thủ ghi bàn, vua phá lưới, Chiếc giày vàng, ai ghi nhiều bàn nhất một giải/mùa. KHÔNG DÙNG cho phong độ W-D-L của một đội (dùng football_stats), tin tức/tiểu sử cầu thủ (dùng lookup). Nếu user không nói giải nào thì gọi clarify trước, không tự đoán giải. Nếu tool trả error=ambiguous_competition thì dùng clarify hỏi user chọn một trong candidates."
@@ -209,3 +209,25 @@ tools:
       required:
       - handles
       - keyword
+
+  - name: standings
+    description: "Lấy BẢNG XẾP HẠNG ĐỘI (league table) THẬT của một giải bóng đá: hạng, đội, số trận, thắng/hoà/thua, bàn thắng/bại, hiệu số, điểm, chuỗi phong độ 5 trận (form, trận gần nhất đứng đầu). DÙNG KHI user hỏi bảng xếp hạng, đội nào đứng đầu / top 4 / nhóm xuống hạng, một đội đang đứng thứ mấy hoặc có bao nhiêu điểm. KHÔNG DÙNG cho vua phá lưới / cầu thủ ghi bàn (dùng top_scorers), danh sách trận và tỷ số của một đội (dùng team_fixtures), tin tức (dùng lookup). Nếu user không nói giải nào thì gọi clarify trước, không tự đoán giải. Nếu tool trả error=ambiguous_competition thì dùng clarify hỏi user chọn một trong candidates."
+    parameters:
+      type: object
+      properties:
+        competition: {type: string, default: "", description: "Tên giải đúng như user nói, ví dụ 'Premier League', 'La Liga', 'Serie A', 'Bundesliga'; hoặc league id dạng số. Không bịa tên giải."}
+        season: {type: integer, description: "NĂM BẮT ĐẦU của mùa giải: 2025/26 -> 2025, 2024/25 -> 2024. Chỉ truyền khi user nêu mùa; bỏ trống = mùa hiện tại. Không tự điền mùa."}
+        country: {type: string, default: "", description: "Quốc gia của giải (tiếng Anh) để phân biệt giải trùng tên: Premier League -> England, La Liga -> Spain, Serie A -> Italy, Bundesliga -> Germany. Bỏ trống với giải châu lục/quốc tế."}
+      required: [competition]
+
+  - name: team_fixtures
+    description: "Lấy N trận ĐÃ ĐÁ gần nhất (tỷ số thật) của MỘT đội trong MỘT mùa giải, sắp theo thời gian cũ -> mới. Output `matches` có sẵn home_team/away_team/home_score/away_score: khi user muốn phân tích phong độ W-D-L của một đội trong một mùa cụ thể mà KHÔNG đưa sẵn danh sách trận, gọi team_fixtures TRƯỚC rồi truyền `matches` và `team.name` (làm team_a) sang football_stats. KHÔNG DÙNG cho bảng xếp hạng (dùng standings), vua phá lưới (dùng top_scorers), lịch thi đấu sắp tới hay trận đang diễn ra (không hỗ trợ). GIỚI HẠN: key Free chỉ có mùa 2022-2024; mùa khác trả error=data_unavailable, khi đó báo đúng lý do cho user, không bịa tỷ số. User không nêu mùa thì gọi clarify hỏi mùa. Nếu error=ambiguous_team hoặc ambiguous_competition thì dùng clarify hỏi user chọn một trong candidates."
+    parameters:
+      type: object
+      properties:
+        team: {type: string, default: "", description: "Tên đội đúng như user nói, ví dụ 'Arsenal', 'Real Madrid'; hoặc team id API-Football dạng số. Không bịa tên đội."}
+        season: {type: integer, description: "BẮT BUỘC. NĂM BẮT ĐẦU của mùa: 2024/25 -> 2024, 2023/24 -> 2023. Không tự điền khi user không nêu mùa."}
+        competition: {type: string, default: "", description: "Chỉ lấy trận của một giải/cúp, ví dụ 'Premier League', 'FA Cup', 'UEFA Champions League'. Truyền khi user nêu giải; bỏ trống = mọi giải đấu, kể cả giao hữu."}
+        country: {type: string, default: "", description: "Quốc gia của ĐỘI (tiếng Anh) để phân biệt đội trùng tên: Arsenal -> England, Real Madrid -> Spain, Inter -> Italy."}
+        last_n: {type: integer, default: 5, description: "Số trận đã đá gần nhất cần lấy, từ 1 đến 50. User nói '5 trận cuối' -> 5. Mặc định 5."}
+      required: [team, season]

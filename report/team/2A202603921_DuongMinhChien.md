@@ -9,7 +9,13 @@
 
 ## 2. Phần việc phụ trách
 
-Tôi thiết kế, cài đặt và kiểm thử tool mới `top_scorers` ở CP3. Tool trả về bảng xếp hạng vua phá lưới của một giải bóng đá, phục vụ hướng Football Research Agent của nhóm. Tôi cũng viết unit test và eval case routing cho tool này (CP3, CP4).
+Tôi thiết kế, cài đặt và kiểm thử ba tool mới ở CP3, phục vụ hướng Football Research Agent của nhóm:
+
+- `top_scorers`: bảng xếp hạng vua phá lưới của một giải.
+- `standings`: bảng xếp hạng đội của một giải.
+- `team_fixtures`: N trận đã đá gần nhất của một đội trong một mùa, để nối sang `football_stats` tính phong độ.
+
+Với mỗi tool, tôi viết unit test và eval case routing (CP3, CP4).
 
 ## 3. Đóng góp cụ thể
 
@@ -47,16 +53,51 @@ File có 26 test, chạy offline: `requests.get` được mock nên không có l
 
 Có 4 case, gồm 3 single-turn và 1 multi-turn. Câu hỏi phải được route tới `top_scorers` với `season=2025, limit=10`; câu "Chiếc giày vàng" không được route sang `lookup`; câu thiếu tên giải phải dẫn tới `clarify`; case multi-turn gom đủ tên giải cùng `season=2024, limit=5`. Các case nằm ở file riêng vì `eval_group.json` của nhóm phải giữ đúng 10 case.
 
+### 3.5. Tool `standings` ([`starter_v0/tools/standings/`](../../starter_v0/tools/standings/))
+
+Tool trả bảng xếp hạng đội của một giải: hạng, đội, số trận, thắng/hoà/thua, bàn thắng/bại, hiệu số, điểm, chuỗi phong độ 5 trận và mô tả suất (Champions League, Relegation…). Nguồn chính là API-Football `/standings`, nguồn dự phòng là SportScore `/api/widget/standings/`, đúng mô hình của `top_scorers`.
+
+Các quy tắc giữ nguyên như `top_scorers`. SportScore không có trường mùa, nên hỏi mùa cũ thì tool không lấy bảng mùa hiện tại thay vào. Trường nguồn không có (SportScore không có `form` và id đội) thì trả `null`. Giải trùng tên trả `ambiguous_competition`. Giải có nhiều bảng (vòng bảng cúp) được tách thành nhiều phần tử trong `groups`.
+
+Chuỗi `form` của API-Football xếp trận gần nhất đứng đầu. Tôi kiểm tra điều này bằng dữ liệu thật: Arsenal mùa 2024 có `"WWDLD"`, còn 5 trận cuối theo thời gian là D, L, D, W, W.
+
+### 3.6. Tool `team_fixtures` ([`starter_v0/tools/team_fixtures/`](../../starter_v0/tools/team_fixtures/))
+
+Tool lấy N trận đã đá gần nhất của một đội trong một mùa, sắp từ cũ đến mới. Danh sách `matches` dùng đúng format fixture của `football_stats` (`home_team`, `away_team`, `home_score`, `away_score`), nên agent nối được `team_fixtures` → `football_stats`. Trước đây `football_stats` bắt user tự đưa danh sách trận.
+
+Gọi thử ngày 2026-11-11 cho thấy gói Free của API-Football chặn tham số `last` và `next` của `/fixtures`, và chỉ mở mùa 2022–2024. Vì vậy tool lấy nguyên lịch một mùa rồi tự lọc và cắt. `season` là tham số bắt buộc, còn mùa ngoài khoảng đó trả `data_unavailable` kèm lý do `plan_restriction`. Tool không có nguồn dự phòng: widget `/api/widget/team/` của SportScore trả cùng một trận mẫu "Arsenal vs Chelsea" cho cả `arsenal` lẫn `chelsea`, nên không dùng được.
+
+Các quy tắc xử lý dữ liệu:
+
+- Đội được tìm qua `/teams?search=`, chỉ nhận tên khớp chính xác. Tìm "Arsenal" ra 3 đội cùng tên (Anh, Guadeloupe, Belarus), nên khi không có `country` tool trả `ambiguous_team` kèm `candidates`, không tự chọn.
+- Chỉ giữ trận có status `FT`, `AET`, `PEN` và đủ tỷ số. Trận hoãn, huỷ hoặc thiếu tỷ số bị bỏ qua, không điền tỷ số giả.
+- Tỷ số là kết quả sau 90 phút hoặc sau hiệp phụ. Loạt luân lưu nằm riêng trong `penalty_shootout`, vì `goals` của API-Football không tính luân lưu.
+- Không truyền `competition` thì kết quả gồm mọi giải, kể cả giao hữu, và `warning` có ghi rõ điều đó. Arsenal mùa 2024 có 63 trận như vậy, trong đó có trận giao hữu thắng 2-1 Manchester United vẫn đá luân lưu.
+
+### 3.7. Phần dùng chung, đăng ký, test và eval cho hai tool mới
+
+- Trong [`top_scorers/tool.py`](../../starter_v0/tools/top_scorers/tool.py), tôi tách phần dò giải thành `_resolve_api_football_league` và `_api_football_key`, hành vi không đổi (26 test cũ vẫn pass). Ba tool dùng chung một cache, nên lần tra `/leagues` của tool này tiết kiệm quota cho tool kia.
+- Đăng ký: thêm `"standings"` và `"team_fixtures"` vào [`tools/__init__.py`](../../starter_v0/tools/__init__.py), khai báo hai tool ở cuối [`artifacts/tools.yaml`](../../starter_v0/artifacts/tools.yaml) với mô tả khi nào dùng / không dùng. Mô tả của `standings` tách rõ khỏi `top_scorers`, mô tả của `team_fixtures` hướng dẫn chuyển `matches` sang `football_stats`.
+- Unit test chạy offline (mock `requests.get`): [`tests/test_standings.py`](../../starter_v0/tests/test_standings.py) và [`tests/test_team_fixtures.py`](../../starter_v0/tests/test_team_fixtures.py), tổng cộng 51 test. Nội dung gồm happy path, fallback, bảo vệ mùa giải, đội/giải trùng tên, luân lưu, trận chưa đá, lỗi 429/500/timeout không retry, key không lộ, input xấu không phát sinh request, cache, và một test nối thẳng output `team_fixtures` vào `football_stats`.
+- Eval: [`data/eval_standings.json`](../../starter_v0/data/eval_standings.json) và [`data/eval_team_fixtures.json`](../../starter_v0/data/eval_team_fixtures.json), mỗi file 4 case (3 single-turn, 1 multi-turn). Case F02 yêu cầu lượt đầu phải gọi `team_fixtures`, gọi ngay `football_stats` với danh sách trận tự bịa là sai. Case S02 kiểm tra câu hỏi về điểm số của đội không bị route sang `top_scorers`.
+
 ## 4. Bằng chứng
 
 - File/commit/PR:
   - Commit chính `23e97e0` (_feat(CP3): add top_scorers tool with API-Football primary and SportScore fallback_): 7 file, +1091 dòng, 0 dòng xoá, đã merge vào `main`.
+  - Commit `791e511` (_feat(CP3): add standings and team_fixtures tools_): 11 file, +1543 dòng, 4 dòng xoá (phần tách hàm trong `top_scorers/tool.py`).
   - Commit `794ab19` tạo báo cáo cá nhân.
   - Commit `428df30` (_Add top scorers research too_) là bản đầu tiên của tool. Nhóm đã revert commit này ở `142d701` vì nó sửa quá nhiều file dùng chung, trong đó có `system_prompt.md`. Bản `23e97e0` được làm lại từ đầu và chỉ chạm vào các file của tool.
 - `pytest`: `tests/test_top_scorers.py` 26 passed. Toàn suite 101 passed, 14 skipped, 0 failed (14 test skipped là stub có sẵn trong `test_tools_todo.py`). `tests/test_tool_contract.py` vẫn xanh sau khi thêm tool.
 - Chạy thật ngày 2026-11-10:
   - Premier League, mùa hiện tại: API-Football trả _"Free plans do not have access to this season, try from 2022 to 2024"_, tool fallback sang SportScore và trả top 5 (Haaland 9 bàn, Isak 7…), `season.verified: false`, có attribution.
   - Premier League, `season=2024`: API-Football trả dữ liệu, `verified: true`, không phải fallback.
+- `pytest` sau khi thêm `standings` và `team_fixtures` (đã rebase lên `main` mới nhất của nhóm): 51 test mới đều pass, toàn suite 233 passed, 0 failed, contract test xanh.
+- Chạy thật ngày 2026-11-11:
+  - `standings("Premier League", 2024, "England")`: API-Football, Liverpool hạng 1 với 84 điểm, Arsenal hạng 2 với 74 điểm.
+  - `standings("Premier League", country="England")` cho mùa hiện tại: API-Football báo lỗi gói Free, tool fallback sang SportScore (`fallback_reason: plan_restriction`), trả bảng 20 đội với Arsenal dẫn đầu 27 điểm sau 10 trận, có attribution.
+  - `team_fixtures("Arsenal", 2024, "Premier League", "England", 5)`: 5 trận cuối mùa, từ Arsenal 2-2 Crystal Palace đến Southampton 1-2 Arsenal. Đưa thẳng kết quả vào `football_stats` ra phong độ `D-L-D-W-W`, khớp với `form` `"WWDLD"` của `standings` khi đọc ngược.
+  - `team_fixtures("Arsenal", 2025, country="England")`: `data_unavailable`, lý do `plan_restriction`. `team_fixtures("Arsenal", 2024)` không kèm `country`: `ambiguous_team`.
 - AI/công cụ đã dùng và cách tự kiểm tra kết quả: tôi dùng Claude Code để đọc codebase. Cách tôi kiểm tra kết quả:
   1. Gọi thử endpoint thật của API-Football và SportScore để lấy cấu trúc JSON thật rồi mới viết mock, không để AI tự đoán schema.
   2. Chạy `pytest` toàn suite và contract test sau mỗi thay đổi.
