@@ -95,19 +95,17 @@ CP3: football_stats, football_headlines, football_mentions và unit test. CP4: 1
 
 ### Phần việc phụ trách
 
-CP3: ba tool bóng đá mới `top_scorers` (vua phá lưới), `standings` (bảng xếp hạng đội), `team_fixtures` (N trận đã đá của một đội trong một mùa) và unit test cho từng tool. CP4: eval case routing cho ba tool, đặt ở file riêng để `eval_group.json` vẫn giữ đúng 10 case.
+CP3: ba tool mới `top_scorers` (vua phá lưới), `standings` (bảng xếp hạng đội), `team_fixtures` (trận đã đá của một đội trong một mùa) và unit test. CP4: 12 eval case routing ở file riêng.
 
 ### Đóng góp cụ thể
 
-- `top_scorers` và `standings` lấy dữ liệu từ API-Football, khi lỗi thì chuyển sang SportScore và ghi lý do vào `attempts`. SportScore không có trường mùa, nên hỏi mùa cũ thì tool trả `data_unavailable`, không đưa dữ liệu mùa hiện tại ra thay. Trường nguồn không có thì trả `null`, giải trùng tên thì trả `candidates` để agent hỏi lại.
-- `team_fixtures` trả `matches` đúng format fixture của `football_stats`, nên agent nối được `team_fixtures` → `football_stats`. Gói Free của API-Football chặn `last`/`next` và chỉ mở mùa 2022–2024, nên `season` là tham số bắt buộc và tool không có fallback (widget team của SportScore trả dữ liệu mẫu).
-- Ba tool dùng chung phần dò giải, cache 24h và xử lý lỗi; không retry khi gặp 429; API key không xuất hiện trong output. Chỉ thêm file mới và thêm dòng vào `tools/__init__.py`, `tools.yaml`, `.env.example`; không sửa system prompt hay tool của thành viên khác.
-- 77 unit test offline (26 `top_scorers`, 51 cho hai tool sau). Toàn suite trên `main` mới nhất: 246 passed, 0 failed. Chạy thật với key Free: `standings` mùa 2024 cho Liverpool 84 điểm đứng đầu; nối `team_fixtures` Arsenal 2024 sang `football_stats` ra phong độ `D-L-D-W-W`, khớp với `form` `"WWDLD"` của `standings`.
-- 12 eval case (mỗi tool 4 case, gồm 3 single-turn và 1 multi-turn). Chạy OpenRouter/openai/gpt-4o-mini, nhãn v10 trên code mới nhất: 12/12 PASS ở cả hai lần chạy. Bản đầu (v6) chỉ 7/12 vì model hỏi `clarify` xác nhận dù đã đủ thông tin và đổi "2023/24" thành 2024; sửa mô tả hai tool `standings`, `team_fixtures` qua v7–v10 thì hết lỗi.
+- Ba tool lấy dữ liệu từ API-Football; `top_scorers` và `standings` chuyển sang SportScore khi nguồn chính lỗi. Tool không tự điền dữ liệu: trường thiếu trả `null`, không lấy mùa hiện tại thay cho mùa cũ, tên giải hoặc đội trùng thì trả `candidates`.
+- `team_fixtures` trả `matches` đúng format của `football_stats` để nối hai tool. Gói Free chỉ mở mùa 2022–2024 nên `season` là bắt buộc.
+- 77 unit test offline, toàn suite 246 passed. Eval với `gpt-4o-mini`: bản đầu (v6) đạt 7/12, sau khi sửa mô tả tool, v10 đạt 12/12 ở cả hai lần chạy.
+- Chỉ thêm file mới và thêm dòng vào `tools/__init__.py`, `tools.yaml`, `.env.example`; không sửa system prompt hay tool của thành viên khác.
 
 ### Bằng chứng
 
-- [Báo cáo cá nhân](report/team/2A202603921_DuongMinhChien.md).
-- [top_scorers](starter_v0/tools/top_scorers/tool.py), [standings](starter_v0/tools/standings/tool.py), [team_fixtures](starter_v0/tools/team_fixtures/tool.py); mỗi folder có TOOL.md ghi giới hạn đã kiểm chứng bằng gọi thật.
-- Unit test: [test_top_scorers.py](starter_v0/tests/test_top_scorers.py), [test_standings.py](starter_v0/tests/test_standings.py), [test_team_fixtures.py](starter_v0/tests/test_team_fixtures.py). Eval: [eval_top_scorers.json](starter_v0/data/eval_top_scorers.json), [eval_standings.json](starter_v0/data/eval_standings.json), [eval_team_fixtures.json](starter_v0/data/eval_team_fixtures.json).
-- Commit kỹ thuật: `23e97e0` (top_scorers), `791e511` (standings và team_fixtures), `2450c27` (eval v6–v10 và 32 file run; số liệu từng version trong [version_log.csv](starter_v0/artifacts/version_log.csv)).
+- [Báo cáo cá nhân](report/team/2A202603921_DuongMinhChien.md), [version_log.csv](starter_v0/artifacts/version_log.csv) (v6–v10).
+- Code: [top_scorers](starter_v0/tools/top_scorers/tool.py), [standings](starter_v0/tools/standings/tool.py), [team_fixtures](starter_v0/tools/team_fixtures/tool.py). Test: [test_top_scorers.py](starter_v0/tests/test_top_scorers.py), [test_standings.py](starter_v0/tests/test_standings.py), [test_team_fixtures.py](starter_v0/tests/test_team_fixtures.py). Eval: [eval_top_scorers.json](starter_v0/data/eval_top_scorers.json), [eval_standings.json](starter_v0/data/eval_standings.json), [eval_team_fixtures.json](starter_v0/data/eval_team_fixtures.json).
+- Commit: `23e97e0` (top_scorers), `791e511` (standings, team_fixtures), `2450c27` (eval v6–v10).
