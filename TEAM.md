@@ -52,7 +52,7 @@ CP3: football_stats, football_headlines, football_mentions và unit test. CP4: 1
 - Hoàn thiện validation và regression test football_stats; thêm headlines gom nhiều URL và mentions lọc nhiều timeline, có xử lý trùng và lỗi từng nguồn.
 - Thêm code, TOOL.md, đăng ký và khai báo tool mới; giữ nguyên system prompt và khai báo tool cũ của CP1/CP2.
 - Viết 50 lượt test cho ba tool sau tham số hóa (22 stats, 13 headlines, 15 mentions), triển khai 14 test stub có sẵn. Toàn suite đạt 172 passed, 0 failed, 0 skipped.
-- Chạy eval OpenRouter/openai/gpt-4o-mini trên máy cá nhân, nhãn v5; sau pull đạt 9/10 PASS (G05 còn sai routing). Tổng 172 test pass gồm cả test của thành viên khác, không phải toàn bộ do Lộc viết. Không nhận là đã làm UI, gửi Telegram thật hoặc chạy model local.
+- Chạy eval OpenRouter/openai/gpt-4o-mini trên máy cá nhân, nhãn v5; sau pull đạt 9/10 PASS (G05 còn sai routing). Tổng 172 test pass gồm cả test của thành viên khác.
 
 ### Bằng chứng
 
