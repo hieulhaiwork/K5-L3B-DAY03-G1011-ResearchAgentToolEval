@@ -11,7 +11,7 @@
 
 | STT | Họ tên | MSSV | Email | GitHub | Vai trò |
 | --: | ------ | ---- | ----- | ------ | ------- |
-|   1 |        |      |       |        |         |
+|   1 |Lê Hiền Hiếu   | 2A202603940     | 26ai.hieulh@vinuni.edu.vn      |  hieulhaiwork      | PM/AI Optimizer        |
 |   2 |        |      |       |        |         |
 |   3 | Trần Xuân Lộc | 2A202603951     |    xuanloca2tv@gmail.com |   Kaylez-TXL       | CP3: 3 tool bóng đá, unit test; CP4: eval nhóm; bonus Test challenge |
 |   4 | Nguyễn Quang Tiệp | 2A202603946 | 26ai.tiepnq@vinuni.edu.vn | nguyenquangtiep |         |
@@ -28,19 +28,29 @@ Ví dụ: `report/team/20241234_NguyenVanAn.md`.
 
 Sao chép mục dưới đây cho từng thành viên.
 
-## HoVaTen-MSSV
+## Lê Hiền Hiếu — 2A202603940
 
 ### Phần việc phụ trách
 
--
+Nhóm trưởng phụ trách chính là thống nhất ý tưởng, phân chia công việc đều cho các thành viên trong nhóm, tham gia hợp tác cùng NguyenQuangTiep để hoàn thành CP1 và CP2. Trong khi chờ tích hợp tool mới, tôi đề xuất 10 testcase tự tạo để làm baseline định hướng cho 2 bạn viết tool mới. Cuối cùng viết code cho streamlit để demo trực quan.
 
 ### Đóng góp cụ thể
 
--
+- CP1 + CP2: Hợp tác với NguyenQuangTiep cùng hoàn thành việc chạy mô hình baseline v0 trên bộ eval-base. Sau đó cả hai người cùng phân tích lỗi, dự đoán xem vì sao lỗi đó xảy ra, thay đổi system_prompt.md và tools.yaml qua tổng cộng 5 version mới PASS hết các testcase trong bộ eval-base.
+
+- CP4: Khởi tạo sẵn 10 testcases để test các chức năng của model v5 trong thời gian đợi TranXuanLoc và DuongMinhChien tích hợp các tool vào model. Sau đó để TranXuanLoc và DuongMinhChien tự thay đổi các testcases đó để test tool mới.
+
+- CP5: Viết streamlit UI để demo.
+
+- Hoàn thiện các báo cáo: individual report, group_report, version_log.csv
 
 ### Bằng chứng
 
--
+- [Báo cáo cá nhân](report/team/2A202603940_LeHienHieu.md), [báo cáo nhóm B3/B5a/B5](report/team/group_report.md).
+- Tôi đóng vai trò phân tích lỗi, đề xuất thay đổi prompt_system và tools describe sau đó gửi các thay đổi sang NguyenQuangTiep thông qua discord để tiết kiệm thời gian. Sau đó chạy thử nghiệm model trên máy tính của NguyenQuangTiep nên bạn đó có các commit về runs v1,v2,v3,v4,v5 và prompt_system cũng như tools. Các commit đó thực tế là công sức của tôi và NguyenQuangTiep cùng làm.
+- Comit 1199fca để khởi tạo bộ Eval group.
+- [Runs](starter_v0/runs/), [system prompt](starter_v0/artifacts/system_prompt.md), [tool declarations](starter_v0/artifacts/tools.yaml), [version log](starter_v0/artifacts/version_log.csv)
+- [Streamlit App](starter_v0/app.py)
 
 ## Trần Xuân Lộc — 2A202603951
 
