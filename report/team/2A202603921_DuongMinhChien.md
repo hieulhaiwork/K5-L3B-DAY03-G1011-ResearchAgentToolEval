@@ -57,7 +57,7 @@ Có 4 case, gồm 3 single-turn và 1 multi-turn. Câu hỏi phải được rou
 - Chạy thật ngày 2026-11-10:
   - Premier League, mùa hiện tại: API-Football trả _"Free plans do not have access to this season, try from 2022 to 2024"_, tool fallback sang SportScore và trả top 5 (Haaland 9 bàn, Isak 7…), `season.verified: false`, có attribution.
   - Premier League, `season=2024`: API-Football trả dữ liệu, `verified: true`, không phải fallback.
-- AI/công cụ đã dùng và cách tự kiểm tra kết quả: tôi dùng Claude Code để đọc codebase, viết code tool, test và tài liệu. Cách tôi kiểm tra kết quả:
+- AI/công cụ đã dùng và cách tự kiểm tra kết quả: tôi dùng Claude Code để đọc codebase. Cách tôi kiểm tra kết quả:
   1. Gọi thử endpoint thật của API-Football và SportScore để lấy cấu trúc JSON thật rồi mới viết mock, không để AI tự đoán schema.
   2. Chạy `pytest` toàn suite và contract test sau mỗi thay đổi.
   3. Chạy tool thật với key Free để xác nhận cả nhánh fallback lẫn nhánh API-Football.
