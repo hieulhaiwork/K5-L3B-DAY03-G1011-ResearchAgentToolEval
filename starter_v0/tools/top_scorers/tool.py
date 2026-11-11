@@ -234,12 +234,20 @@ def _api_football_call(path: str, params: dict[str, Any], key: str) -> list[dict
     return response
 
 
-def _fetch_api_football(competition: str, season: int | None, limit: int, country: str | None,
-                        context: dict[str, Any]) -> dict[str, Any]:
+def _api_football_key() -> str:
     key = os.getenv("API_FOOTBALL_KEY")
     if not key:
         raise ProviderError("missing_api_key", "API_FOOTBALL_KEY is not configured")
+    return key
 
+
+def _resolve_api_football_league(competition: str, season: int | None, country: str | None, key: str,
+                                 context: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any], int | None]:
+    """Find exactly one league and the requested (or current) season on API-Football.
+
+    Returns (league item, chosen season dict, season year). Also used by the
+    standings and team_fixtures tools. Raises ProviderError / AmbiguousCompetition.
+    """
     if competition.isdigit():
         params: dict[str, Any] = {"id": int(competition)}
         leagues = _api_football_leagues(params, key)
@@ -268,7 +276,6 @@ def _fetch_api_football(competition: str, season: int | None, limit: int, countr
         } for item in unique.values()])
 
     item = next(iter(unique.values()))
-    league = item.get("league") or {}
     seasons = [s for s in item.get("seasons") or [] if isinstance(s, dict)]
     current = next((s for s in seasons if s.get("current")), None)
     if current is not None:
@@ -282,7 +289,14 @@ def _fetch_api_football(competition: str, season: int | None, limit: int, countr
         chosen = next((s for s in seasons if _int_or_none(s.get("year")) == season), None)
         if chosen is None:
             raise ProviderError("unsupported_season", f"Season {season} is not available for this competition on API-Football")
-    year = _int_or_none(chosen.get("year"))
+    return item, chosen, _int_or_none(chosen.get("year"))
+
+
+def _fetch_api_football(competition: str, season: int | None, limit: int, country: str | None,
+                        context: dict[str, Any]) -> dict[str, Any]:
+    key = _api_football_key()
+    item, chosen, year = _resolve_api_football_league(competition, season, country, key, context)
+    league = item.get("league") or {}
     if not (chosen.get("coverage") or {}).get("top_scorers"):
         raise ProviderError("no_top_scorers_coverage", f"API-Football has no top-scorer coverage for season {year}")
 

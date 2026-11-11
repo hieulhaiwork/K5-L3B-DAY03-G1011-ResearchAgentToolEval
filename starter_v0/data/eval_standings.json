@@ -1,0 +1,80 @@
+{
+  "dataset_id": "day03_v2_standings",
+  "dataset_role": "group",
+  "description": "Case routing cho tool mới standings (file riêng, không thay 10 case của eval_group.json). Eval chỉ chấm tool + args ở lượt đầu; hành vi provider (API-Football -> SportScore, season protection, cả hai lỗi) được kiểm tra bằng unit test trong tests/test_standings.py.",
+  "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
+  "cases": [
+    {
+      "id": "S01_standings_historic_season",
+      "phase": "B",
+      "suite": "group",
+      "query": "Bảng xếp hạng chung cuộc Premier League mùa 2023/24 thế nào?",
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {"name": "standings", "args": {"season": 2023}}
+        ]
+      },
+      "metadata": {
+        "skill": "routing_standings_args",
+        "difficulty": "medium",
+        "what_it_tests": "Route tới standings và chuyển mùa '2023/24' thành năm bắt đầu season=2023."
+      }
+    },
+    {
+      "id": "S02_standings_not_top_scorers",
+      "phase": "B",
+      "suite": "group",
+      "query": "Đội nào đang đứng đầu La Liga và hơn đội nhì bao nhiêu điểm?",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {"name": "standings", "args": {}}
+        ]
+      },
+      "metadata": {
+        "skill": "routing_standings_vs_top_scorers",
+        "difficulty": "medium",
+        "what_it_tests": "Câu hỏi về thứ hạng/điểm của đội phải route tới standings, không phải top_scorers (bảng xếp hạng cầu thủ) hay lookup."
+      }
+    },
+    {
+      "id": "S03_standings_missing_competition",
+      "phase": "B",
+      "suite": "group",
+      "query": "Cho mình xem bảng xếp hạng hiện tại với.",
+      "failure_type": "missing_info",
+      "expect": {
+        "tool_calls": [
+          {"name": "clarify", "args": {"response_type": "text"}}
+        ]
+      },
+      "metadata": {
+        "skill": "clarify_missing_competition",
+        "difficulty": "medium",
+        "what_it_tests": "Không nêu giải đấu -> phải gọi clarify hỏi giải nào, không tự đoán competition rồi gọi standings."
+      }
+    },
+    {
+      "id": "S04_multi_standings_details_across_turns",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Mình muốn xem bảng xếp hạng các đội."},
+        {"role": "user", "content": "Serie A của Ý nhé."},
+        {"role": "user", "content": "Mùa 2022/23 ấy."}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {"name": "standings", "args": {"season": 2022}}
+        ]
+      },
+      "metadata": {
+        "skill": "multiturn_standings_args",
+        "difficulty": "hard",
+        "what_it_tests": "Multi-turn: gom giải (turn 2) + mùa 2022/23 -> season=2022 (turn 3) vào một lệnh standings."
+      }
+    }
+  ]
+}

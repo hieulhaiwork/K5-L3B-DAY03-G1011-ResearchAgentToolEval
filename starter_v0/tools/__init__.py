@@ -21,6 +21,8 @@ from .football_stats.tool import analyze_football_form
 from .football_headlines.tool import collect_football_headlines
 from .football_mentions.tool import collect_football_mentions
 from .top_scorers.tool import top_scorers
+from .standings.tool import standings
+from .team_fixtures.tool import team_fixtures
 
 
 # NOTE (starter_v0): tool names here are intentionally vague. These keys are the
@@ -43,6 +45,8 @@ TOOL_FUNCTIONS = {
     "football_headlines": collect_football_headlines,
     "football_mentions": collect_football_mentions,
     "top_scorers": top_scorers,
+    "standings": standings,
+    "team_fixtures": team_fixtures,
     # TODO CP3 (student): register your new tool here, e.g. "my_tool": my_tool_function,
     # then declare it in artifacts/tools.yaml and run `pytest tests/test_tool_contract.py`.
 }

@@ -1,0 +1,80 @@
+{
+  "dataset_id": "day03_v2_team_fixtures",
+  "dataset_role": "group",
+  "description": "Case routing cho tool mới team_fixtures (file riêng, không thay 10 case của eval_group.json). Eval chỉ chấm tool + args ở lượt đầu; lọc trận đã đá, thứ tự thời gian, luân lưu, giới hạn gói Free được kiểm tra bằng unit test trong tests/test_team_fixtures.py.",
+  "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
+  "cases": [
+    {
+      "id": "F01_team_fixtures_season_and_last_n",
+      "phase": "B",
+      "suite": "group",
+      "query": "5 trận Premier League cuối cùng của Arsenal mùa 2024/25 có kết quả ra sao?",
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {"name": "team_fixtures", "args": {"season": 2024, "last_n": 5}}
+        ]
+      },
+      "metadata": {
+        "skill": "routing_team_fixtures_args",
+        "difficulty": "medium",
+        "what_it_tests": "Route tới team_fixtures, chuyển '2024/25' thành season=2024 và '5 trận cuối' thành last_n=5."
+      }
+    },
+    {
+      "id": "F02_team_fixtures_before_football_stats",
+      "phase": "B",
+      "suite": "group",
+      "query": "Phân tích phong độ 5 trận cuối mùa 2023/24 của Liverpool ở Premier League giúp mình.",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {"name": "team_fixtures", "args": {"season": 2023, "last_n": 5}}
+        ]
+      },
+      "metadata": {
+        "skill": "chain_team_fixtures_then_football_stats",
+        "difficulty": "hard",
+        "what_it_tests": "User không đưa danh sách trận -> lượt đầu phải lấy dữ liệu thật bằng team_fixtures; gọi football_stats ngay (với matches tự bịa) là sai."
+      }
+    },
+    {
+      "id": "F03_team_fixtures_missing_season",
+      "phase": "B",
+      "suite": "group",
+      "query": "Cho mình xem kết quả các trận của Chelsea với.",
+      "failure_type": "missing_info",
+      "expect": {
+        "tool_calls": [
+          {"name": "clarify", "args": {"response_type": "text"}}
+        ]
+      },
+      "metadata": {
+        "skill": "clarify_missing_season",
+        "difficulty": "medium",
+        "what_it_tests": "team_fixtures bắt buộc có season; user không nêu mùa -> gọi clarify hỏi mùa, không tự điền season."
+      }
+    },
+    {
+      "id": "F04_multi_team_fixtures_details_across_turns",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Mình muốn xem kết quả các trận của Real Madrid."},
+        {"role": "user", "content": "Mùa 2022/23 nhé, chỉ tính La Liga."},
+        {"role": "user", "content": "Lấy 10 trận cuối thôi."}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {"name": "team_fixtures", "args": {"season": 2022, "last_n": 10}}
+        ]
+      },
+      "metadata": {
+        "skill": "multiturn_team_fixtures_args",
+        "difficulty": "hard",
+        "what_it_tests": "Multi-turn: gom đội (turn 1) + mùa 2022/23 và giải (turn 2) + 10 trận (turn 3) -> season=2022, last_n=10 trong một lệnh team_fixtures."
+      }
+    }
+  ]
+}
