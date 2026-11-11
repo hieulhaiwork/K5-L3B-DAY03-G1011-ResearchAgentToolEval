@@ -110,4 +110,4 @@ CP3: ba tool bóng đá mới `top_scorers` (vua phá lưới), `standings` (b�
 - [Báo cáo cá nhân](report/team/2A202603921_DuongMinhChien.md).
 - [top_scorers](starter_v0/tools/top_scorers/tool.py), [standings](starter_v0/tools/standings/tool.py), [team_fixtures](starter_v0/tools/team_fixtures/tool.py); mỗi folder có TOOL.md ghi giới hạn đã kiểm chứng bằng gọi thật.
 - Unit test: [test_top_scorers.py](starter_v0/tests/test_top_scorers.py), [test_standings.py](starter_v0/tests/test_standings.py), [test_team_fixtures.py](starter_v0/tests/test_team_fixtures.py). Eval: [eval_top_scorers.json](starter_v0/data/eval_top_scorers.json), [eval_standings.json](starter_v0/data/eval_standings.json), [eval_team_fixtures.json](starter_v0/data/eval_team_fixtures.json).
-- Commit kỹ thuật: `23e97e0` (top_scorers), `791e511` (standings và team_fixtures).
+- Commit kỹ thuật: `23e97e0` (top_scorers), `791e511` (standings và team_fixtures), `2450c27` (eval v6–v10 và 32 file run; số liệu từng version trong [version_log.csv](starter_v0/artifacts/version_log.csv)).
